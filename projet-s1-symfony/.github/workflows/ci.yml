@@ -1,75 +1,75 @@
 name: "CI - DEV"
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-  pull_request:
-    branches:
-      - main
-      - dev
+    push:
+        branches:
+            - main
+            - dev
+    pull_request:
+        branches:
+            - main
+            - dev
 
 jobs:
-  prepare:
-    name: "Prepare"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Show variables"
-        run: |
-          echo "OS: $RUNNER_OS"
-          echo "ARCH: $RUNNER_ARCH"
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.composer
-            ~/.cache
-          key: ${{ runner.os }}-${{ runner.arch }}-vendor-cache
-      - uses: actions/checkout@v5
-      - uses: actions/cache@v4
-        with:
-          path: ./vendor
-          key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
-      - run: composer install
+    prepare:
+        name: "Prepare"
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Show variables"
+              run: |
+                  echo "OS: $RUNNER_OS"
+                  echo "ARCH: $RUNNER_ARCH"
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.composer
+                      ~/.cache
+                  key: ${{ runner.os }}-${{ runner.arch }}-vendor-cache
+            - uses: actions/checkout@v5
+            - uses: actions/cache@v4
+              with:
+                  path: ./vendor
+                  key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
+            - run: composer install
 
-  lint:
-    needs: ["prepare"]
-    name: "Lint code"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.1"
+    lint:
+        needs: ["prepare"]
+        name: "Lint code"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.1"
 
-      - name: Restore vendor cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./vendor
-          key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
+            - name: Restore vendor cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: ./vendor
+                  key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
 
-      # utiliser le bon linter quand choisi et installé
-      - name: Run PHPStan
-        run: |
-          if [ -x vendor/bin/phpstan ]; then
-            vendor/bin/phpstan analyse || exit 1
-          else
-            echo "phpstan not available, skipping"
-          fi
+            # utiliser le bon linter quand choisi et installé
+            - name: Run PHPStan
+              run: |
+                  if [ -x vendor/bin/phpstan ]; then
+                    vendor/bin/phpstan analyse || exit 1
+                  else
+                    echo "phpstan not available, skipping"
+                  fi
 
-      - name: Run PHP-CS-Fixer
-        run: |
-          if [ -x vendor/bin/php-cs-fixer ]; then
-            vendor/bin/php-cs-fixer fix --dry-run --diff || true
-          else
-            echo "php-cs-fixer not available, skipping"
-          fi
+            - name: Run PHP-CS-Fixer
+              run: |
+                  if [ -x vendor/bin/php-cs-fixer ]; then
+                    vendor/bin/php-cs-fixer fix --dry-run --diff || true
+                  else
+                    echo "php-cs-fixer not available, skipping"
+                  fi
 
-  # unit-tests:
+    # unit-tests:
 
-  # functional-tests:
+    # functional-tests:
 
-  # e2e-tests:
+    # e2e-tests:
 
-  # notify:
+    # notify:
