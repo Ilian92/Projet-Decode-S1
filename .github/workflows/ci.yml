@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - dev
+            - test
 
 jobs:
     prepare:
@@ -12,6 +13,7 @@ jobs:
         steps:
             - name: "Show variables"
               run: |
+                  ls
                   cd projet-s1-symfony
                   echo "OS: $RUNNER_OS"
                   echo "ARCH: $RUNNER_ARCH"
