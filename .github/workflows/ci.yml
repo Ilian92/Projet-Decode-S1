@@ -3,11 +3,6 @@ name: "CI - DEV"
 on:
     push:
         branches:
-            - main
-            - dev
-    pull_request:
-        branches:
-            - main
             - dev
 
 jobs:
@@ -17,6 +12,7 @@ jobs:
         steps:
             - name: "Show variables"
               run: |
+                  cd projet-s1-symfony
                   echo "OS: $RUNNER_OS"
                   echo "ARCH: $RUNNER_ARCH"
             - uses: actions/cache@v4
@@ -28,9 +24,11 @@ jobs:
             - uses: actions/checkout@v5
             - uses: actions/cache@v4
               with:
-                  path: ./vendor
+                  path: ./projet-s1-symfony/vendor
                   key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
-            - run: composer install
+            - run: |
+                  cd projet-s1-symfony
+                  composer install
 
     lint:
         needs: ["prepare"]
