@@ -11,6 +11,7 @@ jobs:
     name: "Prepare"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - name: "Show variables"
         shell: bash
         working-directory: ./projet-s1-symfony
@@ -23,7 +24,6 @@ jobs:
             ~/.composer
             ~/.cache
           key: ${{ runner.os }}-${{ runner.arch }}-vendor-cache
-      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: ./projet-s1-symfony/vendor
