@@ -10,11 +10,12 @@ jobs:
   prepare:
     name: "Prepare"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./projet-s1-symfony
     steps:
       - uses: actions/checkout@v5
       - name: "Show variables"
-        shell: bash
-        working-directory: ./projet-s1-symfony
         run: |
           echo "OS: $RUNNER_OS"
           echo "ARCH: $RUNNER_ARCH"
