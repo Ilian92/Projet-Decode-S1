@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: "Show variables"
         shell: bash
-        working-directory: projet-s1-symfony
+        working-directory: ./projet-s1-symfony
         run: |
           echo "OS: $RUNNER_OS"
           echo "ARCH: $RUNNER_ARCH"
@@ -28,8 +28,7 @@ jobs:
         with:
           path: ./projet-s1-symfony/vendor
           key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
-      - run: |
-          composer install
+      - run: composer install
 
   lint:
     needs: ["prepare"]
