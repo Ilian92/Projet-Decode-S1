@@ -13,9 +13,7 @@ jobs:
         steps:
             - name: "Show variables"
               run: |
-                  ls
-                  cd projet-s1-symfony
-                  echo "OS: $RUNNER_OS"
+                  cd projet-s1-symfony && echo "OS: $RUNNER_OS"
                   echo "ARCH: $RUNNER_ARCH"
             - uses: actions/cache@v4
               with:
@@ -29,8 +27,7 @@ jobs:
                   path: ./projet-s1-symfony/vendor
                   key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
             - run: |
-                  cd projet-s1-symfony
-                  composer install
+                  cd projet-s1-symfony && composer install
 
     lint:
         needs: ["prepare"]
