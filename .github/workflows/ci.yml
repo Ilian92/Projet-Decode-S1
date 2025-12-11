@@ -57,14 +57,6 @@ jobs:
             echo "phpstan not available, skipping"
           fi
 
-      - name: Run PHP-CS-Fixer
-        run: |
-          if [ -x vendor/bin/php-cs-fixer ]; then
-            vendor/bin/php-cs-fixer fix --dry-run --diff || true
-          else
-            echo "php-cs-fixer not available, skipping"
-          fi
-
   # unit-tests:
 
   # functional-tests:
