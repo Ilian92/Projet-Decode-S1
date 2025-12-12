@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
@@ -28,6 +30,26 @@ class Order
 
     #[ORM\Column(length: 255)]
     private ?string $trackingNumber = null;
+
+    /**
+     * @var Collection<int, OrderLine>
+     */
+    #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'tableOrder')]
+    private Collection $orderLine;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?Address $address = null;
+
+    #[ORM\OneToOne(inversedBy: 'table_order', cascade: ['persist', 'remove'])]
+    private ?MonthlyBox $monthlyBox = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?Customer $customer = null;
+
+    public function __construct()
+    {
+        $this->orderLine = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -90,6 +112,72 @@ class Order
     public function setTrackingNumber(string $trackingNumber): static
     {
         $this->trackingNumber = $trackingNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderLine>
+     */
+    public function getOrderLine(): Collection
+    {
+        return $this->orderLine;
+    }
+
+    public function addOrderLine(OrderLine $orderLine): static
+    {
+        if (!$this->orderLine->contains($orderLine)) {
+            $this->orderLine->add($orderLine);
+            $orderLine->setTableOrder($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderLine(OrderLine $orderLine): static
+    {
+        if ($this->orderLine->removeElement($orderLine)) {
+            // set the owning side to null (unless already changed)
+            if ($orderLine->getTableOrder() === $this) {
+                $orderLine->setTableOrder(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?Address $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getMonthlyBox(): ?MonthlyBox
+    {
+        return $this->monthlyBox;
+    }
+
+    public function setMonthlyBox(?MonthlyBox $monthlyBox): static
+    {
+        $this->monthlyBox = $monthlyBox;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?Customer $customer): static
+    {
+        $this->customer = $customer;
 
         return $this;
     }

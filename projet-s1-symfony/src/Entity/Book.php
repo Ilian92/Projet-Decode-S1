@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BookRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,24 @@ class Book
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $releaseDate = null;
+
+    #[ORM\ManyToOne(inversedBy: 'book')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Work $work = null;
+
+    #[ORM\ManyToOne(inversedBy: 'book')]
+    private ?BookPublisher $bookPublisher = null;
+
+    /**
+     * @var Collection<int, OrderLine>
+     */
+    #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'book')]
+    private Collection $orderLine;
+
+    public function __construct()
+    {
+        $this->orderLine = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +125,60 @@ class Book
     public function setReleaseDate(\DateTime $releaseDate): static
     {
         $this->releaseDate = $releaseDate;
+
+        return $this;
+    }
+
+    public function getWork(): ?Work
+    {
+        return $this->work;
+    }
+
+    public function setWork(?Work $work): static
+    {
+        $this->work = $work;
+
+        return $this;
+    }
+
+    public function getBookPublisher(): ?BookPublisher
+    {
+        return $this->bookPublisher;
+    }
+
+    public function setBookPublisher(?BookPublisher $bookPublisher): static
+    {
+        $this->bookPublisher = $bookPublisher;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderLine>
+     */
+    public function getOrderLine(): Collection
+    {
+        return $this->orderLine;
+    }
+
+    public function addOrderLine(OrderLine $orderLine): static
+    {
+        if (!$this->orderLine->contains($orderLine)) {
+            $this->orderLine->add($orderLine);
+            $orderLine->setBook($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderLine(OrderLine $orderLine): static
+    {
+        if ($this->orderLine->removeElement($orderLine)) {
+            // set the owning side to null (unless already changed)
+            if ($orderLine->getBook() === $this) {
+                $orderLine->setBook(null);
+            }
+        }
 
         return $this;
     }

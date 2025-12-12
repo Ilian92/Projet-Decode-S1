@@ -22,6 +22,12 @@ class MonthlyBox
     #[ORM\Column(length: 255)]
     private ?string $shippingStatus = null;
 
+    #[ORM\OneToOne(mappedBy: 'monthlyBox', cascade: ['persist', 'remove'])]
+    private ?Order $table_order = null;
+
+    #[ORM\ManyToOne(inversedBy: 'monthlyBoxes')]
+    private ?Subscription $subscription = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +65,40 @@ class MonthlyBox
     public function setShippingStatus(string $shippingStatus): static
     {
         $this->shippingStatus = $shippingStatus;
+
+        return $this;
+    }
+
+    public function getTableOrder(): ?Order
+    {
+        return $this->table_order;
+    }
+
+    public function setTableOrder(?Order $table_order): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($table_order === null && $this->table_order !== null) {
+            $this->table_order->setMonthlyBox(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($table_order !== null && $table_order->getMonthlyBox() !== $this) {
+            $table_order->setMonthlyBox($this);
+        }
+
+        $this->table_order = $table_order;
+
+        return $this;
+    }
+
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): static
+    {
+        $this->subscription = $subscription;
 
         return $this;
     }

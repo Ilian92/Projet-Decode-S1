@@ -19,6 +19,12 @@ class OrderLine
     #[ORM\Column]
     private ?int $unitPriceSnapshot = null;
 
+    #[ORM\ManyToOne(inversedBy: 'orderLine')]
+    private ?Book $book = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orderLine')]
+    private ?Order $tableOrder = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +50,30 @@ class OrderLine
     public function setUnitPriceSnapshot(int $unitPriceSnapshot): static
     {
         $this->unitPriceSnapshot = $unitPriceSnapshot;
+
+        return $this;
+    }
+
+    public function getBook(): ?Book
+    {
+        return $this->book;
+    }
+
+    public function setBook(?Book $book): static
+    {
+        $this->book = $book;
+
+        return $this;
+    }
+
+    public function getTableOrder(): ?Order
+    {
+        return $this->tableOrder;
+    }
+
+    public function setTableOrder(?Order $tableOrder): static
+    {
+        $this->tableOrder = $tableOrder;
 
         return $this;
     }

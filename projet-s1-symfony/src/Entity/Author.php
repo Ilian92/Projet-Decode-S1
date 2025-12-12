@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AuthorRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,17 @@ class Author
 
     #[ORM\Column(length: 255)]
     private ?string $photoUrl = null;
+
+    /**
+     * @var Collection<int, Work>
+     */
+    #[ORM\ManyToMany(targetEntity: Work::class, mappedBy: 'author')]
+    private Collection $works;
+
+    public function __construct()
+    {
+        $this->works = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +88,33 @@ class Author
     public function setPhotoUrl(string $photoUrl): static
     {
         $this->photoUrl = $photoUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Work>
+     */
+    public function getWorks(): Collection
+    {
+        return $this->works;
+    }
+
+    public function addWork(Work $work): static
+    {
+        if (!$this->works->contains($work)) {
+            $this->works->add($work);
+            $work->addAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWork(Work $work): static
+    {
+        if ($this->works->removeElement($work)) {
+            $work->removeAuthor($this);
+        }
 
         return $this;
     }
