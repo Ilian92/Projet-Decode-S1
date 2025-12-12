@@ -18,10 +18,10 @@ class BookPublisher
     #[ORM\Column(length: 255)]
     private ?string $publisherName = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $contactEmail = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $website = null;
 
     /**

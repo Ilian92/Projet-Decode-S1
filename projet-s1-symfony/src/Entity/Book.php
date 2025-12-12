@@ -19,19 +19,19 @@ class Book
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $publicationDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $currentUnitPrice = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $availableStock = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $coverImageUrl = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $weightGrams = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $releaseDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'book')]
