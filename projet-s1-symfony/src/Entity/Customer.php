@@ -40,7 +40,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTime $registrationDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTime $lastLogin = null;
 
     /**
