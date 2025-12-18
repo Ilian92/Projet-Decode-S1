@@ -45,11 +45,11 @@ class Book
      * @var Collection<int, OrderLine>
      */
     #[ORM\OneToMany(targetEntity: OrderLine::class, mappedBy: 'book')]
-    private Collection $orderLine;
+    private Collection $orderLines;
 
     public function __construct()
     {
-        $this->orderLine = new ArrayCollection();
+        $this->orderLines = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,15 +156,15 @@ class Book
     /**
      * @return Collection<int, OrderLine>
      */
-    public function getOrderLine(): Collection
+    public function getOrderLines(): Collection
     {
-        return $this->orderLine;
+        return $this->orderLines;
     }
 
     public function addOrderLine(OrderLine $orderLine): static
     {
-        if (!$this->orderLine->contains($orderLine)) {
-            $this->orderLine->add($orderLine);
+        if (!$this->orderLines->contains($orderLine)) {
+            $this->orderLines->add($orderLine);
             $orderLine->setBook($this);
         }
 
@@ -173,7 +173,7 @@ class Book
 
     public function removeOrderLine(OrderLine $orderLine): static
     {
-        if ($this->orderLine->removeElement($orderLine)) {
+        if ($this->orderLines->removeElement($orderLine)) {
             // set the owning side to null (unless already changed)
             if ($orderLine->getBook() === $this) {
                 $orderLine->setBook(null);
