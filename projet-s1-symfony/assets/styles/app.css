@@ -1,6 +1,20 @@
 @import "tailwindcss";
 @source not "../../public";
 
-body {
-    background-color: lightgray;
+@theme {
+    --color-primary-50: #faf7f6;
+    --color-primary-100: #f6edea;
+    --color-primary-200: #efded9;
+    --color-primary-300: #e3c7be;
+    --color-primary-400: #d3ab9e;
+    --color-primary-500: #bd8776;
+    --color-primary-600: #a76e5b;
+    --color-primary-700: #8b5a4a;
+    --color-primary-800: #744d40;
+    --color-primary-900: #62443a;
+    --color-primary-950: #34211b;
+
+    --color-secondary-800: #be001f;
+    --color-secondary-900: #880016;
+    --color-secondary-950: #56000e;
 }
