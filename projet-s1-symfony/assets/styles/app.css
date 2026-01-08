@@ -18,3 +18,7 @@
     --color-secondary-900: #880016;
     --color-secondary-950: #56000e;
 }
+
+@layer base {
+    
+}
