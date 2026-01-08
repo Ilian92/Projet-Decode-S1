@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @source not "../../public";
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Puppies+Play&family=Sancreek&display=swap');
 
 @theme {
     --color-primary-50: #faf7f6;
@@ -17,4 +18,20 @@
     --color-secondary-800: #be001f;
     --color-secondary-900: #880016;
     --color-secondary-950: #56000e;
+
+    --color-contrasted-50: #f4f9f7;
+    --color-contrasted-100: #d9eee4;
+    --color-contrasted-200: #b3dccb;
+    --color-contrasted-300: #85c3ac;
+    --color-contrasted-400: #5ca58c;
+    --color-contrasted-500: #448e76;
+    --color-contrasted-600: #336e5c;
+    --color-contrasted-700: #2c594c;
+    --color-contrasted-800: #27483f;
+    --color-contrasted-900: #243d37;
+    --color-contrasted-950: #10231e;
+
+    --font-puppies: "Puppies Play", cursive;
+    --font-bodoni: "Bodoni Moda", serif;
+    --font-sancreek: "Sancreek", serif;
 }
