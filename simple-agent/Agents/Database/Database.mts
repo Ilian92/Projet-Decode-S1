@@ -4,7 +4,8 @@ import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { loadAgentPrompt } from "./generate_prompt.mts";
-import { weather } from "./tools/weather.mts";
+import { getWorks } from "./tools/getWorks.mts";
+import { get } from 'http';
 
 const agentPrompt = loadAgentPrompt('Agent');
 
@@ -17,12 +18,12 @@ const agentPrompt = loadAgentPrompt('Agent');
   }
 });*/
 
-const agentModel = new ChatOpenAI({ temperature: 0.5, model: "gpt-4o-mini" });
+const agentModel = new ChatOpenAI({ temperature: 0.5, model: "gpt-4.1" });
 
 const agentCheckpointer = new MemorySaver();
 export const agent = createReactAgent({
   prompt: agentPrompt,
   llm: agentModel,
-  tools: [weather],
+  tools: [getWorks],
   checkpointSaver: agentCheckpointer,
 });

@@ -1,7 +1,7 @@
 import type { CompiledStateGraph } from '@langchain/langgraph';
 import 'dotenv/config';
 
-import { agent } from '../Agents/Agent/Agent.mts';
+import { agent } from '../Agents/Agent/Database.mts';
 
 export interface AgentInfo {
   id: string;
