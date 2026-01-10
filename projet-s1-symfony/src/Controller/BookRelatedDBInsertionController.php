@@ -16,9 +16,20 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
-final class DatabaseInsertionController extends AbstractController
+final class BookRelatedDBInsertionController extends AbstractController
 {
-    // rajouter commentaire sur ce qui est attendu en input et fait ici
+    /*
+    * @Route("/database/insertion", name="app_database_insertion", methods={"POST"})
+    * Handles the insertion of authors, genres, works, book publishers, and books into the database.
+    * input JSON structure:
+    * {
+    *   "authors": [ {author1_data}, {author2_data}, ... ],
+    *   "genres": [ {genre1_data}, {genre2_data}, ... ],
+    *   "work": {work_data, "authorIds": [id1, id2, ...], "genreIds": [id1, id2, ...]},
+    *   "bookPublisher": {book_publisher_data},
+    *   "book": {book_data}
+    * }
+    */
     #[Route('/database/insertion', name: 'app_database_insertion', methods: ['POST'])]
     public function index(
         Request $request,
@@ -35,7 +46,7 @@ final class DatabaseInsertionController extends AbstractController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            // Auhor
+            // Author
             $authors = [];
             if (isset($data['authors']) && is_array($data['authors'])) {
                 foreach ($data['authors'] as $authorData) {
