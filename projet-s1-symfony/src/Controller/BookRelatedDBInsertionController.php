@@ -7,6 +7,11 @@ use App\Entity\Genre;
 use App\Entity\Work;
 use App\Entity\Book;
 use App\Entity\BookPublisher;
+use App\Repository\AuthorRepository;
+use App\Repository\GenreRepository;
+use App\Repository\WorkRepository;
+use App\Repository\BookPublisherRepository;
+use App\Repository\BookRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,7 +39,12 @@ final class BookRelatedDBInsertionController extends AbstractController
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        AuthorRepository $authorRepository,
+        GenreRepository $genreRepository,
+        WorkRepository $workRepository,
+        BookPublisherRepository $bookPublisherRepository,
+        BookRepository $bookRepository
     ): Response {
         try {
             $data = json_decode($request->getContent(), true);
@@ -46,18 +56,27 @@ final class BookRelatedDBInsertionController extends AbstractController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            // Author
+            // Author - vérifier si l'auteur existe déjà
             $authors = [];
             if (isset($data['authors']) && is_array($data['authors'])) {
                 foreach ($data['authors'] as $authorData) {
-                    $author = $serializer->deserialize(
-                        json_encode($authorData),
-                        Author::class,
-                        'json'
-                    );
+                    $existingAuthor = $authorRepository->findOneBy([
+                        'firstName' => $authorData['firstName'],
+                        'lastName' => $authorData['lastName']
+                    ]);
 
-                    $entityManager->persist($author);
-                    $authors[] = $author;
+                    if ($existingAuthor) {
+                        $authors[] = $existingAuthor;
+                    } else {
+                        $author = $serializer->deserialize(
+                            json_encode($authorData),
+                            Author::class,
+                            'json'
+                        );
+
+                        $entityManager->persist($author);
+                        $authors[] = $author;
+                    }
                 }
             }
 
@@ -65,27 +84,43 @@ final class BookRelatedDBInsertionController extends AbstractController
             $genres = [];
             if (isset($data['genres']) && is_array($data['genres'])) {
                 foreach ($data['genres'] as $genreData) {
-                    $genre = $serializer->deserialize(
-                        json_encode($genreData),
-                        Genre::class,
-                        'json'
-                    );
+                    $existingGenre = $genreRepository->findOneBy([
+                        'label' => $genreData['label']
+                    ]);
 
-                    $entityManager->persist($genre);
-                    $genres[] = $genre;
+                    if ($existingGenre) {
+                        $genres[] = $existingGenre;
+                    } else {
+                        $genre = $serializer->deserialize(
+                            json_encode($genreData),
+                            Genre::class,
+                            'json'
+                        );
+
+                        $entityManager->persist($genre);
+                        $genres[] = $genre;
+                    }
                 }
             }
 
             // BookPublisher
             $bookPublisher = null;
             if (isset($data['bookPublisher'])) {
-                $bookPublisher = $serializer->deserialize(
-                    json_encode($data['bookPublisher']),
-                    BookPublisher::class,
-                    'json'
-                );
+                $existingPublisher = $bookPublisherRepository->findOneBy([
+                    'publisherName' => $data['bookPublisher']['publisherName']
+                ]);
 
-                $entityManager->persist($bookPublisher);
+                if ($existingPublisher) {
+                    $bookPublisher = $existingPublisher;
+                } else {
+                    $bookPublisher = $serializer->deserialize(
+                        json_encode($data['bookPublisher']),
+                        BookPublisher::class,
+                        'json'
+                    );
+
+                    $entityManager->persist($bookPublisher);
+                }
             }
 
             // Work and relations
@@ -94,45 +129,70 @@ final class BookRelatedDBInsertionController extends AbstractController
                 $authorIds = $data['work']['authorIds'] ?? [];
                 $genreIds = $data['work']['genreIds'] ?? [];
 
-                unset($data['work']['authorIds'], $data['work']['genreIds']);
+                $existingWork = $workRepository->findOneBy([
+                    'title' => $data['work']['title']
+                ]);
 
-                $work = $serializer->deserialize(
-                    json_encode($data['work']),
-                    Work::class,
-                    'json'
-                );
+                if ($existingWork) {
+                    $work = $existingWork;
+                } else {
+                    unset($data['work']['authorIds'], $data['work']['genreIds']);
 
-                foreach ($authorIds as $authorId) {
-                    if (isset($authors[$authorId])) {
-                        $work->addAuthor($authors[$authorId]);
+                    $work = $serializer->deserialize(
+                        json_encode($data['work']),
+                        Work::class,
+                        'json'
+                    );
+
+                    foreach ($authorIds as $authorId) {
+                        if (isset($authors[$authorId])) {
+                            $work->addAuthor($authors[$authorId]);
+                        }
                     }
-                }
 
-                foreach ($genreIds as $genreId) {
-                    if (isset($genres[$genreId])) {
-                        $work->addGenre($genres[$genreId]);
+                    foreach ($genreIds as $genreId) {
+                        if (isset($genres[$genreId])) {
+                            $work->addGenre($genres[$genreId]);
+                        }
                     }
-                }
 
-                $entityManager->persist($work);
+                    $entityManager->persist($work);
+                }
             }
 
             // Book and relations
             $book = null;
             if (isset($data['book']) && $work) {
-                $book = $serializer->deserialize(
-                    json_encode($data['book']),
-                    Book::class,
-                    'json'
-                );
+                $bookData = $data['book'];
+                $publicationDate = isset($bookData['publicationDate'])
+                    ? new \DateTime($bookData['publicationDate'])
+                    : null;
 
-                $book->setWork($work);
-
-                if ($bookPublisher) {
-                    $book->setBookPublisher($bookPublisher);
+                $existingBook = null;
+                if ($publicationDate) {
+                    $existingBook = $bookRepository->findOneBy([
+                        'work' => $work,
+                        'publicationDate' => $publicationDate
+                    ]);
                 }
 
-                $entityManager->persist($book);
+                if ($existingBook) {
+                    $book = $existingBook;
+                } else {
+                    $book = $serializer->deserialize(
+                        json_encode($data['book']),
+                        Book::class,
+                        'json'
+                    );
+
+                    $book->setWork($work);
+
+                    if ($bookPublisher) {
+                        $book->setBookPublisher($bookPublisher);
+                    }
+
+                    $entityManager->persist($book);
+                }
             }
 
             // Save all to database
@@ -147,6 +207,10 @@ final class BookRelatedDBInsertionController extends AbstractController
                     'work' => $work?->getId(),
                     'bookPublisher' => $bookPublisher?->getId(),
                     'book' => $book?->getId(),
+                ],
+                'reused' => [
+                    'authors' => count(array_filter($authors, fn($a) => !$entityManager->contains($a) || $a->getId() !== null)),
+                    'genres' => count(array_filter($genres, fn($g) => !$entityManager->contains($g) || $g->getId() !== null)),
                 ]
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
