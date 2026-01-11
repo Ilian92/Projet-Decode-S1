@@ -118,6 +118,17 @@ jobs:
 
                   cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
+                  echo "Démarrage des services Docker (PostgreSQL, Mailpit)..."
+                  command -v docker >/dev/null 2>&1 || { echo "Docker n'est pas installé sur le Pi"; exit 1; }
+                  docker compose version >/dev/null 2>&1 || { echo "docker compose n'est pas disponible sur le Pi"; exit 1; }
+                  docker compose up -d
+
+                  echo "Attente que PostgreSQL soit prêt..."
+                  until docker exec $(docker ps -qf "name=database") pg_isready -U "${POSTGRES_USER:-app}" -d "${POSTGRES_DB:-app}"; do
+                      echo "PostgreSQL n'est pas encore prêt, attente de 5 secondes..."
+                      sleep 3
+                  done
+
                   export APP_ENV=prod
                   export APP_DEBUG=0
 
