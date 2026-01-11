@@ -87,11 +87,11 @@ jobs:
                   mkdir -p ~/.ssh
                   echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
+                  ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
 
             - name: "Git pull on Raspberry Pi"
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
                   set -euo pipefail
 
                   PROJECT_DIR="/home/ilian/Dev/Projet-Decode-S1"
@@ -109,7 +109,7 @@ jobs:
 
             - name: "Post-deployment tasks"
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
                   set -euo pipefail
 
                   cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
@@ -165,11 +165,11 @@ jobs:
                   mkdir -p ~/.ssh
                   echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
+            ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
 
             - name: "Check deployment status"
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
                   cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   export APP_ENV=prod
