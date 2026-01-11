@@ -133,16 +133,6 @@ jobs:
                   echo "Build des assets..."
                   npm run build
 
-                  # Backup de la base de données
-                  echo "Backup de la base de données..."
-                  timestamp=$(date +%d.%m.%Y-%H.%M.%S)
-                  mkdir -p ~/backups/db
-                  php bin/console doctrine:schema:update --dump-sql > ~/backups/db/schema-$timestamp.sql
-
-                  # Garder seulement les 5 derniers backups SQL
-                  cd ~/backups/db
-                  ls -t schema-*.sql | tail -n +6 | xargs -r rm
-
                   # Retour au projet
                   cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
