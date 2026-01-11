@@ -82,6 +82,8 @@ jobs:
         name: "Deploy to Raspberry Pi"
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v5
+
             - name: "Connect runner to Tailscale"
               uses: tailscale/github-action@v2
               with:
