@@ -12,7 +12,7 @@ jobs:
         runs-on: ubuntu-latest
         defaults:
             run:
-                working-directory: projet-s1-symfony
+                working-directory: ../projet-s1-symfony
         steps:
             - name: "Show variables"
               run: |
