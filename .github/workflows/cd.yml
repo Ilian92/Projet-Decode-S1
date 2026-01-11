@@ -10,18 +10,15 @@ jobs:
     prepare:
         name: "Prepare project"
         runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ../projet-s1-symfony
         steps:
+            - uses: actions/checkout@v5
+
             - name: "Show variables"
               run: |
                   echo "OS: $RUNNER_OS"
                   echo "ARCH: $RUNNER_ARCH"
                   echo "RPI_HOST: ${{ secrets.RPI_HOST }}"
                   echo "RPI_USER: ${{ secrets.RPI_USER }}"
-
-            - uses: actions/checkout@v5
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -45,18 +42,17 @@ jobs:
                   key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
 
             - name: Install Composer dependencies
+              working-directory: projet-s1-symfony
               run: composer install --no-dev --optimize-autoloader --no-interaction
 
             - name: Install npm dependencies
+              working-directory: projet-s1-symfony
               run: npm ci --production
 
     build:
         needs: ["prepare"]
         name: "Build assets"
         runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./projet-s1-symfony
         steps:
             - uses: actions/checkout@v5
 
@@ -69,6 +65,7 @@ jobs:
                   key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
 
             - name: Build assets
+              working-directory: projet-s1-symfony
               run: npm run build
 
             - name: Upload build artifacts
@@ -120,7 +117,7 @@ jobs:
                   cd ~/${{ github.event.repository.name }}/projet-s1-symfony
 
                   # Backup de la base de données
-                  echo "📦 Backup de la base de données..."
+                  echo "Backup de la base de données..."
                   timestamp=$(date +%d.%m.%Y-%H.%M.%S)
                   mkdir -p ~/backups/db
                   php bin/console doctrine:schema:update --dump-sql > ~/backups/db/schema-$timestamp.sql
@@ -133,7 +130,7 @@ jobs:
                   cd ~/${{ github.event.repository.name }}/projet-s1-symfony
 
                   # Migrations de la base de données
-                  echo "🗄️ Exécution des migrations..."
+                  echo "Exécution des migrations..."
                   php bin/console doctrine:migrations:migrate --no-interaction
 
                   # Clear le cache
@@ -142,10 +139,10 @@ jobs:
                   php bin/console cache:warmup
 
                   # Permissions
-                  echo "🔐 Ajustement des permissions..."
+                  echo "Ajustement des permissions..."
                   chmod -R 775 var/cache var/log
 
-                  echo "✅ Déploiement terminé avec succès!"
+                  echo "Déploiement terminé avec succès!"
                   EOF
 
     monitoring:
@@ -165,16 +162,16 @@ jobs:
                   ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
                   cd ~/${{ github.event.repository.name }}/projet-s1-symfony
 
-                  echo "📊 Vérification de la version PHP..."
+                  echo "Vérification de la version PHP..."
                   php -v
 
-                  echo "📊 Vérification des migrations..."
+                  echo "Vérification des migrations..."
                   php bin/console doctrine:migrations:status
 
-                  echo "📊 Vérification du cache..."
+                  echo "Vérification du cache..."
                   ls -lah var/cache
 
-                  echo "✅ Monitoring terminé"
+                  echo "Monitoring terminé"
                   EOF
 
     notify:
@@ -186,7 +183,7 @@ jobs:
             - name: "Status notification"
               run: |
                   if [ "${{ needs.deploy.result }}" == "success" ]; then
-                    echo "✅ Déploiement réussi sur Raspberry Pi (${{ secrets.RPI_HOST }})"
+                    echo "Déploiement réussi sur Raspberry Pi (${{ secrets.RPI_HOST }})"
                   else
-                    echo "❌ Échec du déploiement"
+                    echo "Échec du déploiement"
                   fi
