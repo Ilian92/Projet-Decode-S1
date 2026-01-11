@@ -1,0 +1,192 @@
+name: "CD - Deploy to Raspberry Pi"
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - dev
+
+jobs:
+    prepare:
+        name: "Prepare project"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./projet-s1-symfony
+        steps:
+            - name: "Show variables"
+              run: |
+                  echo "OS: $RUNNER_OS"
+                  echo "ARCH: $RUNNER_ARCH"
+                  echo "RPI_HOST: ${{ secrets.RPI_HOST }}"
+                  echo "RPI_USER: ${{ secrets.RPI_USER }}"
+
+            - uses: actions/checkout@v5
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.2"
+                  extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+                  coverage: none
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: projet-s1-symfony/vendor
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-prod
+
+            - name: Cache npm dependencies
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      projet-s1-symfony/node_modules
+                      ~/.npm
+                  key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
+
+            - name: Install Composer dependencies
+              run: composer install --no-dev --optimize-autoloader --no-interaction
+
+            - name: Install npm dependencies
+              run: npm ci --production
+
+    build:
+        needs: ["prepare"]
+        name: "Build assets"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./projet-s1-symfony
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Restore npm cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: |
+                      projet-s1-symfony/node_modules
+                      ~/.npm
+                  key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
+
+            - name: Build assets
+              run: npm run build
+
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: build-assets
+                  path: projet-s1-symfony/public/build
+
+    deploy:
+        needs: ["build"]
+        name: "Deploy to Raspberry Pi"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Restore Composer cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: projet-s1-symfony/vendor
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-prod
+
+            - name: Download build artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: build-assets
+                  path: projet-s1-symfony/public/build
+
+            - name: Deploy to Raspberry Pi
+              uses: burnett01/rsync-deployments@7.1.0
+              with:
+                  switches: -avzr --delete --exclude .git --exclude .github --exclude tests --exclude node_modules --exclude var/cache --exclude var/log
+                  path: ./
+                  remote_path: ~/${{ github.event.repository.name }}
+                  remote_host: ${{ secrets.RPI_HOST }}
+                  remote_user: ${{ secrets.RPI_USER }}
+                  remote_key: ${{ secrets.RPI_SSH_KEY }}
+                  remote_port: 22
+
+            - name: "Install SSH CONFIG"
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh-keyscan -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
+
+            - name: "Post-deployment tasks"
+              run: |
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+
+                  # Backup de la base de données
+                  echo "📦 Backup de la base de données..."
+                  timestamp=$(date +%d.%m.%Y-%H.%M.%S)
+                  mkdir -p ~/backups/db
+                  php bin/console doctrine:schema:update --dump-sql > ~/backups/db/schema-$timestamp.sql
+
+                  # Garder seulement les 5 derniers backups SQL
+                  cd ~/backups/db
+                  ls -t schema-*.sql | tail -n +6 | xargs -r rm
+
+                  # Retour au projet
+                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+
+                  # Migrations de la base de données
+                  echo "🗄️ Exécution des migrations..."
+                  php bin/console doctrine:migrations:migrate --no-interaction
+
+                  # Clear le cache
+                  echo "🧹 Nettoyage du cache..."
+                  php bin/console cache:clear
+                  php bin/console cache:warmup
+
+                  # Permissions
+                  echo "🔐 Ajustement des permissions..."
+                  chmod -R 775 var/cache var/log
+
+                  echo "✅ Déploiement terminé avec succès!"
+                  EOF
+
+    monitoring:
+        needs: ["deploy"]
+        name: "Monitoring"
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Install SSH CONFIG"
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh-keyscan -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
+
+            - name: "Check deployment status"
+              run: |
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+
+                  echo "📊 Vérification de la version PHP..."
+                  php -v
+
+                  echo "📊 Vérification des migrations..."
+                  php bin/console doctrine:migrations:status
+
+                  echo "📊 Vérification du cache..."
+                  ls -lah var/cache
+
+                  echo "✅ Monitoring terminé"
+                  EOF
+
+    notify:
+        needs: ["monitoring"]
+        if: always()
+        name: "Notification"
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Status notification"
+              run: |
+                  if [ "${{ needs.deploy.result }}" == "success" ]; then
+                    echo "✅ Déploiement réussi sur Raspberry Pi (${{ secrets.RPI_HOST }})"
+                  else
+                    echo "❌ Échec du déploiement"
+                  fi
