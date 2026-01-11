@@ -82,37 +82,39 @@ jobs:
         name: "Deploy to Raspberry Pi"
         runs-on: ubuntu-latest
         steps:
+            - name: "Connect runner to Tailscale"
+              uses: tailscale/github-action@v2
+              with:
+                  authkey: ${{ secrets.TS_AUTHKEY }}
+
             - name: "Install SSH CONFIG"
               run: |
                   mkdir -p ~/.ssh
-                  echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 700 ~/.ssh
+                  echo "${{ secrets.SSH_CONFIG }}" > ~/.ssh/config
+                  echo "${{ secrets.PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+                  echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
+                  chmod 644 ~/.ssh/id_rsa.pub
+                  chmod 600 ~/.ssh/config
 
-            - name: "Git pull on Raspberry Pi"
-              run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
-                  set -euo pipefail
-
-                  PROJECT_DIR="/home/ilian/Dev/Projet-Decode-S1"
-                  if [ ! -d "$PROJECT_DIR/.git" ]; then
-                    echo "❌ Repo non trouvé sur le Raspberry Pi: $PROJECT_DIR/.git"
-                    echo "➡️ Clonez d'abord le repo sur le Pi dans $PROJECT_DIR (ou adaptez PROJECT_DIR dans le workflow)."
-                    exit 1
-                  fi
-
-                  cd "$PROJECT_DIR"
-                  echo "🔄 Mise à jour du code depuis origin/dev..."
-                  git fetch origin dev
-                  git reset --hard origin/dev
-                  EOF
+            - name: deploy sources to remote server
+              uses: burnett01/rsync-deployments@7.1.0
+              with:
+                  switches: -avzr --delete --exclude .git --exclude .github --exclude tests
+                  path: ./
+                  remote_path: ~/${{ github.event.repository.name }}
+                  remote_host: ${{ secrets.REMOTE_HOST }}
+                  remote_user: ${{ secrets.REMOTE_USER }}
+                  remote_key: ${{ secrets.PRIVATE_KEY }}
+                  remote_port: ${{ secrets.REMOTE_PORT }}
 
             - name: "Post-deployment tasks"
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
+                  ssh rpi 'bash -s' << 'EOF'
                   set -euo pipefail
 
-                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
@@ -137,7 +139,7 @@ jobs:
                   ls -t schema-*.sql | tail -n +6 | xargs -r rm
 
                   # Retour au projet
-                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
 
                   # Migrations de la base de données
                   echo "Exécution des migrations..."
@@ -160,17 +162,26 @@ jobs:
         name: "Monitoring"
         runs-on: ubuntu-latest
         steps:
+            - name: "Connect runner to Tailscale"
+              uses: tailscale/github-action@v2
+              with:
+                  authkey: ${{ secrets.TS_AUTHKEY }}
+
             - name: "Install SSH CONFIG"
               run: |
                   mkdir -p ~/.ssh
-                  echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 700 ~/.ssh
+                  echo "${{ secrets.SSH_CONFIG }}" > ~/.ssh/config
+                  echo "${{ secrets.PUBLIC_KEY }}" > ~/.ssh/id_rsa.pub
+                  echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
+                  chmod 644 ~/.ssh/id_rsa.pub
+                  chmod 600 ~/.ssh/config
 
             - name: "Check deployment status"
               run: |
-                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@[${{ secrets.RPI_HOST }}] 'bash -s' << 'EOF'
-                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+                  ssh rpi 'bash -s' << 'EOF'
+                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
@@ -196,7 +207,7 @@ jobs:
             - name: "Status notification"
               run: |
                   if [ "${{ needs.deploy.result }}" == "success" ]; then
-                    echo "Déploiement réussi sur Raspberry Pi (${{ secrets.RPI_HOST }})"
+                    echo "Déploiement réussi sur Raspberry Pi (${{ secrets.REMOTE_HOST }})"
                   else
                     echo "Échec du déploiement"
                   fi
