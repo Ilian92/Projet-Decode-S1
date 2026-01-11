@@ -165,7 +165,7 @@ jobs:
                   mkdir -p ~/.ssh
                   echo "${{ secrets.RPI_SSH_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
-            ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
+                  ssh-keyscan -6 -H "${{ secrets.RPI_HOST }}" >> ~/.ssh/known_hosts || true
 
             - name: "Check deployment status"
               run: |
