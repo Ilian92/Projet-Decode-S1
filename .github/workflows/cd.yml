@@ -120,9 +120,11 @@ jobs:
                   export APP_DEBUG=0
 
                   echo "Installation des dépendances PHP..."
+                  sudo apt install composer -y
                   composer install --no-dev --optimize-autoloader --no-interaction
 
                   echo "Installation des dépendances Node.js..."
+                  sudo apt install nodejs npm -y
                   npm ci
 
                   echo "Build des assets..."
