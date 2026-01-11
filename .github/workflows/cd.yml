@@ -59,6 +59,12 @@ jobs:
         steps:
             - uses: actions/checkout@v5
 
+            - name: Restore Composer cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: projet-s1-symfony/vendor
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-prod
+
             - name: Restore npm cache
               uses: actions/cache/restore@v4
               with:
