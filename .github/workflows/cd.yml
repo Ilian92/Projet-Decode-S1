@@ -103,7 +103,7 @@ jobs:
               with:
                   switches: -avzr --delete --exclude .git --exclude .github --exclude tests
                   path: ./
-                  remote_path: ~/${{ github.event.repository.name }}
+                  remote_path: /home/ilian/Dev/Projet-Decode-S1
                   remote_host: ${{ secrets.REMOTE_HOST }}
                   remote_user: ${{ secrets.REMOTE_USER }}
                   remote_key: ${{ secrets.PRIVATE_KEY }}
@@ -114,7 +114,7 @@ jobs:
                   ssh rpi 'bash -s' << 'EOF'
                   set -euo pipefail
 
-                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
@@ -139,7 +139,7 @@ jobs:
                   ls -t schema-*.sql | tail -n +6 | xargs -r rm
 
                   # Retour au projet
-                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   # Migrations de la base de données
                   echo "Exécution des migrations..."
@@ -181,7 +181,7 @@ jobs:
             - name: "Check deployment status"
               run: |
                   ssh rpi 'bash -s' << 'EOF'
-                  cd "$HOME/${{ github.event.repository.name }}/projet-s1-symfony"
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
@@ -199,7 +199,7 @@ jobs:
                   EOF
 
     notify:
-        needs: ["monitoring"]
+        needs: ["deploy", "monitoring"]
         if: always()
         name: "Notification"
         runs-on: ubuntu-latest
