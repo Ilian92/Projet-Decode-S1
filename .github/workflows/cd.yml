@@ -158,6 +158,7 @@ jobs:
 
                   # Permissions
                   echo "Ajustement des permissions..."
+                  mkdir -p var/cache var/log
                   chmod -R 775 var/cache var/log
 
                   echo "Déploiement terminé avec succès!"
