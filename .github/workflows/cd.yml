@@ -43,11 +43,14 @@ jobs:
 
             - name: Install Composer dependencies
               working-directory: projet-s1-symfony
+              env:
+                  APP_ENV: prod
+                  APP_DEBUG: "0"
               run: composer install --no-dev --optimize-autoloader --no-interaction
 
             - name: Install npm dependencies
               working-directory: projet-s1-symfony
-              run: npm ci --production
+              run: npm ci
 
     build:
         needs: ["prepare"]
@@ -116,6 +119,12 @@ jobs:
                   ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
                   cd ~/${{ github.event.repository.name }}/projet-s1-symfony
 
+                  export APP_ENV=prod
+                  export APP_DEBUG=0
+
+                  echo "Installation des dépendances PHP..."
+                  composer install --no-dev --optimize-autoloader --no-interaction
+
                   # Backup de la base de données
                   echo "Backup de la base de données..."
                   timestamp=$(date +%d.%m.%Y-%H.%M.%S)
@@ -131,12 +140,12 @@ jobs:
 
                   # Migrations de la base de données
                   echo "Exécution des migrations..."
-                  php bin/console doctrine:migrations:migrate --no-interaction
+                  php bin/console doctrine:migrations:migrate --no-interaction --env=prod
 
                   # Clear le cache
-                  echo "🧹 Nettoyage du cache..."
-                  php bin/console cache:clear
-                  php bin/console cache:warmup
+                  echo "Nettoyage du cache..."
+                  php bin/console cache:clear --env=prod
+                  php bin/console cache:warmup --env=prod
 
                   # Permissions
                   echo "Ajustement des permissions..."
@@ -162,11 +171,14 @@ jobs:
                   ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
                   cd ~/${{ github.event.repository.name }}/projet-s1-symfony
 
+                  export APP_ENV=prod
+                  export APP_DEBUG=0
+
                   echo "Vérification de la version PHP..."
                   php -v
 
                   echo "Vérification des migrations..."
-                  php bin/console doctrine:migrations:status
+                  php bin/console doctrine:migrations:status --env=prod
 
                   echo "Vérification du cache..."
                   ls -lah var/cache
