@@ -77,42 +77,11 @@ jobs:
               working-directory: projet-s1-symfony
               run: npm run build
 
-            - name: Upload build artifacts
-              uses: actions/upload-artifact@v4
-              with:
-                  name: build-assets
-                  path: projet-s1-symfony/public/build
-
     deploy:
         needs: ["build"]
         name: "Deploy to Raspberry Pi"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v5
-
-            - name: Restore Composer cache
-              uses: actions/cache/restore@v4
-              with:
-                  path: projet-s1-symfony/vendor
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}-prod
-
-            - name: Download build artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: build-assets
-                  path: projet-s1-symfony/public/build
-
-            - name: Deploy to Raspberry Pi
-              uses: burnett01/rsync-deployments@7.1.0
-              with:
-                  switches: -avzr --delete --exclude .git --exclude .github --exclude tests --exclude node_modules --exclude var/cache --exclude var/log
-                  path: ./
-                  remote_path: ~/${{ github.event.repository.name }}
-                  remote_host: ${{ secrets.RPI_HOST }}
-                  remote_user: ${{ secrets.RPI_USER }}
-                  remote_key: ${{ secrets.RPI_SSH_KEY }}
-                  remote_port: 22
-
             - name: "Install SSH CONFIG"
               run: |
                   mkdir -p ~/.ssh
@@ -120,16 +89,42 @@ jobs:
                   chmod 600 ~/.ssh/id_rsa
                   ssh-keyscan -H ${{ secrets.RPI_HOST }} >> ~/.ssh/known_hosts
 
+            - name: "Git pull on Raspberry Pi"
+              run: |
+                  ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
+                  set -euo pipefail
+
+                  PROJECT_DIR="/home/ilian/Dev/Projet-Decode-S1"
+                  if [ ! -d "$PROJECT_DIR/.git" ]; then
+                    echo "❌ Repo non trouvé sur le Raspberry Pi: $PROJECT_DIR/.git"
+                    echo "➡️ Clonez d'abord le repo sur le Pi dans $PROJECT_DIR (ou adaptez PROJECT_DIR dans le workflow)."
+                    exit 1
+                  fi
+
+                  cd "$PROJECT_DIR"
+                  echo "🔄 Mise à jour du code depuis origin/dev..."
+                  git fetch origin dev
+                  git reset --hard origin/dev
+                  EOF
+
             - name: "Post-deployment tasks"
               run: |
                   ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
-                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+                  set -euo pipefail
+
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
 
                   echo "Installation des dépendances PHP..."
                   composer install --no-dev --optimize-autoloader --no-interaction
+
+                  echo "Installation des dépendances Node.js..."
+                  npm ci
+
+                  echo "Build des assets..."
+                  npm run build
 
                   # Backup de la base de données
                   echo "Backup de la base de données..."
@@ -142,7 +137,7 @@ jobs:
                   ls -t schema-*.sql | tail -n +6 | xargs -r rm
 
                   # Retour au projet
-                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   # Migrations de la base de données
                   echo "Exécution des migrations..."
@@ -175,7 +170,7 @@ jobs:
             - name: "Check deployment status"
               run: |
                   ssh -o StrictHostKeyChecking=no ${{ secrets.RPI_USER }}@${{ secrets.RPI_HOST }} 'bash -s' << 'EOF'
-                  cd ~/${{ github.event.repository.name }}/projet-s1-symfony
+                  cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
                   export APP_ENV=prod
                   export APP_DEBUG=0
