@@ -100,6 +100,13 @@ jobs:
           chmod 644 ~/.ssh/id_rsa.pub
           chmod 600 ~/.ssh/config
 
+      - name: "Fix permissions before rsync"
+        run: |
+          ssh rpi 'bash -s' << 'EOF'
+          echo "Correction des permissions avant rsync..."
+          sudo chown -R ilian:ilian /home/ilian/Dev/Projet-Decode-S1 2>/dev/null || true
+          EOF
+
       - name: deploy sources to remote server
         uses: burnett01/rsync-deployments@7.1.0
         with:
