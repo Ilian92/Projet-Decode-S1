@@ -152,7 +152,7 @@ jobs:
               sleep 3
           done
 
-          cd "$PROJECT_DIR"
+          cd "$PROJECT_DIR" 
 
           export APP_ENV=prod
           export APP_DEBUG=0
