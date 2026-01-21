@@ -122,13 +122,17 @@ jobs:
           command -v docker >/dev/null 2>&1 || { echo "Docker n'est pas installé sur le Pi"; exit 1; }
           docker compose version >/dev/null 2>&1 || { echo "docker compose n'est pas disponible sur le Pi"; exit 1; }
 
-          # Vérifier si les conteneurs sont déjà en cours d'exécution
-          RUNNING_SERVICES=$(docker compose ps --services --filter "status=running" 2>/dev/null || echo "")
+          # Vérifier si les ports sont déjà utilisés
+          PORTS_IN_USE=0
+          for PORT in 5432 8000 1025 8025; do
+              if ss -tuln 2>/dev/null | grep -q ":$PORT " || lsof -i :$PORT 2>/dev/null | grep -q LISTEN; then
+                  echo "Port $PORT est déjà utilisé"
+                  PORTS_IN_USE=$((PORTS_IN_USE + 1))
+              fi
+          done
 
-          if echo "$RUNNING_SERVICES" | grep -q "database" && \
-             echo "$RUNNING_SERVICES" | grep -q "webapp" && \
-             echo "$RUNNING_SERVICES" | grep -q "mailer"; then
-              echo "Tous les services Docker sont déjà en cours d'exécution"
+          if [ $PORTS_IN_USE -ge 3 ]; then
+              echo "Les services Docker semblent déjà en cours d'exécution (ports déjà utilisés)"
           else
               echo "Démarrage des services Docker (Webapp, PostgreSQL, Mailpit)..."
               docker compose up -d
