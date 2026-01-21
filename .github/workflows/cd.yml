@@ -130,7 +130,7 @@ jobs:
           docker compose up -d
 
           echo "Correction des permissions des fichiers créés par Docker..."
-          sudo chown -R ilian:ilian var/ 2>/dev/null || true
+          sudo chown -R ilian:ilian . 2>/dev/null || true
 
           echo "Attente que PostgreSQL soit prêt..."
           until docker exec $(docker ps -qf "name=database") pg_isready -U "${POSTGRES_USER:-app}" -d "${POSTGRES_DB:-app}"; do
