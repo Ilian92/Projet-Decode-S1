@@ -123,10 +123,14 @@ jobs:
           docker compose version >/dev/null 2>&1 || { echo "docker compose n'est pas disponible sur le Pi"; exit 1; }
 
           # Vérifier si les conteneurs sont déjà en cours d'exécution
-          if docker compose ps --services --filter "status=running" | grep -q "database"; then
-              echo "Les services Docker sont déjà en cours d'exécution"
+          RUNNING_SERVICES=$(docker compose ps --services --filter "status=running" 2>/dev/null || echo "")
+
+          if echo "$RUNNING_SERVICES" | grep -q "database" && \
+             echo "$RUNNING_SERVICES" | grep -q "webapp" && \
+             echo "$RUNNING_SERVICES" | grep -q "mailer"; then
+              echo "Tous les services Docker sont déjà en cours d'exécution"
           else
-              echo "Démarrage des services Docker (PostgreSQL, Mailpit)..."
+              echo "Démarrage des services Docker (Webapp, PostgreSQL, Mailpit)..."
               docker compose up -d
           fi
 
