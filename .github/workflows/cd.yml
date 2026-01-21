@@ -134,7 +134,12 @@ jobs:
           echo "Démarrage des services Docker (PostgreSQL, Mailpit, Webapp)..."
           command -v docker >/dev/null 2>&1 || { echo "Docker n'est pas installé sur le Pi"; exit 1; }
           docker compose version >/dev/null 2>&1 || { echo "docker compose n'est pas disponible sur le Pi"; exit 1; }
-          docker compose up -d
+
+          # Arrêter webapp temporairement pour éviter les conflits de permissions
+          docker compose stop webapp 2>/dev/null || true
+
+          # Démarrer uniquement database et mailer
+          docker compose up -d database mailer
 
           echo "Correction des permissions des fichiers créés par Docker..."
           sudo chown -R ilian:ilian . 2>/dev/null || true
@@ -151,6 +156,9 @@ jobs:
           echo "Installation des dépendances PHP..."
           sudo apt-get update
           sudo apt-get install -y php-xml php-pgsql composer
+
+          # Supprimer vendor/ pour éviter les conflits de permissions
+          sudo rm -rf vendor/
           composer install --no-dev --optimize-autoloader --no-interaction
 
           echo "Installation des dépendances Node.js..."
@@ -162,6 +170,9 @@ jobs:
 
           # Retour au projet
           cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+
+          # Lancement du service webapp
+          docker compose up -d webapp
 
           # Migrations de la base de données
           echo "Exécution des migrations..."
