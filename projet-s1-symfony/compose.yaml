@@ -1,6 +1,20 @@
-
 services:
-###> doctrine/doctrine-bundle ###
+  ###> symfony/webapp ###
+  webapp:
+    image: shinsenter/symfony:latest
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:80"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_ENV: dev
+  ###< symfony/webapp ###
+
+  ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
@@ -9,7 +23,15 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-app}
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "${POSTGRES_DB:-app}",
+          "-U",
+          "${POSTGRES_USER:-app}",
+        ]
       timeout: 5s
       retries: 5
       start_period: 60s
@@ -19,9 +41,9 @@ services:
       - "5432:5432"
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+  ###< doctrine/doctrine-bundle ###
 
-###> symfony/mailer ###
+  ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
     ports:
@@ -33,7 +55,7 @@ services:
 ###< symfony/mailer ###
 
 volumes:
-###> doctrine/doctrine-bundle ###
+  ###> doctrine/doctrine-bundle ###
   database_data:
 ###< doctrine/doctrine-bundle ###
 
