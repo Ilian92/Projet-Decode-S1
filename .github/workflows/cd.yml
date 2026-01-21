@@ -125,8 +125,9 @@ jobs:
           chmod +x bin/console
 
           echo "Configuration des variables d'environnement pour Docker..."
-          export UID=$(id -u)
-          export GID=$(id -g)
+          # Créer un fichier .env.local avec les UID/GID pour éviter le problème de readonly
+          echo "UID=$(id -u)" > .env.local
+          echo "GID=$(id -g)" >> .env.local
 
           echo "Démarrage des services Docker (PostgreSQL, Mailpit)..."
           command -v docker >/dev/null 2>&1 || { echo "Docker n'est pas installé sur le Pi"; exit 1; }
