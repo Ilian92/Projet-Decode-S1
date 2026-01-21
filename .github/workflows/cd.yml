@@ -116,33 +116,43 @@ jobs:
           ssh rpi 'bash -s' << 'EOF'
           set -euo pipefail
 
-          cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+          PROJECT_DIR="/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
+          COMPOSE_ROOT="/home/ilian/Dev"
+
+          cd "$PROJECT_DIR"
 
           echo "Vérification de Docker..."
           command -v docker >/dev/null 2>&1 || { echo "Docker n'est pas installé sur le Pi"; exit 1; }
           docker compose version >/dev/null 2>&1 || { echo "docker compose n'est pas disponible sur le Pi"; exit 1; }
 
-          # Vérifier si les ports sont déjà utilisés
-          PORTS_IN_USE=0
-          for PORT in 5432 8000 1025 8025; do
-              if ss -tuln 2>/dev/null | grep -q ":$PORT " || lsof -i :$PORT 2>/dev/null | grep -q LISTEN; then
-                  echo "Port $PORT est déjà utilisé"
-                  PORTS_IN_USE=$((PORTS_IN_USE + 1))
-              fi
-          done
-
-          if [ $PORTS_IN_USE -ge 3 ]; then
-              echo "Les services Docker semblent déjà en cours d'exécution (ports déjà utilisés)"
+          # Redémarrer les services depuis le compose principal pour éviter les conflits
+          echo "Redémarrage des services du projet Symfony depuis le compose principal..."
+          cd "$COMPOSE_ROOT"
+          if [ -f "compose.yaml" ] || [ -f "docker-compose.yaml" ]; then
+              # Redémarrer uniquement les services du projet Symfony
+              docker compose restart database webapp mailer 2>/dev/null || true
+              docker compose up -d database webapp mailer 2>/dev/null || docker compose up -d
           else
-              echo "Démarrage des services Docker (Webapp, PostgreSQL, Mailpit)..."
+              # Fallback : démarrer depuis le dossier du projet si pas de compose principal
+              cd "$PROJECT_DIR"
               docker compose up -d
           fi
 
           echo "Attente que PostgreSQL soit prêt..."
-          until docker exec $(docker ps -qf "name=database") pg_isready -U "${POSTGRES_USER:-app}" -d "${POSTGRES_DB:-app}"; do
+          # Utiliser un nom de conteneur plus robuste
+          DB_CONTAINER=$(docker ps --format '{{.Names}}' | grep -E '(database|postgres)' | head -n 1)
+          if [ -z "$DB_CONTAINER" ]; then
+              echo "Erreur: Conteneur PostgreSQL introuvable"
+              exit 1
+          fi
+
+          echo "Conteneur PostgreSQL trouvé: $DB_CONTAINER"
+          until docker exec "$DB_CONTAINER" pg_isready -U "${POSTGRES_USER:-app}" -d "${POSTGRES_DB:-app}" 2>/dev/null; do
               echo "PostgreSQL n'est pas encore prêt, attente de 3 secondes..."
               sleep 3
           done
+
+          cd "$PROJECT_DIR"
 
           export APP_ENV=prod
           export APP_DEBUG=0
