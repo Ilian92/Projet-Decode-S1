@@ -2,7 +2,7 @@ services:
   ###> symfony/webapp ###
   webapp:
     image: shinsenter/symfony:latest
-    user: "1000:1000"
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - .:/var/www/html
     ports:
@@ -13,6 +13,8 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       APP_ENV: dev
+      PUID: ${UID:-1000}
+      PGID: ${GID:-1000}
   ###< symfony/webapp ###
 
   ###> doctrine/doctrine-bundle ###
