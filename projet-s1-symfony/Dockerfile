@@ -1,6 +1,6 @@
 FROM php:8.3-cli-alpine
 
-ARG APP_ENV=prod
+# ARG APP_ENV=prod
 
 RUN apk add --no-cache \
     libzip-dev \
@@ -18,12 +18,14 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 
 COPY . .
-ENV APP_ENV=${APP_ENV}
-RUN if [ "$APP_ENV" = "prod" ]; then \
-        composer install --no-dev --optimize-autoloader; \
-    else \
-        composer install; \
-    fi
+# ENV APP_ENV=${APP_ENV}
+# RUN if [ "$APP_ENV" = "prod" ]; then \
+#         composer install --no-dev --optimize-autoloader; \
+#     else \
+#         composer install; \
+#     fi
+
+RUN composer install
 
 RUN mkdir -p var/cache var/log \
     && chmod -R 777 var
