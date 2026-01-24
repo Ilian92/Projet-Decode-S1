@@ -8,8 +8,9 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     icu-dev \
+    postgresql-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql zip gd intl opcache
+    && docker-php-ext-install pdo_pgsql zip gd intl opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
