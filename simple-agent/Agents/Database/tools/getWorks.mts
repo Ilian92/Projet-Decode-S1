@@ -2,33 +2,33 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
 export const getWorks = tool(
-  async ({ information }) => {
+  async ({}) => {
     try {
-      // const url = `https://wttr.in/${encodeURIComponent(information)}?format=j1&lang=fr`;
+      const url = `http://localhost:8000/database/get/works`;
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'curl/7.68.0'
-        }
+          "Content-Type": "application/json",
+        },
       });
-      
+
       if (!response.ok) {
         if (response.status === 404) {
-          return `Information "${information}" non trouvée. Vérifiez l'orthographe.`;
+          return `Route non trouvée. Vérifiez que le serveur est lancé.`;
         }
         throw new Error(`Erreur API: ${response.status}`);
       }
-      return await response.json();
-      
+
+      const data = await response.json();
+      return JSON.stringify(data, null, 2);
     } catch (error) {
-      console.error('Erreur base de données:', error);
-      return `Impossible de récupérer les informations pour "${information}".`;
+      console.error("Erreur base de données:", error);
+      return `Impossible de récupérer les informations des livres. Vérifiez que le serveur est lancé sur le port 8000.`;
     }
   },
   {
     name: "getWorks",
-    description: "Obtient les informations des livres de la base de données du site de vente de livres mississippi.com",
-    schema: z.object({
-      information: z.string().describe("Le nom de l'information à obtenir depuis la base de données"),
-    }),
-  }
-); 
+    description:
+      "Récupère la liste complète des livres (works) depuis la base de données du site mississippi.com via l'API locale",
+    schema: z.object({}),
+  },
+);
