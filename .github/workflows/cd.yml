@@ -174,17 +174,21 @@ jobs:
           # Lancement du service webapp
           docker compose up -d webapp
 
-          # Migrations de la base de données
-          echo "Exécution des migrations..."
-          php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+          # Attendre que webapp soit prêt
+          sleep 5
 
-          # Clear le cache
+          # Migrations de la base de données (dans le conteneur)
+          echo "Exécution des migrations..."
+          docker compose exec -T webapp php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+
+          # Clear le cache (dans le conteneur)
           echo "Nettoyage du cache..."
-          php bin/console cache:clear --env=prod
-          php bin/console cache:warmup --env=prod
+          docker compose exec -T webapp php bin/console cache:clear --env=prod
+          docker compose exec -T webapp php bin/console cache:warmup --env=prod
 
           # Permissions
           echo "Ajustement des permissions..."
+          sudo chown -R ilian:ilian var/ 2>/dev/null || true
           mkdir -p var/cache var/log
           chmod -R 775 var/cache var/log
 
@@ -221,13 +225,13 @@ jobs:
           export APP_DEBUG=0
 
           echo "Vérification de la version PHP..."
-          php -v
+          docker compose exec -T webapp php -v
 
           echo "Vérification des migrations..."
-          php bin/console doctrine:migrations:status --env=prod
+          docker compose exec -T webapp php bin/console doctrine:migrations:status --env=prod
 
           echo "Vérification du cache..."
-          ls -lah var/cache
+          docker compose exec -T webapp ls -lah var/cache
 
           echo "Monitoring terminé"
           EOF
