@@ -171,6 +171,10 @@ jobs:
           # Retour au projet
           cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
 
+          # Reconstruction de l'image Docker avec les nouvelles dépendances
+          echo "Reconstruction de l'image Docker..."
+          docker compose build webapp
+
           # Lancement du service webapp
           docker compose up -d webapp
 
