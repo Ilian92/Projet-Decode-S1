@@ -29,9 +29,9 @@ export const getWork = tool(
   {
     name: "getWork",
     description:
-      "Récupère les informations d'un livre spécifique (work) depuis la base de données du site mississippi.com via l'API locale en utilisant son ID",
+      "Récupère une œuvre littéraire spécifique par son ID depuis la base de données mississippi.com. Retourne un objet avec l'id, title, summary, genres, auteurs et livres associés.",
     schema: z.object({
-      id: z.string().describe("L'identifiant du livre (work) à récupérer"),
+      id: z.string().describe("L'identifiant unique de l'œuvre à récupérer"),
     }),
   },
 );

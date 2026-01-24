@@ -29,7 +29,7 @@ export const getWorks = tool(
   {
     name: "getWorks",
     description:
-      "Récupère la liste complète des livres (works) depuis la base de données du site mississippi.com via l'API locale",
+      "Récupère toutes les œuvres littéraires de la base de données mississippi.com. Retourne un tableau contenant pour chaque œuvre : id, title, summary, genres associés (id, label), auteurs (id, firstName, lastName) et livres (id, publicationDate, currentUnitPrice, availableStock).",
     schema: z.object({}),
   },
 );

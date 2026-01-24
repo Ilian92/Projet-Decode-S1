@@ -29,9 +29,9 @@ export const getAuthor = tool(
   {
     name: "getAuthor",
     description:
-      "Récupère les informations d'un auteur spécifique depuis la base de données du site mississippi.com via l'API locale en utilisant son ID",
+      "Récupère un auteur spécifique par son ID depuis la base de données mississippi.com. Retourne un objet avec l'id, firstName, lastName, biography, photoUrl et les œuvres associées.",
     schema: z.object({
-      id: z.string().describe("L'identifiant de l'auteur à récupérer"),
+      id: z.string().describe("L'identifiant unique de l'auteur à récupérer"),
     }),
   },
 );

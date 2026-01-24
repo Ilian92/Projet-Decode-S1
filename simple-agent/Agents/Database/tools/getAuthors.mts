@@ -29,7 +29,7 @@ export const getAuthors = tool(
   {
     name: "getAuthors",
     description:
-      "Récupère la liste complète des auteurs de livres depuis la base de données du site mississippi.com via l'API locale",
+      "Récupère tous les auteurs de la base de données mississippi.com. Retourne un tableau contenant pour chaque auteur : id, firstName, lastName, biography, photoUrl et leurs œuvres associées (id, title).",
     schema: z.object({}),
   },
 );
