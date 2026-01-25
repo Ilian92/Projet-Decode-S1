@@ -1,13 +1,13 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import { loadAgentPrompt } from "./generate_prompt.mts";
 import { getWorks } from "./tools/getWorks.mts";
-import { get } from 'http';
+import { get } from "http";
 
-const agentPrompt = loadAgentPrompt('Agent');
+const agentPrompt = loadAgentPrompt("Agent");
 
 /*const agentModel = new ChatOpenAI({ 
   temperature: 0.5,
