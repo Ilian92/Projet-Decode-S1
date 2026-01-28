@@ -25,3 +25,4 @@ services:
         arguments:
             $apiBaseUrl: '%open_library_api%'
             $apiImageUrl: '%open_library_image_api%'
+            $cache: '@cache.app'

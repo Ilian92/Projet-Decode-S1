@@ -4,60 +4,105 @@
 {% endblock %}
 
 {% block body %}
-{# Featured Books Carousel - Best sellers #}
-<section class="bg-gradient-to-br from-primary-100 via-primary-50 to-primary-200 py-16">
-	<div class="container mx-auto px-4 ">
-		{% include 'components/section_header.html.twig' with {
-            title: 'Meilleures ventes',
-            showViewAll: true
-        } %}
-
-		<div class="flex flex-wrap gap-6 justify-center">
-			{% for i in 1..8 %}
-				{% include 'components/book_card.html.twig' with {
-                    title: 'Le Nom du Vent',
-                    author: 'Patrick Rothfuss',
-                    price: '24,90',
-                    imageUrl: 'https://picsum.photos/300/400?random=' ~ i,
-                    badge: 'Bestseller',
-                    rating: 4.8
-                } %}
-			{% endfor %}
+	{# 1. Meilleures ventes + Categories - Combined section with same background #}
+	<section
+		class="bg-gradient-to-br from-white via-contrasted-100 to-white pt-8 md:pt-12 pb-16 relative overflow-hidden">
+		{# Decorative elements similar to subscription #}
+		<div class="absolute inset-0 opacity-5">
+			<div class="absolute top-0 left-0 w-96 h-96 bg-primary-300 rounded-full blur-3xl"></div>
+			<div class="absolute bottom-0 right-0 w-96 h-96 bg-primary-200 rounded-full blur-3xl"></div>
 		</div>
-	</div>
-</section>
 
-{# New Releases Section - Latest books #}
-<section class="bg-white py-16">
-	<div class="container mx-auto px-4">
-		{% include 'components/section_header.html.twig' with {
-            title: 'Dernières parutions',
-            subtitle: 'Découvrez les nouveautés de ce mois',
-            showViewAll: true
-        } %}
+		<div
+			class="container mx-auto px-4 relative z-10">
+			{# Bestsellers Section #}
+			<div class="text-center mb-6">
+				<h2 class="font-bodoni text-2xl md:text-3xl font-bold text-primary-900 mb-2 relative inline-block">
+					<span class="relative z-10">Meilleures ventes</span>
+					<span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+				</h2>
+			</div>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-			{% for i in 1..3 %}
-				{% include 'components/new_release_card.html.twig' with {
-                    title: 'L\'Art de la Guerre',
-                    author: 'Sun Tzu',
-                    description: 'Un classique intemporel de stratégie militaire qui continue d\'inspirer les leaders modernes dans tous les domaines.',
-                    price: '19,90',
-                    imageUrl: 'https://picsum.photos/400/600?random=' ~ (i + 10),
-                    releaseDate: 'Janvier 2026'
-                } %}
-			{% endfor %}
+			<div class="flex flex-wrap gap-4 md:gap-6 justify-center items-start mb-16">
+				{% if bestsellers is defined and bestsellers|length > 0 %}
+					{% for book in bestsellers|slice(0, 6) %}
+						{% include 'components/minimal_book_card.html.twig' with {
+                        title: book.title,
+                        author: book.author,
+                        imageUrl: book.cover_url|default('https://picsum.photos/200/300?random=' ~ loop.index)
+                    } %}
+					{% endfor %}
+				{% else %}
+					{% for i in 1..6 %}
+						{% include 'components/minimal_book_card.html.twig' with {
+                        title: 'Le Nom du Vent',
+                        author: 'Patrick Rothfuss',
+                        imageUrl: 'https://picsum.photos/200/300?random=' ~ i
+                    } %}
+					{% endfor %}
+				{% endif %}
+			</div>
+
+			{# Categories Section #}
+			{% if categories is defined and categories|length > 0 %}
+				{% include 'components/section_header.html.twig' with {
+                title: null,
+                subtitle: 'Découvrez une sélection de livres par genre',
+                centered: true,
+                showViewAll: false
+            } %}
+
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+					{% for category in categories|slice(0, 3) %}
+						<div class="bg-primary-50 rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300">
+							<h3 class="font-bodoni text-xl font-bold text-primary-900 mb-2">
+								{{ category.name }}
+							</h3>
+							<p class="font-bodoni text-sm text-primary-600 mb-4">
+								{{ category.work_count }}
+								livres disponibles
+							</p>
+
+							{% if category.books is defined and category.books|length > 0 %}
+								<div class="flex flex-wrap gap-4 justify-center">
+									{% for book in category.books|slice(0, 4) %}
+										{% include 'components/book_card.html.twig' with {
+                                        title: book.title,
+                                        author: book.author,
+                                        price: '24,90',
+                                        imageUrl: book.cover_url|default('https://picsum.photos/300/400?random=' ~ loop.index),
+                                        rating: 4.8,
+                                        workKey: book.key
+                                    } %}
+									{% endfor %}
+								</div>
+							{% else %}
+								<div class="flex flex-wrap gap-4 justify-center">
+									{% for i in 1..4 %}
+										{% include 'components/book_card.html.twig' with {
+                                        title: 'Livre exemple',
+                                        author: 'Auteur exemple',
+                                        price: '24,90',
+                                        imageUrl: 'https://picsum.photos/300/400?random=' ~ (loop.parent.loop.index * 10 + i),
+                                        rating: 4.8
+                                    } %}
+									{% endfor %}
+								</div>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
 		</div>
-	</div>
-</section>
+	</section>
 
-{# Monthly Box / Subscription Highlight #}
-{% include 'components/subscription_box.html.twig' %}
+	{# 3. Monthly Box / Subscription Highlight #}
+	{% include 'components/subscription_box.html.twig' %}
 
-{# Editor's Picks - Curated selections #}
-<section class="bg-primary-100 py-16">
-	<div class="container mx-auto px-4">
-		{% include 'components/section_header.html.twig' with {
+	{# 4. Sélection des libraires #}
+	<section class="bg-primary-100 py-16">
+		<div class="container mx-auto px-4">
+			{% include 'components/section_header.html.twig' with {
             title: 'Nos coups de cœur',
             subtitle: 'Des livres qui nous ont marqués, sélectionnés avec soin par notre équipe de passionnés',
             centered: true,
@@ -65,24 +110,41 @@
             showViewAll: false
         } %}
 
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-			{% for i in 1..4 %}
-				{% include 'components/book_card.html.twig' with {
-                    title: 'Les Misérables',
-                    author: 'Victor Hugo',
-                    price: '22,90',
-                    imageUrl: 'https://picsum.photos/400/600?random=' ~ (i + 20),
-                    showRating: false,
-                    showHeartIcon: true,
-                    hoverQuote: 'Un chef-d\'œuvre qui vous transporte dans un univers captivant...',
-                    buttonText: 'Voir',
-                    buttonClass: 'bg-primary-500 hover:bg-primary-600'
-                } %}
-            {% endfor %}
-        </div>
-    </div>
-</section>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+				{% if editorsPicks is defined and editorsPicks|length > 0 %}
+					{% for book in editorsPicks %}
+						{% include 'components/book_card.html.twig' with {
+                        title: book.title,
+                        author: book.author,
+                        price: '22,90',
+                        imageUrl: book.cover_url|default('https://picsum.photos/400/600?random=' ~ loop.index),
+                        showRating: false,
+                        showHeartIcon: true,
+                        hoverQuote: 'Un chef-d\'œuvre qui vous transporte dans un univers captivant...',
+                        buttonText: 'Voir',
+                        buttonClass: 'bg-primary-500 hover:bg-primary-600',
+                        workKey: book.key
+                    } %}
+				{% endfor %}
+			{% else %}
+				{% for i in 1..4 %}
+					{% include 'components/book_card.html.twig' with {
+                        title: 'Les Misérables',
+                        author: 'Victor Hugo',
+                        price: '22,90',
+                        imageUrl: 'https://picsum.photos/400/600?random=' ~ (i + 20),
+                        showRating: false,
+                        showHeartIcon: true,
+                        hoverQuote: 'Un chef-d\'œuvre qui vous transporte dans un univers captivant...',
+                        buttonText: 'Voir',
+                        buttonClass: 'bg-primary-500 hover:bg-primary-600'
+                    } %}
+					{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+	</section>
 
-{# Newsletter Signup Section #}
-{% include 'components/newsletter_signup.html.twig' %}
+	{# 5. Newsletter Signup Section #}
+	{% include 'components/newsletter_signup.html.twig' %}
 {% endblock %}
