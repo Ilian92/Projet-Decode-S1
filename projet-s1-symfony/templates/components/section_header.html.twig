@@ -1,0 +1,53 @@
+{# Section Header Component
+   
+   Parameters:
+   - title: Section title (required)
+   - subtitle: Optional subtitle/description
+   - showViewAll: Show "Voir tout" link (default: true)
+   - viewAllUrl: URL for "Voir tout" link (default: "#")
+   - viewAllText: Text for "Voir tout" link (default: "Voir tout →")
+   - centered: Center align title (default: false)
+   - badge: Optional badge text above title
+   - badgeClass: Badge color class (default: "bg-primary-200 text-primary-800")
+#}
+
+{% if centered|default(false) %}
+<div class="text-center mb-12">
+    {% if badge is defined and badge %}
+    <span class="inline-block {{ badgeClass|default('bg-primary-200 text-primary-800') }} font-bodoni text-sm font-bold px-4 py-2 rounded-full mb-4">
+        {{ badge }}
+    </span>
+    {% endif %}
+    <h2 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 {% if subtitle is defined and subtitle %}mb-4{% endif %}">
+        {{ title }}
+    </h2>
+    {% if subtitle is defined and subtitle %}
+    <p class="font-bodoni text-lg text-primary-700 max-w-2xl mx-auto">
+        {{ subtitle }}
+    </p>
+    {% endif %}
+</div>
+{% else %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        {% if badge is defined and badge %}
+        <span class="inline-block {{ badgeClass|default('bg-primary-200 text-primary-800') }} font-bodoni text-sm font-bold px-4 py-2 rounded-full mb-4">
+            {{ badge }}
+        </span>
+        {% endif %}
+        <h2 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 {% if subtitle is defined and subtitle %}mb-2{% endif %}">
+            {{ title }}
+        </h2>
+        {% if subtitle is defined and subtitle %}
+        <p class="font-bodoni text-primary-700">
+            {{ subtitle }}
+        </p>
+        {% endif %}
+    </div>
+    {% if showViewAll|default(true) %}
+    <a href="{{ viewAllUrl|default('#') }}" class="font-bodoni text-primary-700 hover:text-primary-900 font-medium underline-offset-4 hover:underline transition-colors">
+        {{ viewAllText|default('Voir tout →') }}
+    </a>
+    {% endif %}
+</div>
+{% endif %}
