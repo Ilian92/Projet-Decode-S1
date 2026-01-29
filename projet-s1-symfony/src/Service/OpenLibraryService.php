@@ -73,9 +73,20 @@ class OpenLibraryService
         return $this->getJson("/works/$workID.json");
     }
 
-    public function fetchWorkBooks(string $workID): array
+    /**
+     * @param int|null $limit  Optional limit for editions
+     * @param int      $offset Optional offset for pagination
+     */
+    public function fetchWorkBooks(string $workID, ?int $limit = null, int $offset = 0): array
     {
-        return $this->getJson("/works/$workID/editions.json");
+        $query = [];
+        if ($limit !== null) {
+            $query['limit'] = $limit;
+        }
+        if ($offset > 0) {
+            $query['offset'] = $offset;
+        }
+        return $this->getJson("/works/$workID/editions.json", $query);
     }
 
     public function fetchBook(string $bookID): array

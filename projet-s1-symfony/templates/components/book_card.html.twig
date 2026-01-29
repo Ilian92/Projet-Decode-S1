@@ -1,22 +1,15 @@
 {# Book Card Component
    
    Parameters:
-   - book: Book entity (optional, for dynamic data)
-   - title: Book title (default: "Le Nom du Vent")
-   - author: Author name (default: "Patrick Rothfuss")
-   - price: Price in euros (default: "24,90")
-   - imageUrl: Cover image URL (default: placeholder)
-   - rating: Rating value (default: 4.8)
-   - badge: Badge text (optional, e.g. "Bestseller", "Nouveau")
-   - badgeColor: Badge color class (default: "bg-secondary-800")
-   - showRating: Show rating stars (default: true)
-   - buttonText: Button text (default: "Ajouter")
-   - buttonClass: Button style class (default: "bg-secondary-800 hover:bg-secondary-900")
-   - hoverQuote: Quote to show on hover (optional)
-   - showHeartIcon: Show heart icon for favorites (default: false)
+   - workKey: OpenLibrary work key (e.g. "/works/OL123W") - when set, card links to work page
+   - title, author, price, imageUrl, rating, badge, badgeColor, showRating, buttonText, buttonClass, hoverQuote, showHeartIcon
 #}
+{% set workUrl = workKey is defined and workKey ? path('app_work_show', { id: workKey|split('/')|last }) : null %}
 
 <article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer w-40">
+	{% if workUrl %}
+		<a href="{{ workUrl }}" class="block group/link">
+	{% endif %}
 	<div class="aspect-3/4 bg-primary-100 overflow-hidden relative">
 		<img src="{{ imageUrl|default('https://picsum.photos/300/400?random=' ~ random(1000)) }}" alt="Couverture de {{ title|default('Le Nom du Vent') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 		{% if badge is defined and badge %}
@@ -43,7 +36,7 @@
 				<span class="font-bodoni text-xs text-primary-600 font-medium">Coup de cœur</span>
 			</div>
 		{% endif %}
-		<h3 class="font-bodoni text-sm font-bold text-primary-900 mb-1 line-clamp-2">
+		<h3 class="font-bodoni text-sm font-bold text-primary-900 mb-1 line-clamp-2 group-hover:text-secondary-700 transition-colors">
 			{{ title|default('Le Nom du Vent') }}
 		</h3>
 		<p class="font-bodoni text-xs text-primary-600 mb-1.5">
@@ -60,14 +53,32 @@
 				<span class="font-bodoni text-xs text-primary-600 ml-1">({{ ratingValue }})</span>
 			</div>
 		{% endif %}
+		{% if workUrl and (buttonText|default('Ajouter')) != 'Voir' %}
+			</a>
+		{% endif %}
 		<div class="flex items-center justify-between gap-2">
 			<span class="font-bodoni text-base font-bold text-secondary-800">
 				{{ price|default('24,90') }}
 				€
 			</span>
-			<button class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap">
-				{{ buttonText|default('Ajouter') }}
-			</button>
+			{% if workUrl and (buttonText|default('Ajouter')) == 'Voir' %}
+				<span class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block">
+					{{ buttonText }}
+				</span>
+			{% else %}
+				<button type="button" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap">
+					{{ buttonText|default('Ajouter') }}
+				</button>
+			{% endif %}
 		</div>
 	</div>
+	{% if workUrl %}
+		{% if (buttonText|default('Ajouter')) != 'Voir' %}
+			<div class="px-3 pb-3 -mt-2 flex justify-end">
+				<a href="{{ workUrl }}" class="font-bodoni text-xs text-primary-600 hover:text-secondary-800 underline">Voir la fiche</a>
+			</div>
+		{% else %}
+			</a>
+		{% endif %}
+	{% endif %}
 </article>
