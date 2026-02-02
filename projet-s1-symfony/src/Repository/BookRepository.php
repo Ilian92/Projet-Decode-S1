@@ -40,4 +40,31 @@ class BookRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    /**
+     * Find bestseller books based on order line quantities
+     * 
+     * @param int $limit Maximum number of books to return
+     * @return Book[] Returns an array of Book objects
+     */
+    public function findBestsellers(int $limit = 8): array
+    {
+        // Get books with their order line counts, ordered by total quantity sold
+        $results = $this->createQueryBuilder('b')
+            ->leftJoin('b.orderLines', 'ol')
+            ->leftJoin('b.work', 'w')
+            ->select('b')
+            ->addSelect('COALESCE(SUM(ol.quantity), 0) as HIDDEN totalQuantity')
+            ->groupBy('b.id')
+            ->orderBy('totalQuantity', 'DESC')
+            ->addOrderBy('b.id', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        // Extract Book entities from results
+        return array_map(function ($result) {
+            return is_array($result) ? $result[0] : $result;
+        }, $results);
+    }
 }
