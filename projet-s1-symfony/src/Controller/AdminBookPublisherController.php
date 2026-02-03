@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/book/publisher')]
+#[Route('/admin/book-publisher')]
 final class AdminBookPublisherController extends AbstractController
 {
     #[Route(name: 'app_admin_book_publisher_index', methods: ['GET'])]
@@ -71,7 +71,7 @@ final class AdminBookPublisherController extends AbstractController
     #[Route('/{id}', name: 'app_admin_book_publisher_delete', methods: ['POST'])]
     public function delete(Request $request, BookPublisher $bookPublisher, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$bookPublisher->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $bookPublisher->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($bookPublisher);
             $entityManager->flush();
         }
