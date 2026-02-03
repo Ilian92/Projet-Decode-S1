@@ -14,15 +14,16 @@
                     </tr>
                 {% endif %}
             {% endfor %}
+            <tr>
+                <td colspan="2" class="px-6 py-6 text-right bg-white">
+                    <button type="submit" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-8 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="font-bodoni font-medium">{{ button_label|default('Enregistrer') }}</span>
+                    </button>
+                </td>
+            </tr>
         </tbody>
     </table>
-    
-    <div class="px-6 py-4 bg-primary-50 flex justify-end">
-        <button type="submit" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-8 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="font-bodoni font-medium">{{ button_label|default('Enregistrer') }}</span>
-        </button>
-    </div>
 {{ form_end(form) }}
