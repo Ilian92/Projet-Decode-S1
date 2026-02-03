@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}BookPublisher index{% endblock %}
+
+{% block body %}
+    <h1>BookPublisher index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PublisherName</th>
+                <th>ContactEmail</th>
+                <th>Website</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for book_publisher in book_publishers %}
+            <tr>
+                <td>{{ book_publisher.id }}</td>
+                <td>{{ book_publisher.publisherName }}</td>
+                <td>{{ book_publisher.contactEmail }}</td>
+                <td>{{ book_publisher.website }}</td>
+                <td>
+                    <a href="{{ path('app_admin_book_publisher_show', {'id': book_publisher.id}) }}">show</a>
+                    <a href="{{ path('app_admin_book_publisher_edit', {'id': book_publisher.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_book_publisher_new') }}">Create new</a>
+{% endblock %}

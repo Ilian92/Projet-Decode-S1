@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit MonthlyBox{% endblock %}
+
+{% block body %}
+    <h1>Edit MonthlyBox</h1>
+
+    {{ include('admin_monthly_box/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_admin_monthly_box_index') }}">back to list</a>
+
+    {{ include('admin_monthly_box/_delete_form.html.twig') }}
+{% endblock %}

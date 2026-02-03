@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New BookPublisher{% endblock %}
+
+{% block body %}
+    <h1>Create new BookPublisher</h1>
+
+    {{ include('admin_book_publisher/_form.html.twig') }}
+
+    <a href="{{ path('app_admin_book_publisher_index') }}">back to list</a>
+{% endblock %}

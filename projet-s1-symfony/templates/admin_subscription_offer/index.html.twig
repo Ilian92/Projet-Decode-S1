@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SubscriptionOffer index{% endblock %}
+
+{% block body %}
+    <h1>SubscriptionOffer index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>OfferName</th>
+                <th>Description</th>
+                <th>MonthlyPrice</th>
+                <th>IncludedBooksCount</th>
+                <th>CommitmentMonths</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for subscription_offer in subscription_offers %}
+            <tr>
+                <td>{{ subscription_offer.id }}</td>
+                <td>{{ subscription_offer.offerName }}</td>
+                <td>{{ subscription_offer.description }}</td>
+                <td>{{ subscription_offer.monthlyPrice }}</td>
+                <td>{{ subscription_offer.includedBooksCount }}</td>
+                <td>{{ subscription_offer.commitmentMonths }}</td>
+                <td>
+                    <a href="{{ path('app_admin_subscription_offer_show', {'id': subscription_offer.id}) }}">show</a>
+                    <a href="{{ path('app_admin_subscription_offer_edit', {'id': subscription_offer.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_subscription_offer_new') }}">Create new</a>
+{% endblock %}

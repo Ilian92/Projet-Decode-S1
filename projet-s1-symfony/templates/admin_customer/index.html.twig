@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer index{% endblock %}
+
+{% block body %}
+    <h1>Customer index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>LastName</th>
+                <th>FirstName</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>PasswordHash</th>
+                <th>Phone</th>
+                <th>RegistrationDate</th>
+                <th>LastLogin</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.lastName }}</td>
+                <td>{{ customer.firstName }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.roles ? customer.roles|json_encode : '' }}</td>
+                <td>{{ customer.passwordHash }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.registrationDate ? customer.registrationDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ customer.lastLogin ? customer.lastLogin|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_admin_customer_show', {'id': customer.id}) }}">show</a>
+                    <a href="{{ path('app_admin_customer_edit', {'id': customer.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_customer_new') }}">Create new</a>
+{% endblock %}

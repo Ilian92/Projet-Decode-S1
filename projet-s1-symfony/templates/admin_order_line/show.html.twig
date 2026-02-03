@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}OrderLine{% endblock %}
+
+{% block body %}
+    <h1>OrderLine</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ order_line.id }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ order_line.quantity }}</td>
+            </tr>
+            <tr>
+                <th>UnitPriceSnapshot</th>
+                <td>{{ order_line.unitPriceSnapshot }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_order_line_index') }}">back to list</a>
+
+    <a href="{{ path('app_admin_order_line_edit', {'id': order_line.id}) }}">edit</a>
+
+    {{ include('admin_order_line/_delete_form.html.twig') }}
+{% endblock %}
