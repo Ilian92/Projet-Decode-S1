@@ -6,7 +6,7 @@
 <section class="min-h-screen pt-8 md:pt-12 pb-16 relative overflow-hidden">
     {# Layered background: image + gradient (same style as home) #}
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" style="background-image: url('https://picsum.photos/1200/800');"></div>
-    <div class="absolute inset-0 bg-linear-to-br from-white/100 via-contrasted-100/85 to-white/100"></div>
+    <div class="absolute inset-0 bg-linear-to-br from-white via-contrasted-100/85 to-white"></div>
     {# Decorative elements #}
     <div class="absolute inset-0 opacity-5">
         <div class="absolute top-0 left-0 w-96 h-96 bg-primary-300 rounded-full blur-3xl"></div>
@@ -18,7 +18,7 @@
         <nav class="font-bodoni text-sm text-primary-600 mb-6" aria-label="Fil d'Ariane">
             <ol class="flex flex-wrap items-center gap-1">
                 <li><a href="{{ path('app_home') }}" class="hover:text-secondary-800 underline">Accueil</a></li>
-                <li aria-hidden="true">›</li>
+                <li aria-hidden="true">></li>
                 <li><span class="text-primary-900 font-medium">Assistant Database</span></li>
             </ol>
         </nav>
@@ -27,7 +27,7 @@
         <div class="text-center mb-8">
             <h1 class="font-bodoni text-2xl md:text-3xl font-bold text-primary-900 mb-2 relative inline-block">
                 <span class="relative z-10">Assistant Database</span>
-                <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+                <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 z-0 transform -skew-x-12"></span>
             </h1>
             <p class="font-bodoni text-sm text-primary-600 flex items-center justify-center gap-2 mt-2">
                 <span class="w-2 h-2 rounded-full bg-green-500"></span>
