@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Puppies+Play&display=swap');
 @import "tailwindcss";
 @source "../templates/**/*.{html,twig}";
 @source "../src/**/*.php";
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Puppies+Play&display=swap');
 
 @theme {
     --color-primary-50: #faf7f6;
@@ -33,7 +33,8 @@
     --color-contrasted-950: #10231e;
 
     --font-puppies: "Puppies Play", cursive;
-    --font-bodoni: "Bodoni Moda", serif;
+    --font-bodoni: "Gill Sans", sans-serif;
+    --default-font-family: "Gill Sans", sans-serif;
 }
 
 /* Ensure header stays fixed at top */
