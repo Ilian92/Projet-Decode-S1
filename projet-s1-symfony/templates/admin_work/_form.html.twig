@@ -1,4 +1,13 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+    <div class="space-y-4">
+        {{ form_widget(form) }}
+    </div>
+    <div class="flex justify-end mt-6">
+        <button type="submit" class="inline-flex items-center gap-2 bg-secondary-800 border-2 border-primary-50 hover:border-secondary-500 rounded-lg px-8 py-3 shadow-sm hover:shadow-md transition-all duration-300 group">
+            <svg class="w-5 h-5 text-primary-200 group-hover:text-primary-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="font-bodoni text-primary-100 group-hover:text-white font-medium">{{ button_label|default('Enregistrer') }}</span>
+        </button>
+    </div>
 {{ form_end(form) }}
