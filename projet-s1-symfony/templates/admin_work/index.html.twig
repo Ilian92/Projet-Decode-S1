@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Work index{% endblock %}
+
+{% block body %}
+    <h1>Work index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Summary</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for work in works %}
+            <tr>
+                <td>{{ work.id }}</td>
+                <td>{{ work.title }}</td>
+                <td>{{ work.summary }}</td>
+                <td>
+                    <a href="{{ path('app_admin_work_show', {'id': work.id}) }}">show</a>
+                    <a href="{{ path('app_admin_work_edit', {'id': work.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_work_new') }}">Create new</a>
+{% endblock %}
