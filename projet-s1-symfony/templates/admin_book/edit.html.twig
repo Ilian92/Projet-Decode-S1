@@ -1,13 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Book{% endblock %}
+{% block title %}Modifier le livre{% endblock %}
 
 {% block body %}
-    <h1>Edit Book</h1>
+    <section class="py-8 md:py-12 bg-primary-50">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="mb-8">
+                <h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+                    <span class="relative inline-block">
+                        <span class="relative z-10">Modifier le livre</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+                    </span>
+                </h1>
+                <a href="{{ path('app_admin_book_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Retour à la liste
+                </a>
+            </div>
 
-    {{ include('admin_book/_form.html.twig', {'button_label': 'Update'}) }}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                {{ include('admin_book/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+            </div>
 
-    <a href="{{ path('app_admin_book_index') }}">back to list</a>
+            <div class="mt-6 flex gap-4 justify-between items-center">
+                <a href="{{ path('app_admin_book_show', {'id': book.id}) }}" class="inline-flex items-center gap-2 bg-primary-500 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-primary-600 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <span class="font-bodoni font-medium">Voir</span>
+                </a>
 
-    {{ include('admin_book/_delete_form.html.twig') }}
+                {{ include('admin_book/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </section>
 {% endblock %}

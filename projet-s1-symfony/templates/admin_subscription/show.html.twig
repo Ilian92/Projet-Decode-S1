@@ -1,38 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Subscription{% endblock %}
+{% block title %}Abonnement #{{ subscription.id }}{% endblock %}
 
 {% block body %}
-    <h1>Subscription</h1>
+    <section class="py-8 md:py-12 bg-primary-50">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="mb-8">
+                <h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+                    <span class="relative inline-block">
+                        <span class="relative z-10">Abonnement #{{ subscription.id }}</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+                    </span>
+                </h1>
+                <a href="{{ path('app_admin_subscription_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Retour à la liste
+                </a>
+            </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ subscription.id }}</td>
-            </tr>
-            <tr>
-                <th>StartDate</th>
-                <td>{{ subscription.startDate ? subscription.startDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>ExpectedEndDate</th>
-                <td>{{ subscription.expectedEndDate ? subscription.expectedEndDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ subscription.status }}</td>
-            </tr>
-            <tr>
-                <th>NextPaymentDate</th>
-                <td>{{ subscription.nextPaymentDate ? subscription.nextPaymentDate|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <table class="min-w-full">
+                    <tbody class="divide-y divide-primary-100">
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">ID</th>
+                            <td class="px-6 py-4 text-sm text-primary-800">{{ subscription.id }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de début</th>
+                            <td class="px-6 py-4 text-sm text-primary-800 font-semibold">{{ subscription.startDate ? subscription.startDate|date('d/m/Y') : '' }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de fin prévue</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription.expectedEndDate ? subscription.expectedEndDate|date('d/m/Y') : '' }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Statut</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription.status }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date du prochain paiement</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription.nextPaymentDate ? subscription.nextPaymentDate|date('d/m/Y') : '' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <a href="{{ path('app_admin_subscription_index') }}">back to list</a>
+            <div class="mt-6 flex gap-4 justify-between items-center">
+                <a href="{{ path('app_admin_subscription_edit', {'id': subscription.id}) }}" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span class="font-bodoni font-medium">Modifier</span>
+                </a>
 
-    <a href="{{ path('app_admin_subscription_edit', {'id': subscription.id}) }}">edit</a>
-
-    {{ include('admin_subscription/_delete_form.html.twig') }}
+                {{ include('admin_subscription/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </section>
 {% endblock %}

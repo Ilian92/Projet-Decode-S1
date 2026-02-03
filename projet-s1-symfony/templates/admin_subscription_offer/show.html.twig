@@ -1,42 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SubscriptionOffer{% endblock %}
+{% block title %}{{ subscription_offer.offerName }}{% endblock %}
 
 {% block body %}
-    <h1>SubscriptionOffer</h1>
+    <section class="py-8 md:py-12 bg-primary-50">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="mb-8">
+                <h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+                    <span class="relative inline-block">
+                        <span class="relative z-10">{{ subscription_offer.offerName }}</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+                    </span>
+                </h1>
+                <a href="{{ path('app_admin_subscription_offer_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Retour à la liste
+                </a>
+            </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ subscription_offer.id }}</td>
-            </tr>
-            <tr>
-                <th>OfferName</th>
-                <td>{{ subscription_offer.offerName }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ subscription_offer.description }}</td>
-            </tr>
-            <tr>
-                <th>MonthlyPrice</th>
-                <td>{{ subscription_offer.monthlyPrice }}</td>
-            </tr>
-            <tr>
-                <th>IncludedBooksCount</th>
-                <td>{{ subscription_offer.includedBooksCount }}</td>
-            </tr>
-            <tr>
-                <th>CommitmentMonths</th>
-                <td>{{ subscription_offer.commitmentMonths }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <table class="min-w-full">
+                    <tbody class="divide-y divide-primary-100">
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">ID</th>
+                            <td class="px-6 py-4 text-sm text-primary-800">{{ subscription_offer.id }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Nom de l'offre</th>
+                            <td class="px-6 py-4 text-sm text-primary-800 font-semibold">{{ subscription_offer.offerName }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3 align-top">Description</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription_offer.description }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Prix mensuel</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription_offer.monthlyPrice }} €</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Nombre de livres inclus</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription_offer.includedBooksCount }}</td>
+                        </tr>
+                        <tr class="hover:bg-primary-50 transition-colors duration-200">
+                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Durée d'engagement (mois)</th>
+                            <td class="px-6 py-4 text-sm text-primary-600">{{ subscription_offer.commitmentMonths }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <a href="{{ path('app_admin_subscription_offer_index') }}">back to list</a>
+            <div class="mt-6 flex gap-4 justify-between items-center">
+                <a href="{{ path('app_admin_subscription_offer_edit', {'id': subscription_offer.id}) }}" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <span class="font-bodoni font-medium">Modifier</span>
+                </a>
 
-    <a href="{{ path('app_admin_subscription_offer_edit', {'id': subscription_offer.id}) }}">edit</a>
-
-    {{ include('admin_subscription_offer/_delete_form.html.twig') }}
+                {{ include('admin_subscription_offer/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </section>
 {% endblock %}
