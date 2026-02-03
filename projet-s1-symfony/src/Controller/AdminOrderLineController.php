@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/order/line')]
+#[Route('/admin/order-line')]
 final class AdminOrderLineController extends AbstractController
 {
     #[Route(name: 'app_admin_order_line_index', methods: ['GET'])]

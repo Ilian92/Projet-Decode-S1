@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/subscription/offer')]
+#[Route('/admin/subscription-offer')]
 final class AdminSubscriptionOfferController extends AbstractController
 {
     #[Route(name: 'app_admin_subscription_offer_index', methods: ['GET'])]

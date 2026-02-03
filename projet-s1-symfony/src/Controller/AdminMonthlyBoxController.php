@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/monthly/box')]
+#[Route('/admin/monthly-box')]
 final class AdminMonthlyBoxController extends AbstractController
 {
     #[Route(name: 'app_admin_monthly_box_index', methods: ['GET'])]
