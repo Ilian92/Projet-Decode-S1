@@ -1,0 +1,96 @@
+{# Book Edition Card Component
+   
+   Parameters:
+   - book: Book entity (required) - the book/edition to display
+   - showAddToCart: Optional boolean to show add to cart button (default: true)
+#}
+{% set price = null %}
+{% if book.currentUnitPrice %}
+	{% set priceInEuros = book.currentUnitPrice / 100 %}
+	{% set price = priceInEuros|number_format(2, ',', ' ') %}
+{% endif %}
+
+{% set publisherName = book.bookPublisher ? book.bookPublisher.publisherName : null %}
+
+{% set publicationDate = null %}
+{% if book.publicationDate %}
+	{% set publicationDate = book.publicationDate|date('Y') %}
+{% endif %}
+
+{% set isAvailable = book.availableStock is not null and book.availableStock > 0 %}
+{% set stockStatus = isAvailable ? 'En stock' : 'Rupture de stock' %}
+{% set stockClass = isAvailable ? 'text-green-600' : 'text-red-600' %}
+
+<article class="bg-white rounded-lg border-2 border-primary-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+	<div class="p-4">
+		{# Cover Image #}
+		<div class="aspect-[3/4] bg-primary-100 rounded-lg overflow-hidden mb-4">
+			{% if book.coverImageUrl %}
+				<img src="{{ book.coverImageUrl }}" alt="Couverture" class="w-full h-full object-cover">
+			{% else %}
+				<div class="w-full h-full flex items-center justify-center text-primary-400 font-bodoni text-sm p-2 text-center">Pas de couverture</div>
+			{% endif %}
+		</div>
+
+		{# Publisher #}
+		{% if publisherName %}
+			<p class="font-bodoni text-xs text-primary-500 mb-2 line-clamp-1">
+				{{ publisherName }}
+			</p>
+		{% endif %}
+
+		{# Publication Date #}
+		{% if publicationDate %}
+			<p class="font-bodoni text-xs text-primary-600 mb-2">
+				Publié en {{ publicationDate }}
+			</p>
+		{% endif %}
+
+		{# Price #}
+		<div class="mb-3">
+			{% if price %}
+				<span class="font-bodoni text-xl font-bold text-secondary-800">
+					{{ price }} €
+				</span>
+			{% else %}
+				<span class="font-bodoni text-sm text-primary-500">
+					Prix non disponible
+				</span>
+			{% endif %}
+		</div>
+
+		{# Stock Status #}
+		<div class="mb-4">
+			<p class="font-bodoni text-xs font-medium {{ stockClass }}">
+				{{ stockStatus }}
+				{% if isAvailable and book.availableStock %}
+					({{ book.availableStock }} disponible{{ book.availableStock > 1 ? 's' : '' }})
+				{% endif %}
+			</p>
+		</div>
+
+		{# Weight if available #}
+		{% if book.weightGrams %}
+			<p class="font-bodoni text-xs text-primary-500 mb-4">
+				Poids : {{ (book.weightGrams / 1000)|number_format(2, ',', ' ') }} kg
+			</p>
+		{% endif %}
+
+		{# Add to Cart Button #}
+		{% if showAddToCart|default(true) %}
+			{% if isAvailable and price %}
+				<button type="button" class="w-full bg-secondary-800 hover:bg-secondary-900 text-white px-4 py-2 rounded-md font-bodoni font-medium transition-colors duration-200">
+					Ajouter au panier
+				</button>
+			{% else %}
+				<button type="button" disabled class="w-full bg-primary-300 text-primary-600 px-4 py-2 rounded-md font-bodoni font-medium cursor-not-allowed">
+					{% if not isAvailable %}
+						Indisponible
+					{% else %}
+						Prix non disponible
+					{% endif %}
+				</button>
+			{% endif %}
+		{% endif %}
+	</div>
+</article>

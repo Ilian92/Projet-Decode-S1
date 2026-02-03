@@ -228,17 +228,22 @@ class OpenLibraryService
         
         // Handle authors - can be author_key/author_name arrays (search API) or authors array (subject API)
         $authorKey = null;
-        $authorName = 'Unknown Author';
+        $authorName = null;
         
-        if (isset($work['author_key']) && isset($work['author_name'])) {
-            // Search API format
+        if (isset($work['author_name']) && is_array($work['author_name']) && !empty($work['author_name'])) {
+            // Search API format - author_name is an array
+            $authorName = $work['author_name'][0];
             $authorKey = $work['author_key'][0] ?? null;
-            $authorName = $work['author_name'][0] ?? 'Unknown Author';
+        } elseif (isset($work['author_key']) && is_array($work['author_key']) && !empty($work['author_key'])) {
+            // Search API format - only author_key available, try to extract name
+            $authorKey = $work['author_key'][0];
+            // Note: We can't get the name from just the key without an API call
+            $authorName = null;
         } elseif (isset($work['authors']) && is_array($work['authors']) && !empty($work['authors'])) {
             // Subject API format
             $firstAuthor = $work['authors'][0];
             if (is_array($firstAuthor)) {
-                $authorName = $firstAuthor['name'] ?? 'Unknown Author';
+                $authorName = $firstAuthor['name'] ?? null;
                 $authorKey = $firstAuthor['key'] ?? null;
             } else {
                 $authorName = $firstAuthor;

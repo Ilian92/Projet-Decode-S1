@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Work;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -66,5 +67,24 @@ class BookRepository extends ServiceEntityRepository
         return array_map(function ($result) {
             return is_array($result) ? $result[0] : $result;
         }, $results);
+    }
+
+    /**
+     * Find all books (editions) for a given Work
+     * 
+     * @param Work $work The work entity
+     * @return Book[] Returns an array of Book objects
+     */
+    public function findByWork(Work $work): array
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.work = :work')
+            ->setParameter('work', $work)
+            ->leftJoin('b.bookPublisher', 'bp')
+            ->addSelect('bp')
+            ->orderBy('b.publicationDate', 'DESC')
+            ->addOrderBy('b.currentUnitPrice', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

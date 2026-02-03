@@ -1,0 +1,142 @@
+{# Work Card Component
+   
+   Parameters:
+   - work: Work entity OR array with work data (required)
+     If Work entity: uses work.title, work.author (collection), work.book (collection)
+     If array: uses work.title, work.author, work.cover_url, work.key
+   - badge: Optional badge text
+   - badgeColor: Optional badge color class
+   - showHeartIcon: Optional boolean to show heart icon
+   - hoverQuote: Optional quote to show on hover
+   - buttonText: Optional button text (default: 'Ajouter')
+   - buttonClass: Optional button CSS classes
+#}
+{% if work.key is defined %}
+	{# Array format (from OpenLibrary API) #}
+	{% set workTitle = work.title ?? null %}
+	{% set authorDisplay = work.author %}
+	{# Filter out any "unknown author" variations - show nothing instead #}
+	{% if authorDisplay %}
+		{% set authorLower = authorDisplay|lower|trim %}
+		{% if authorLower == '' or authorLower == 'unknown author' or authorLower == 'auteur inconnu' or authorLower == 'inconnu' %}
+			{% set authorDisplay = null %}
+		{% endif %}
+	{% endif %}
+	{% set coverImageUrl = work.cover_url ?? null %}
+	{% set workKey = work.key %}
+	{% set workUrl = workKey ? path('app_work_show', { id: workKey|split('/')|last }) : null %}
+	{% set price = null %}
+	{% set summary = null %}
+{% else %}
+	{# Work entity format (from database) #}
+	{# Note: Work entities don't have OpenLibrary keys, so no URL can be generated #}
+	{% set workUrl = null %}
+	{% set workTitle = work.title ?? null %}
+	
+	{# Extract authors from work entity #}
+	{% set authors = work.author ?? [] %}
+	{% set authorNames = [] %}
+	{% for author in authors %}
+		{% set authorNames = authorNames|merge([author.firstName ~ ' ' ~ author.lastName]) %}
+	{% endfor %}
+	{% set authorDisplay = authorNames|join(', ') %}
+	{% if authorDisplay is empty %}
+		{% set authorDisplay = null %}
+	{% endif %}
+	
+	{# Extract price and cover from first book #}
+	{% set books = work.book ?? [] %}
+	{% set firstBook = books|first %}
+	{% set price = null %}
+	{% set coverImageUrl = null %}
+	{% if firstBook %}
+		{% if firstBook.currentUnitPrice %}
+			{% set priceInEuros = firstBook.currentUnitPrice / 100 %}
+			{% set price = priceInEuros|number_format(2, ',', ' ') %}
+		{% endif %}
+		{% if firstBook.coverImageUrl %}
+			{% set coverImageUrl = firstBook.coverImageUrl %}
+		{% endif %}
+	{% endif %}
+	
+	{% set summary = work.summary ?? null %}
+{% endif %}
+
+{# Use summary for hover quote if available #}
+{% set displayHoverQuote = hoverQuote|default(summary) %}
+
+<article class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer w-40">
+	{% if workUrl %}
+		<a href="{{ workUrl }}" class="block group/link">
+	{% endif %}
+	<div class="aspect-3/4 bg-primary-100 overflow-hidden relative">
+		{% if coverImageUrl %}
+			<img src="{{ coverImageUrl }}" alt="Couverture de {{ workTitle }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+		{% else %}
+			<div class="w-full h-full flex items-center justify-center text-primary-400 font-bodoni text-sm p-2 text-center">Pas de couverture</div>
+		{% endif %}
+		{% if badge is defined and badge %}
+			<div class="absolute top-1.5 right-1.5">
+				<span class="inline-block {{ badgeColor|default('bg-secondary-800') }} text-white font-bodoni text-xs font-bold px-1.5 py-0.5 rounded">
+					{{ badge }}
+				</span>
+			</div>
+		{% endif %}
+		{% if displayHoverQuote %}
+			<div class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+				<p class="font-bodoni text-white text-xs line-clamp-2">
+					"{{ displayHoverQuote|slice(0, 100) }}{% if displayHoverQuote|length > 100 %}...{% endif %}"
+				</p>
+			</div>
+		{% endif %}
+	</div>
+	<div class="p-3">
+		{% if showHeartIcon|default(false) %}
+			<div class="flex items-center gap-1.5 mb-1.5">
+				<svg class="w-4 h-4 text-secondary-800" fill="currentColor" viewbox="0 0 20 20">
+					<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+				</svg>
+				<span class="font-bodoni text-xs text-primary-600 font-medium">Coup de cœur</span>
+			</div>
+		{% endif %}
+		{% if workTitle %}
+			<h3 class="font-bodoni text-sm font-bold text-primary-900 mb-1 line-clamp-2 group-hover:text-secondary-700 transition-colors">
+				{{ workTitle }}
+			</h3>
+		{% endif %}
+		{% if authorDisplay %}
+			<p class="font-bodoni text-xs text-primary-600 mb-1.5">
+				{{ authorDisplay }}
+			</p>
+		{% endif %}
+		{% if workUrl and (buttonText|default('Ajouter')) != 'Voir' %}
+			</a>
+		{% endif %}
+		<div class="flex items-center justify-between gap-2">
+			{% if price %}
+				<span class="font-bodoni text-base font-bold text-secondary-800">
+					{{ price }}
+					€
+				</span>
+			{% endif %}
+			{% if workUrl and (buttonText|default('Ajouter')) == 'Voir' %}
+				<span class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block">
+					{{ buttonText }}
+				</span>
+			{% else %}
+				<button type="button" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap">
+					{{ buttonText|default('Ajouter') }}
+				</button>
+			{% endif %}
+		</div>
+	</div>
+	{% if workUrl %}
+		{% if (buttonText|default('Ajouter')) != 'Voir' %}
+			<div class="px-3 pb-3 -mt-2 flex justify-end">
+				<a href="{{ workUrl }}" class="font-bodoni text-xs text-primary-600 hover:text-secondary-800 underline">Voir la fiche</a>
+			</div>
+		{% else %}
+			</a>
+		{% endif %}
+	{% endif %}
+</article>

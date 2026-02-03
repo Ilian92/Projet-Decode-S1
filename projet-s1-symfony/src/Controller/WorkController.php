@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Repository\BookRepository;
+use App\Repository\WorkRepository;
 use App\Service\OpenLibraryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +16,9 @@ final class WorkController extends AbstractController
     private const EDITIONS_LIMIT = 12;
 
     public function __construct(
-        private readonly OpenLibraryService $openLibraryService
+        private readonly OpenLibraryService $openLibraryService,
+        private readonly WorkRepository $workRepository,
+        private readonly BookRepository $bookRepository
     ) {
     }
 
@@ -91,11 +95,28 @@ final class WorkController extends AbstractController
         $subjects = $work['subjects'] ?? [];
         $subjects = is_array($subjects) ? array_slice($subjects, 0, 10) : [];
 
-        // Editions (other formats / editions)
+        // Fetch editions from OpenLibrary API using fetchWorkBooks()
+        $books = [];
         $editions = [];
+        $workTitle = $work['title'] ?? null;
+        
         try {
-            $editionsResponse = $this->openLibraryService->fetchWorkBooks($olid, self::EDITIONS_LIMIT, 0);
+            // Fetch all editions for this work from OpenLibrary
+            $editionsResponse = $this->openLibraryService->fetchWorkBooks($olid, null, 0);
             $entries = $editionsResponse['entries'] ?? [];
+            
+            // Try to find Work entity in database by title to match with Book entities
+            $workEntity = null;
+            if ($workTitle) {
+                $workEntity = $this->workRepository->findOneBy(['title' => $workTitle]);
+            }
+            
+            // If we found a Work entity, get all its Book entities (editions available for purchase)
+            if ($workEntity) {
+                $books = $this->bookRepository->findByWork($workEntity);
+            }
+            
+            // Format OpenLibrary editions for display (reference only)
             foreach ($entries as $edition) {
                 $editions[] = $this->openLibraryService->formatEditionForFrontend($edition);
             }
@@ -116,6 +137,7 @@ final class WorkController extends AbstractController
                 'subjects' => $subjects,
                 'editions' => $editions,
             ],
+            'books' => $books, // Books from database (editions available for purchase)
         ]);
     }
 }

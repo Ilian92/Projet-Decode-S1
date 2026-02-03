@@ -6,6 +6,7 @@
 parameters:
     open_library_api: 'https://openlibrary.org/'
     open_library_image_api: 'https://covers.openlibrary.org/'
+    app.subject_filters: !php/const App\Constant\SubjectFilters::FILTERS
 
 services:
     # default configuration for services in *this* file
