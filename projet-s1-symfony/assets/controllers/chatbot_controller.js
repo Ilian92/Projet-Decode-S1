@@ -1,7 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
 
-// TODO Modifier le design temporaire
-
 export default class extends Controller {
     static targets = ["messages", "input", "button"];
 
@@ -10,7 +8,7 @@ export default class extends Controller {
     }
 
     async sendMessage(event) {
-        event.preventDefault(); // Empêche le rechargement de la page
+        event.preventDefault();
 
         console.log("sendMessage appelé");
 
@@ -19,11 +17,9 @@ export default class extends Controller {
 
         console.log("Message à envoyer:", message);
 
-        // Ajouter le message de l'utilisateur à li'nterface
         this.addMessage(message, "user");
         this.inputTarget.value = "";
 
-        // Désactiver le bouton pendant l'envoi
         const originalButtonContent = this.buttonTarget.innerHTML;
         this.buttonTarget.disabled = true;
         this.buttonTarget.innerHTML = "<span>Envoi...</span>";
@@ -46,11 +42,9 @@ export default class extends Controller {
             console.log("Données reçues:", data);
 
             if (data.content) {
-                // Format direct de l'agent IA
                 this.threadId = data.thread_id;
                 this.addMessage(data.content, "bot");
             } else if (data.error) {
-                // Format d'erreur
                 this.addMessage("Erreur: " + data.error, "error");
             } else {
                 this.addMessage("Erreur: Réponse inattendue", "error");
@@ -67,7 +61,6 @@ export default class extends Controller {
     addMessage(content, type) {
         const messageDiv = document.createElement("div");
 
-        // Classes Tailwind selon le type
         if (type === "user") {
             messageDiv.className = "flex flex-col max-w-[80%] self-end";
         } else {
@@ -77,7 +70,6 @@ export default class extends Controller {
         const contentDiv = document.createElement("div");
         contentDiv.textContent = content;
 
-        // Classes Tailwind pour le contenu
         if (type === "user") {
             contentDiv.className =
                 "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm rounded-br-sm";
@@ -95,7 +87,6 @@ export default class extends Controller {
             minute: "2-digit",
         });
 
-        // Classes Tailwind pour le timestamp
         if (type === "user") {
             timeDiv.className = "text-xs text-gray-400 mt-1.5 px-2 text-right";
         } else {
@@ -107,7 +98,6 @@ export default class extends Controller {
 
         this.messagesTarget.appendChild(messageDiv);
 
-        // Scroll automatique vers le bas
         this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight;
     }
 
