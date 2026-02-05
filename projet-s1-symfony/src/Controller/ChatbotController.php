@@ -37,8 +37,6 @@ class ChatbotController extends AbstractController
                 throw new \Exception("Un message doit être renseigné");
             }
 
-            error_log("Envoi de la requête à l'agent IA...");
-
             $response = $this->httpClient->request('POST', 'http://host.docker.internal:8080/Agent/stream', [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -50,14 +48,11 @@ class ChatbotController extends AbstractController
                 'buffer' => false,
             ]);
 
-            error_log("Réponse de l'agent reçue, début du streaming...");
-
             return new StreamedResponse(function () use ($response) {
                 try {
                     foreach ($this->httpClient->stream($response) as $chunk) {
                         if (!$chunk->isLast()) {
                             $content = $chunk->getContent();
-                            error_log("Chunk envoyé: " . substr($content, 0, 100));
                             echo $content;
                             flush();
                         }
