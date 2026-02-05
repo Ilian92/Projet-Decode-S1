@@ -36,7 +36,7 @@ class ChatbotController extends AbstractController
                 throw "Un message doit être renseigné";
             }
 
-            $response = $this->httpClient->request('POST', 'http://host.docker.internal:8080/Agent/invoke', [
+            $response = $this->httpClient->request('POST', 'http://host.docker.internal:8080/Agent/stream', [
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],

@@ -4,6 +4,7 @@ import { API_BASE_URL } from "./config.mjs";
 
 export const getWork = tool(
   async ({ id }) => {
+    console.log(new Date().getTime());
     try {
       const url = `${API_BASE_URL}/database/get/works/${id}`;
       const response = await fetch(url, {
@@ -18,6 +19,7 @@ export const getWork = tool(
         }
         throw new Error(`Erreur API: ${response.status}`);
       }
+      console.log(new Date().getTime());
 
       const data = await response.json();
       return JSON.stringify(data, null, 2);
