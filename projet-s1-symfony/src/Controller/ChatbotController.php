@@ -46,6 +46,7 @@ class ChatbotController extends AbstractController
                     'thread_id' => $threadId
                 ]),
                 'buffer' => false,
+                'timeout' => 5000,
             ]);
 
             return new StreamedResponse(function () use ($response) {
