@@ -40,6 +40,7 @@ class ChatbotController extends AbstractController
             $response = $this->httpClient->request('POST', 'http://host.docker.internal:8080/Agent/stream', [
                 'headers' => [
                     'Content-Type' => 'application/json',
+                    'Connection' => 'keep-alive'
                 ],
                 'body' => json_encode([
                     'message' => $message,
