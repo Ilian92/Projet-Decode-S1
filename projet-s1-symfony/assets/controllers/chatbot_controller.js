@@ -10,12 +10,8 @@ export default class extends Controller {
     async sendMessage(event) {
         event.preventDefault();
 
-        console.log("sendMessage appelé");
-
         const message = this.inputTarget.value.trim();
         if (!message) return;
-
-        console.log("Message à envoyer:", message);
 
         this.addMessage(message, "user");
         this.inputTarget.value = "";
@@ -25,7 +21,6 @@ export default class extends Controller {
         this.buttonTarget.innerHTML = "<span>Envoi...</span>";
 
         try {
-            console.log("Envoi de la requête à /api/chatbot/message");
             const response = await fetch("/api/chatbot/message", {
                 method: "POST",
                 headers: {
@@ -37,25 +32,117 @@ export default class extends Controller {
                 }),
             });
 
-            console.log("Réponse reçue:", response.status);
-            const data = await response.json();
-            console.log("Données reçues:", data);
-
-            if (data.content) {
-                this.threadId = data.thread_id;
-                this.addMessage(data.content, "bot");
-            } else if (data.error) {
-                this.addMessage("Erreur: " + data.error, "error");
-            } else {
-                this.addMessage("Erreur: Réponse inattendue", "error");
+            if (!response.ok) {
+                this.addMessage(`Erreur serveur: ${response.status}`, "error");
+                return;
             }
+
+            const messageDiv = this.createBotMessageContainer();
+            const contentDiv = messageDiv.querySelector(".message-content");
+            const timeDiv = messageDiv.querySelector(".message-time");
+
+            this.messagesTarget.appendChild(messageDiv);
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let currentEvent = null;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                buffer += chunk;
+
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+
+                    if (trimmedLine === "") {
+                        continue;
+                    }
+
+                    if (line.startsWith("event:")) {
+                        currentEvent = line.substring(6).trim();
+                    } else if (line.startsWith("data:")) {
+                        const currentData = line.substring(5).trim();
+
+                        if (currentEvent === "stream_token" && currentData) {
+                            try {
+                                const jsonData = JSON.parse(currentData);
+                                if (jsonData.token) {
+                                    contentDiv.textContent += jsonData.token;
+                                }
+                            } catch (e) {
+                                console.error(
+                                    "Erreur parsing token:",
+                                    currentData,
+                                    e,
+                                );
+                            }
+                        } else if (
+                            currentEvent === "stream_end" &&
+                            currentData
+                        ) {
+                            try {
+                                const jsonData = JSON.parse(currentData);
+                                if (jsonData.thread_id) {
+                                    this.threadId = jsonData.thread_id;
+                                }
+                            } catch (e) {
+                                console.error(
+                                    "Erreur parsing stream_end:",
+                                    currentData,
+                                    e,
+                                );
+                            }
+                        }
+                    }
+                }
+
+                this.messagesTarget.scrollTop =
+                    this.messagesTarget.scrollHeight;
+            }
+
+            timeDiv.textContent = new Date().toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
         } catch (error) {
             console.error("Erreur:", error);
-            this.addMessage("Erreur de connexion au chatbot", "error");
+            this.addMessage(
+                "Erreur de connexion au chatbot: " + error.message,
+                "error",
+            );
         } finally {
             this.buttonTarget.disabled = false;
             this.buttonTarget.innerHTML = originalButtonContent;
         }
+    }
+
+    createBotMessageContainer() {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "flex flex-col max-w-[80%] self-start";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className =
+            "message-content py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
+        contentDiv.textContent = "";
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "message-time text-xs text-gray-400 mt-1.5 px-2";
+        timeDiv.textContent = new Date().toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(timeDiv);
+
+        return messageDiv;
     }
 
     addMessage(content, type) {
