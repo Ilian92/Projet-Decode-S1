@@ -15,3 +15,4 @@ L'outil fournit des informations complètes : température, ressenti, conditions
 ## Data
 date : {date}
 heure : {heure}
+<!-- Anti-adversarial prompt pour empêcher les utilisateurs de parler d'autre chose que du site -->

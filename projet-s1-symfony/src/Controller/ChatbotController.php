@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -25,7 +26,7 @@ class ChatbotController extends AbstractController
     }
 
     #[Route('/api/chatbot/message', name: 'api_chatbot_message', methods: ['POST'])]
-    public function sendMessage(Request $request): JsonResponse
+    public function sendMessage(Request $request): StreamedResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
@@ -33,8 +34,10 @@ class ChatbotController extends AbstractController
             $threadId = $data['thread_id'] ?? null;
 
             if ($message == '') {
-                throw "Un message doit être renseigné";
+                throw new \Exception("Un message doit être renseigné");
             }
+
+            error_log("Envoi de la requête à l'agent IA...");
 
             $response = $this->httpClient->request('POST', 'http://host.docker.internal:8080/Agent/stream', [
                 'headers' => [
@@ -44,16 +47,39 @@ class ChatbotController extends AbstractController
                     'message' => $message,
                     'thread_id' => $threadId
                 ]),
+                'buffer' => false,
             ]);
 
-            $content = $response->getContent();
+            error_log("Réponse de l'agent reçue, début du streaming...");
 
-            return new JsonResponse(json_decode($content, true));
+            return new StreamedResponse(function () use ($response) {
+                try {
+                    foreach ($this->httpClient->stream($response) as $chunk) {
+                        if (!$chunk->isLast()) {
+                            $content = $chunk->getContent();
+                            error_log("Chunk envoyé: " . substr($content, 0, 100));
+                            echo $content;
+                            flush();
+                        }
+                    }
+                    error_log("Streaming terminé avec succès");
+                } catch (\Exception $e) {
+                    error_log("Erreur pendant le streaming: " . $e->getMessage());
+                    echo json_encode(['error' => $e->getMessage()]);
+                    flush();
+                }
+            }, Response::HTTP_OK, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+            ]);
         } catch (\Exception $e) {
-            error_log("ERREUR: " . $e->getMessage());
-            return new JsonResponse([
-                'error' => $e->getMessage()
-            ], 500);
+            error_log("ERREUR globale: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            return new StreamedResponse(function () use ($e) {
+                echo json_encode(['error' => $e->getMessage()]);
+                flush();
+            }, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

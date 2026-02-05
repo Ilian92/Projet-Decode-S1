@@ -1,7 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
 
-// TODO Modifier le design temporaire
-
 export default class extends Controller {
     static targets = ["messages", "input", "button"];
 
@@ -10,26 +8,19 @@ export default class extends Controller {
     }
 
     async sendMessage(event) {
-        event.preventDefault(); // Empêche le rechargement de la page
-
-        console.log("sendMessage appelé");
+        event.preventDefault();
 
         const message = this.inputTarget.value.trim();
         if (!message) return;
 
-        console.log("Message à envoyer:", message);
-
-        // Ajouter le message de l'utilisateur à li'nterface
         this.addMessage(message, "user");
         this.inputTarget.value = "";
 
-        // Désactiver le bouton pendant l'envoi
         const originalButtonContent = this.buttonTarget.innerHTML;
         this.buttonTarget.disabled = true;
         this.buttonTarget.innerHTML = "<span>Envoi...</span>";
 
         try {
-            console.log("Envoi de la requête à /api/chatbot/message");
             const response = await fetch("/api/chatbot/message", {
                 method: "POST",
                 headers: {
@@ -41,33 +32,122 @@ export default class extends Controller {
                 }),
             });
 
-            console.log("Réponse reçue:", response.status);
-            const data = await response.json();
-            console.log("Données reçues:", data);
-
-            if (data.content) {
-                // Format direct de l'agent IA
-                this.threadId = data.thread_id;
-                this.addMessage(data.content, "bot");
-            } else if (data.error) {
-                // Format d'erreur
-                this.addMessage("Erreur: " + data.error, "error");
-            } else {
-                this.addMessage("Erreur: Réponse inattendue", "error");
+            if (!response.ok) {
+                this.addMessage(`Erreur serveur: ${response.status}`, "error");
+                return;
             }
+
+            const messageDiv = this.createBotMessageContainer();
+            const contentDiv = messageDiv.querySelector(".message-content");
+            const timeDiv = messageDiv.querySelector(".message-time");
+
+            this.messagesTarget.appendChild(messageDiv);
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let currentEvent = null;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                buffer += chunk;
+
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+
+                    if (trimmedLine === "") {
+                        continue;
+                    }
+
+                    if (line.startsWith("event:")) {
+                        currentEvent = line.substring(6).trim();
+                    } else if (line.startsWith("data:")) {
+                        const currentData = line.substring(5).trim();
+
+                        if (currentEvent === "stream_token" && currentData) {
+                            try {
+                                const jsonData = JSON.parse(currentData);
+                                if (jsonData.token) {
+                                    contentDiv.textContent += jsonData.token;
+                                }
+                            } catch (e) {
+                                console.error(
+                                    "Erreur parsing token:",
+                                    currentData,
+                                    e,
+                                );
+                            }
+                        } else if (
+                            currentEvent === "stream_end" &&
+                            currentData
+                        ) {
+                            try {
+                                const jsonData = JSON.parse(currentData);
+                                if (jsonData.thread_id) {
+                                    this.threadId = jsonData.thread_id;
+                                }
+                            } catch (e) {
+                                console.error(
+                                    "Erreur parsing stream_end:",
+                                    currentData,
+                                    e,
+                                );
+                            }
+                        }
+                    }
+                }
+
+                this.messagesTarget.scrollTop =
+                    this.messagesTarget.scrollHeight;
+            }
+
+            timeDiv.textContent = new Date().toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
         } catch (error) {
             console.error("Erreur:", error);
-            this.addMessage("Erreur de connexion au chatbot", "error");
+            this.addMessage(
+                "Erreur de connexion au chatbot: " + error.message,
+                "error",
+            );
         } finally {
             this.buttonTarget.disabled = false;
             this.buttonTarget.innerHTML = originalButtonContent;
         }
     }
 
+    createBotMessageContainer() {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "flex flex-col max-w-[80%] self-start";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className =
+            "message-content py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
+        contentDiv.textContent = "";
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "message-time text-xs text-gray-400 mt-1.5 px-2";
+        timeDiv.textContent = new Date().toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(timeDiv);
+
+        return messageDiv;
+    }
+
     addMessage(content, type) {
         const messageDiv = document.createElement("div");
 
-        // Classes Tailwind selon le type
         if (type === "user") {
             messageDiv.className = "flex flex-col max-w-[80%] self-end";
         } else {
@@ -77,7 +157,6 @@ export default class extends Controller {
         const contentDiv = document.createElement("div");
         contentDiv.textContent = content;
 
-        // Classes Tailwind pour le contenu
         if (type === "user") {
             contentDiv.className =
                 "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm rounded-br-sm";
@@ -95,7 +174,6 @@ export default class extends Controller {
             minute: "2-digit",
         });
 
-        // Classes Tailwind pour le timestamp
         if (type === "user") {
             timeDiv.className = "text-xs text-gray-400 mt-1.5 px-2 text-right";
         } else {
@@ -107,7 +185,6 @@ export default class extends Controller {
 
         this.messagesTarget.appendChild(messageDiv);
 
-        // Scroll automatique vers le bas
         this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight;
     }
 
