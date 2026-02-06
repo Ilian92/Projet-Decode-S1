@@ -51,14 +51,13 @@ final class RegisterController extends AbstractController
                     $request
                 );
             }
+        } else {
+            // Initialisation des propriétés pour éviter l'erreur Twig avec les propriétés typées
+            $customer->setLastName('');
+            $customer->setFirstName('');
+            $customer->setEmail('');
+            $customer->setPhone('');
         }
-
-        // Initialisation des propriétés pour éviter l'erreur Twig
-        // if ($customer->getLastName() === null) $customer->setLastName('');
-        // if ($customer->getFirstName() === null) $customer->setFirstName('');
-        // if ($customer->getEmail() === null) $customer->setEmail('');
-        // if ($customer->getPhone() === null) $customer->setPhone('');
-        // if ($customer->getAddress() === null) $customer->setAddress(null);
 
         return $this->render('register/index.html.twig', [
             'customer' => $customer,

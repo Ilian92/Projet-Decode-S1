@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Constant\SubjectFilters;
 use App\Service\OpenLibraryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,19 +17,6 @@ final class SearchController extends AbstractController
         'new' => 'Nouveautés',
         'rating' => 'Mieux notés',
         'editions' => 'Plus d\'éditions',
-    ];
-
-    /** Subject filters (Amazon-style "Department") - OpenLibrary subject keys */
-    private const SUBJECT_FILTERS = [
-        'fiction' => 'Littérature',
-        'science_fiction' => 'Science-Fiction',
-        'mystery' => 'Policier / Thriller',
-        'love' => 'Romance',
-        'fantasy' => 'Fantasy',
-        'biography' => 'Biographies',
-        'history' => 'Histoire',
-        'juvenile' => 'Jeunesse',
-        'comics' => 'BD & Mangas',
     ];
 
     public function __construct(
@@ -59,7 +47,7 @@ final class SearchController extends AbstractController
             if ($query !== '') {
                 $params['q'] = $query;
             }
-            if ($subject !== '' && isset(self::SUBJECT_FILTERS[$subject])) {
+            if ($subject !== '' && isset(SubjectFilters::FILTERS[$subject])) {
                 $params['subject'] = $subject;
             }
             if ($sort === 'new') {
@@ -95,7 +83,7 @@ final class SearchController extends AbstractController
             'totalResults' => $totalResults,
             'totalPages' => $totalPages,
             'resultsPerPage' => self::RESULTS_PER_PAGE,
-            'subjectFilters' => self::SUBJECT_FILTERS,
+            'subjectFilters' => SubjectFilters::FILTERS,
             'sortOptions' => self::SORT_OPTIONS,
             'hasSearched' => $hasSearched,
         ]);

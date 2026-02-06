@@ -1,12 +1,12 @@
 <header class="group/header w-full fixed top-0 left-0 right-0 z-50 bg-primary-600">
 	<div class="shadow-lg w-full group-hover/header:py-6 px-4 py-2 transition-all duration-300">
-		<div class="container m-auto flex flex-col gap-0 group-hover/header:gap-2">
+		<div class="container m-auto flex flex-col gap-0 group-hover/header:gap-2 relative z-20">
 			<div
-				class="flex items-center justify-around gap-8">
+				class="flex items-center justify-around gap-8 relative z-20">
 				{# Logo / Nom du site #}
 				<div class="shrink-0">
 					<a href="{{ path('app_home') }}" class="font-puppies font-bold group/logo transition-colors">
-						<text class="text-6xl text-primary-200 group-hover/logo:text-primary-400">Mississipi</text>
+						<text class="text-6xl text-primary-200 group-hover/logo:text-primary-400">Mississippi</text>
 						<text class="text-3xl text-secondary-950 group-hover/logo:text-secondary-900">.com</text>
 					</a>
 				</div>
@@ -23,13 +23,40 @@
 					</form>
 				</div>
 
-				{# Icône utilisateur #}
-				<div class="flex-shrink-0">
-					<a href="{{ path('app_login') }}" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-						</svg>
-					</a>
+				{# User section: Cart, Name, Disconnect (if logged in) or Login icon (if not) #}
+				<div class="flex-shrink-0 flex items-center gap-3 relative z-[100]" id="header-user-section" style="z-index: 100;">
+					{% if app.user %}
+						{# Shopping Cart #}
+						<a href="#" id="header-cart-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Panier">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+							</svg>
+							{# Cart badge - can be added later when cart functionality is implemented #}
+							{# <span class="absolute -top-1 -right-1 bg-secondary-800 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span> #}
+						</a>
+
+						{# User Name #}
+						<div id="header-user-name" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 hover:bg-white transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;">
+							<span class="font-bodoni text-primary-700 text-sm font-medium">
+								{{ app.user.firstName }}
+								{{ app.user.lastName }}
+							</span>
+						</div>
+
+						{# Disconnect Button #}
+						<a href="{{ path('app_logout') }}" id="header-logout-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-red-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Déconnexion" title="Déconnexion">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700 hover:text-red-700 transition-colors" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+							</svg>
+						</a>
+					{% else %}
+						{# Login Icon (when not logged in) #}
+						<a href="{{ path('app_login') }}" id="header-login-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Connexion">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+							</svg>
+						</a>
+					{% endif %}
 				</div>
 			</div>
 			{# Description du site (visible au survol) #}
@@ -38,19 +65,17 @@
 			</p>
 		</div>
 	</div>
-	<div class="bg-contrasted-600 w-full h-0.5 shadow-lg"></div>
-	<nav class="relative w-full h-0 shadow-lg group-hover/header:h-20 transition-all duration-300 absolute overflow-hidden">
+	<div class="bg-contrasted-600 w-full h-2 group-hover/header:h-1 transition-all duration-300 shadow-lg relative z-[50]"></div>
+	<nav class="relative w-full h-0 shadow-lg group-hover/header:h-20 transition-all duration-300 absolute overflow-hidden z-[50] pointer-events-none group-hover/header:pointer-events-auto" style="z-index: 50; top: 100%;">
 		<div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40" style="background-image: url('https://picsum.photos/1200/200');"></div>
 		<div class="absolute inset-0 bg-contrasted-100/80"></div>
 		<div
-			class="container relative z-10 mx-auto px-4 h-full flex items-center justify-center gap-8">
+			class="container relative z-10 mx-auto px-4 h-full flex items-center justify-center gap-8 pointer-events-auto">
 			{# Catégories principales #}
 			<div class="flex items-center gap-6">
-				<a href="#" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">Littérature</a>
-				<a href="#" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">BD/Mangas</a>
-				<a href="#" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">Jeunesse</a>
-				<a href="#" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">Policier</a>
-				<a href="#" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">Science-Fiction</a>
+				{% for key, label in subject_filters %}
+					<a href="{{ path('app_search', { subject: key }) }}" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">{{ label }}</a>
+				{% endfor %}
 			</div>
 
 			{# Séparateur #}
@@ -64,5 +89,251 @@
 			</div>
 		</div>
 	</nav>
+	<script>
+		(function () { // Prevent multiple executions
+if (window.headerDebugInitialized) {
+console.log('[HEADER DEBUG] Script already initialized, skipping...');
+return;
+}
+window.headerDebugInitialized = true;
+
+console.log('[HEADER DEBUG] Script loaded');
+
+// Function to attach debug listeners
+function attachDebugListeners() {
+console.log('[HEADER DEBUG] Attaching listeners...');
+
+// Debug: Check if elements exist
+const userSection = document.getElementById('header-user-section');
+console.log('[HEADER DEBUG] User section found:', !! userSection);
+
+// Cart button
+const cartBtn = document.getElementById('header-cart-btn');
+if (cartBtn) {
+console.log('[HEADER DEBUG] Cart button found:', cartBtn);
+// Remove old listeners by cloning and replacing
+const newCartBtn = cartBtn.cloneNode(true);
+cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
+
+newCartBtn.addEventListener('click', function (e) {
+console.log('[HEADER DEBUG] Cart button CLICKED directly!', e);
+console.log('[HEADER DEBUG] Cart button href:', this.href);
+// Prevent default since it's just a placeholder (#)
+e.preventDefault();
+console.log('[HEADER DEBUG] Cart button - preventDefault called (placeholder link)');
+});
+newCartBtn.addEventListener('mousedown', function (e) {
+console.log('[HEADER DEBUG] Cart button MOUSEDOWN', e);
+});
+newCartBtn.addEventListener('mouseup', function (e) {
+console.log('[HEADER DEBUG] Cart button MOUSEUP', e);
+});
+} else {
+console.log('[HEADER DEBUG] Cart button NOT found');
+}
+
+// Logout button
+const logoutBtn = document.getElementById('header-logout-btn');
+if (logoutBtn) {
+console.log('[HEADER DEBUG] Logout button found:', logoutBtn);
+// Remove old listeners by cloning and replacing
+const newLogoutBtn = logoutBtn.cloneNode(true);
+logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+
+newLogoutBtn.addEventListener('click', function (e) {
+console.log('[HEADER DEBUG] Logout button CLICKED directly!', e);
+console.log('[HEADER DEBUG] Logout button href:', this.href);
+// Let the link navigate normally - don't prevent default
+});
+newLogoutBtn.addEventListener('mousedown', function (e) {
+console.log('[HEADER DEBUG] Logout button MOUSEDOWN', e);
+});
+newLogoutBtn.addEventListener('mouseup', function (e) {
+console.log('[HEADER DEBUG] Logout button MOUSEUP', e);
+});
+} else {
+console.log('[HEADER DEBUG] Logout button NOT found');
+}
+
+// Login button
+const loginBtn = document.getElementById('header-login-btn');
+if (loginBtn) {
+console.log('[HEADER DEBUG] Login button found:', loginBtn);
+// Remove old listeners by cloning and replacing
+const newLoginBtn = loginBtn.cloneNode(true);
+loginBtn.parentNode.replaceChild(newLoginBtn, loginBtn);
+
+newLoginBtn.addEventListener('click', function (e) {
+console.log('[HEADER DEBUG] Login button CLICKED directly!', e);
+console.log('[HEADER DEBUG] Login button href:', this.href);
+// Let the link navigate normally - don't prevent default
+});
+newLoginBtn.addEventListener('mousedown', function (e) {
+console.log('[HEADER DEBUG] Login button MOUSEDOWN', e);
+});
+newLoginBtn.addEventListener('mouseup', function (e) {
+console.log('[HEADER DEBUG] Login button MOUSEUP', e);
+});
+} else {
+console.log('[HEADER DEBUG] Login button NOT found');
+}
+
+// User name div
+const userNameDiv = document.getElementById('header-user-name');
+if (userNameDiv) {
+console.log('[HEADER DEBUG] User name div found:', userNameDiv);
+userNameDiv.addEventListener('click', function (e) {
+console.log('[HEADER DEBUG] User name div CLICKED!', e);
+});
+} else {
+console.log('[HEADER DEBUG] User name div NOT found');
+}
+
+// Debug: Check z-index and pointer-events
+if (userSection) {
+const computedStyle = window.getComputedStyle(userSection);
+console.log('[HEADER DEBUG] User section z-index:', computedStyle.zIndex);
+console.log('[HEADER DEBUG] User section pointer-events:', computedStyle.pointerEvents);
+console.log('[HEADER DEBUG] User section position:', computedStyle.position);
+}
+}
+
+// Use event delegation for clicks (works even after Turbo navigation)
+// Store handler reference to prevent duplicates
+if (!window.headerClickHandler) {
+window.headerClickHandler = function (e) {
+const target = e.target;
+const path = e.composedPath();
+
+// Check if click is on header buttons by traversing the path
+const cartBtn = document.getElementById('header-cart-btn');
+const logoutBtn = document.getElementById('header-logout-btn');
+const loginBtn = document.getElementById('header-login-btn');
+
+// Check if any element in the path is one of our buttons
+let clickedButton = null;
+for (let i = 0; i < path.length; i++) {
+const element = path[i];
+if (element === cartBtn) {
+clickedButton = {
+type: 'cart',
+element: cartBtn
+};
+break;
+}
+if (element === logoutBtn) {
+clickedButton = {
+type: 'logout',
+element: logoutBtn
+};
+break;
+}
+if (element === loginBtn) {
+clickedButton = {
+type: 'login',
+element: loginBtn
+};
+break;
+}
+}
+
+if (clickedButton) {
+console.log('[HEADER DEBUG]', clickedButton.type, 'button CLICKED via delegation!', e);
+console.log('[HEADER DEBUG] Button href:', clickedButton.element.href);
+console.log('[HEADER DEBUG] Default prevented?', e.defaultPrevented);
+
+// Check if something is blocking
+if (clickedButton.element instanceof Element) {
+const computedStyle = window.getComputedStyle(clickedButton.element);
+console.log('[HEADER DEBUG] Button computed styles:', {
+pointerEvents: computedStyle.pointerEvents,
+zIndex: computedStyle.zIndex,
+position: computedStyle.position,
+display: computedStyle.display,
+visibility: computedStyle.visibility
+});
+}
+
+// If default was prevented by something else, try to restore navigation
+if (clickedButton.type !== 'cart' && e.defaultPrevented) {
+console.log('[HEADER DEBUG] Default was prevented, attempting manual navigation');
+window.location.href = clickedButton.element.href;
+}
+}
+
+console.log('[HEADER DEBUG] Global click detected:', {
+target: target,
+targetId: target.id || '',
+targetTag: target.tagName || '',
+clickedButton: clickedButton ? clickedButton.type : null,
+path: path.map(el => {
+if (el instanceof Element) {
+return {
+tag: el.tagName,
+id: el.id || ''
+};
+}
+return {type: el.constructor.name};
+})
+});
+};
+
+// Use bubble phase instead of capture to not interfere
+document.addEventListener('click', window.headerClickHandler, false);
+}
+
+// Initial attachment with delay to ensure DOM is ready
+function init() {
+setTimeout(function () {
+attachDebugListeners();
+}, 50);
+}
+
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', init);
+} else {
+init();
+}
+
+// Re-attach on Turbo navigation
+if (typeof Turbo !== 'undefined') {
+document.addEventListener('turbo:load', function () {
+console.log('[HEADER DEBUG] turbo:load event fired');
+setTimeout(attachDebugListeners, 100);
+});
+document.addEventListener('turbo:render', function () {
+console.log('[HEADER DEBUG] turbo:render event fired');
+setTimeout(attachDebugListeners, 100);
+});
+document.addEventListener('turbo:frame-render', function () {
+console.log('[HEADER DEBUG] turbo:frame-render event fired');
+setTimeout(attachDebugListeners, 100);
+});
+}
+
+// Also listen for DOM mutations (fallback)
+const observer = new MutationObserver(function (mutations) {
+mutations.forEach(function (mutation) {
+if (mutation.addedNodes.length) {
+const hasHeaderElements = Array.from(mutation.addedNodes).some(node => {
+if (node.nodeType === 1) { // Element node
+return node.querySelector && (node.querySelector('#header-cart-btn') || node.querySelector('#header-logout-btn') || node.querySelector('#header-login-btn') || node.id === 'header-user-section');
+}
+return false;
+});
+if (hasHeaderElements) {
+console.log('[HEADER DEBUG] Header elements detected in mutation, reattaching...');
+setTimeout(attachDebugListeners, 10);
+}
+}
+});
+});
+
+observer.observe(document.body, {
+childList: true,
+subtree: true
+});
+})();
+	</script>
 
 </header>

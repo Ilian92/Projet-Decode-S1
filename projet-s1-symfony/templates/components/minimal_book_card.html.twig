@@ -8,7 +8,14 @@
 
 <article class="group cursor-pointer transform hover:scale-105 transition-all duration-300">
 	<div class="w-24 h-32 md:w-28 md:h-36 bg-primary-100 rounded shadow-2xl hover:shadow-4xl transition-shadow duration-300 overflow-hidden ring-2 ring-transparent hover:ring-secondary-500/40 transition-all">
-		<img src="{{ imageUrl|default('https://picsum.photos/200/300?random=' ~ random(1000)) }}" alt="Couverture de {{ title }}" class="w-full h-full object-cover">
+		<img 
+			src="{{ imageUrl|default('https://picsum.photos/200/300?random=' ~ random(1000)) }}" 
+			alt="Couverture de {{ title }}" 
+			width="200"
+			height="300"
+			loading="lazy"
+			class="w-full h-full object-cover"
+		>
 	</div>
 	<div class="mt-2 text-center">
 		<h3 class="font-bodoni text-xs font-bold text-primary-900 line-clamp-2 mb-0.5 group-hover:text-secondary-700 transition-colors">

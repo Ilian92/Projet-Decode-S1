@@ -109,13 +109,8 @@
 							<ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 md:gap-6 list-none p-0 m-0">
 								{% for book in results %}
 									<li>
-										{% include 'components/book_card.html.twig' with {
-											title: book.title,
-											author: book.author,
-											price: '24,90',
-											imageUrl: book.cover_url|default('https://picsum.photos/300/400?random=' ~ loop.index),
-											rating: 4.5,
-											workKey: book.key,
+										{% include 'components/work_card.html.twig' with {
+											work: book,
 											buttonText: 'Voir'
 										} %}
 									</li>
