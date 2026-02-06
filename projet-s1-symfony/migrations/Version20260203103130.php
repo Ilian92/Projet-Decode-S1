@@ -10,11 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-<<<<<<<< HEAD:projet-s1-symfony/migrations/Version20260109154437.php
-final class Version20260109154437 extends AbstractMigration
-========
 final class Version20260203103130 extends AbstractMigration
->>>>>>>> feature/tailwind-thomas:projet-s1-symfony/migrations/Version20260203103130.php
 {
     public function getDescription(): string
     {
@@ -56,13 +52,7 @@ final class Version20260203103130 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_16561EEABB3453DB ON work_author (work_id)');
         $this->addSql('CREATE INDEX IDX_16561EEAF675F31B ON work_author (author_id)');
         $this->addSql('CREATE TABLE messenger_messages (id BIGSERIAL NOT NULL, body TEXT NOT NULL, headers TEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, available_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, delivered_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
-<<<<<<<< HEAD:projet-s1-symfony/migrations/Version20260109154437.php
-        $this->addSql('CREATE INDEX IDX_75EA56E0FB7336F0 ON messenger_messages (queue_name)');
-        $this->addSql('CREATE INDEX IDX_75EA56E0E3BD61CE ON messenger_messages (available_at)');
-        $this->addSql('CREATE INDEX IDX_75EA56E016BA31DB ON messenger_messages (delivered_at)');
-========
         $this->addSql('CREATE INDEX IDX_75EA56E0FB7336F0E3BD61CE16BA31DBBF396750 ON messenger_messages (queue_name, available_at, delivered_at, id)');
->>>>>>>> feature/tailwind-thomas:projet-s1-symfony/migrations/Version20260203103130.php
         $this->addSql('COMMENT ON COLUMN messenger_messages.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN messenger_messages.available_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN messenger_messages.delivered_at IS \'(DC2Type:datetime_immutable)\'');
