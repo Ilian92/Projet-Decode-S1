@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Enum\ImageSize;
+use App\Enum\ImageType;
 use App\Repository\BookRepository;
 use App\Repository\WorkRepository;
 use App\Service\OpenLibraryService;
@@ -13,8 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class WorkController extends AbstractController
 {
-    private const EDITIONS_LIMIT = 12;
-
     public function __construct(
         private readonly OpenLibraryService $openLibraryService,
         private readonly WorkRepository $workRepository,
@@ -25,7 +25,6 @@ final class WorkController extends AbstractController
     #[Route('/work/{id}', name: 'app_work_show', requirements: ['id' => 'OL[0-9A-Z]+W'])]
     public function show(Request $request, string $id): Response
     {
-        // Support full key in URL (e.g. /works/OL123W) or OLID only
         $olid = $this->openLibraryService->extractOlid($id) ?? $id;
 
         try {
@@ -38,7 +37,6 @@ final class WorkController extends AbstractController
             throw new NotFoundHttpException('Œuvre introuvable.');
         }
 
-        // Resolve author names (work API only returns author keys)
         $authors = [];
         $authorKeys = $work['authors'] ?? [];
         foreach ($authorKeys as $authorRef) {
@@ -64,7 +62,6 @@ final class WorkController extends AbstractController
             $authors = [['key' => null, 'name' => 'Auteur inconnu']];
         }
 
-        // Description: can be string or { type, value }
         $description = null;
         if (isset($work['description'])) {
             if (is_string($work['description'])) {
@@ -74,18 +71,14 @@ final class WorkController extends AbstractController
             }
         }
 
-        // Cover: work has covers[] or first_edition cover
         $coverId = null;
         if (!empty($work['covers'])) {
             $coverId = is_array($work['covers']) ? $work['covers'][0] : $work['covers'];
         } elseif (isset($work['cover_id'])) {
             $coverId = $work['cover_id'];
         }
-        $coverUrl = $coverId
-            ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg"
-            : null;
+        $coverUrl = $this->openLibraryService->getImageUrl($coverId, ImageType::BOOK, ImageSize::LARGE);
 
-        // First publish date (can be full date or year)
         $firstPublishDate = $work['first_publish_date'] ?? null;
         $firstPublishYear = null;
         if ($firstPublishDate && preg_match('/\d{4}/', $firstPublishDate, $m)) {
@@ -95,33 +88,55 @@ final class WorkController extends AbstractController
         $subjects = $work['subjects'] ?? [];
         $subjects = is_array($subjects) ? array_slice($subjects, 0, 10) : [];
 
-        // Fetch editions from OpenLibrary API using fetchWorkBooks()
-        $books = [];
-        $editions = [];
         $workTitle = $work['title'] ?? null;
-        
-        try {
-            // Fetch all editions for this work from OpenLibrary
-            $editionsResponse = $this->openLibraryService->fetchWorkBooks($olid, null, 0);
-            $entries = $editionsResponse['entries'] ?? [];
-            
-            // Try to find Work entity in database by title to match with Book entities
-            $workEntity = null;
-            if ($workTitle) {
-                $workEntity = $this->workRepository->findOneBy(['title' => $workTitle]);
-            }
-            
-            // If we found a Work entity, get all its Book entities (editions available for purchase)
+        $workEntity = null;
+        $workId = null;
+        if ($workTitle) {
+            $workEntity = $this->workRepository->findOneBy(['title' => $workTitle]);
             if ($workEntity) {
-                $books = $this->bookRepository->findByWork($workEntity);
+                $workId = $workEntity->getId();
             }
-            
-            // Format OpenLibrary editions for display (reference only)
-            foreach ($entries as $edition) {
-                $editions[] = $this->openLibraryService->formatEditionForFrontend($edition);
+        }
+
+        $ratings = null;
+        try {
+            $ratingsData = $this->openLibraryService->fetchWorkRatings($olid);
+            if (isset($ratingsData['summary'])) {
+                $ratings = [
+                    'average' => $ratingsData['summary']['average'] ?? null,
+                    'count' => $ratingsData['summary']['count'] ?? 0,
+                ];
             }
         } catch (\Throwable $e) {
-            // Optional: show work even without editions
+            // Ratings not available, continue without them
+        }
+
+        $editions = [];
+        try {
+            $editionsResponse = $this->openLibraryService->fetchWorkBooks($olid, null, 0);
+            $entries = $editionsResponse['entries'] ?? [];
+
+            $books = [];
+            if ($workEntity) {
+                $books = $this->bookRepository->findByWorkId($workEntity->getId());
+            }
+
+            $hasBooksInDatabase = !empty($books);
+            $availableBookIds = array_map(fn($book) => $book->getId(), $books);
+
+            foreach ($entries as $edition) {
+                $formattedEdition = $this->openLibraryService->formatEditionForFrontend($edition);
+
+                $isAvailable = $hasBooksInDatabase;
+                $bookId = $hasBooksInDatabase ? ($availableBookIds[0] ?? null) : null;
+
+                $formattedEdition['is_available'] = $isAvailable;
+                $formattedEdition['book_id'] = $bookId;
+
+                $editions[] = $formattedEdition;
+            }
+        } catch (\Throwable $e) {
+            // Editions not available, continue without them
         }
 
         return $this->render('work/show.html.twig', [
@@ -135,9 +150,10 @@ final class WorkController extends AbstractController
                 'first_publish_date' => $firstPublishDate,
                 'first_publish_year' => $firstPublishYear,
                 'subjects' => $subjects,
-                'editions' => $editions,
+                'ratings' => $ratings,
             ],
-            'books' => $books, // Books from database (editions available for purchase)
+            'editions' => $editions,
+            'workId' => $workId,
         ]);
     }
 }
