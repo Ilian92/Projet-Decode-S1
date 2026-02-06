@@ -53,10 +53,27 @@
 					</p>
 
 					{% if work.first_publish_year %}
-						<p class="font-bodoni text-sm text-primary-600 mb-4">
+						<p class="font-bodoni text-sm text-primary-600 mb-2">
 							Première publication :
 							{{ work.first_publish_year }}
 						</p>
+					{% endif %}
+
+					{# Ratings #}
+					{% if work.ratings and work.ratings.average %}
+						<div class="mb-4">
+							{% include 'components/rating_stars.html.twig' with {
+								rating: work.ratings.average,
+								count: work.ratings.count,
+								size: 'w-5 h-5'
+							} %}
+							{% if work.ratings.count > 0 %}
+								<p class="font-bodoni text-sm text-primary-600 mt-1">
+									{{ work.ratings.count }}
+									avis
+								</p>
+							{% endif %}
+						</div>
 					{% endif %}
 
 					{# Note: Price and purchase options are shown per edition below #}
@@ -73,27 +90,27 @@
 				</div>
 			</div>
 
-			{# Available Editions (Books) - Main purchase section #}
-			{% if books is defined and books|length > 0 %}
-				<section class="border-t border-primary-200 pt-8 mb-12" aria-labelledby="editions-heading">
-					<h2 id="editions-heading" class="font-sancreek text-xl font-bold text-primary-900 mb-6">Éditions disponibles ({{ books|length }})</h2>
-					<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-						{% for book in books %}
-							{% include 'components/book_edition_card.html.twig' with {
-								book: book,
-								showAddToCart: true
-							} %}
+			{# Editions Section #}
+			<section class="border-t border-primary-200 pt-8 mb-12" aria-labelledby="editions-heading">
+				<h2 id="editions-heading" class="font-sancreek text-xl font-bold text-primary-900 mb-6">
+					Éditions disponibles
+					{% if editions|length > 0 %}
+						({{ editions|length }})
+					{% endif %}
+				</h2>
+				{% if editions|length > 0 %}
+					<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+						{% for edition in editions %}
+							{% include 'components/edition_card.html.twig' with { edition: edition } %}
 						{% endfor %}
 					</div>
-				</section>
-			{% else %}
-				<section class="border-t border-primary-200 pt-8 mb-12">
-					<div class="bg-primary-50 rounded-lg p-6 text-center">
+				{% else %}
+					<div class="text-center py-8">
 						<p class="font-bodoni text-primary-700 mb-2">Aucune édition disponible pour l'instant.</p>
 						<p class="font-bodoni text-sm text-primary-600">Les éditions de cette œuvre seront bientôt disponibles à la commande.</p>
 					</div>
-				</section>
-			{% endif %}
+				{% endif %}
+			</section>
 
 			{# Product details (subjects) - Amazon "Product details" style #}
 			{% if work.subjects|length > 0 %}
@@ -112,38 +129,6 @@
 				</section>
 			{% endif %}
 
-			{# Other editions from OpenLibrary (reference only, not purchasable) #}
-			{% if work.editions|length > 0 %}
-				<section class="border-t border-primary-200 pt-8" aria-labelledby="openlibrary-editions-heading">
-					<h2 id="openlibrary-editions-heading" class="font-sancreek text-xl font-bold text-primary-900 mb-4">Autres éditions référencées ({{ work.editions|length }})</h2>
-					<ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 list-none p-0 m-0">
-						{% for edition in work.editions %}
-							<li>
-								<article class="bg-primary-50 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-									<a href="#" class="block">
-										<div class="aspect-[3/4] bg-primary-100">
-											{% if edition.cover_url %}
-												<img src="{{ edition.cover_url }}" alt="Couverture {{ edition.title }}" class="w-full h-full object-cover">
-											{% else %}
-												<div class="w-full h-full flex items-center justify-center text-primary-400 font-bodoni text-xs p-2 text-center">Pas de couverture</div>
-											{% endif %}
-										</div>
-										<div class="p-2">
-											<h3 class="font-bodoni text-xs font-bold text-primary-900 line-clamp-2 mb-0.5">{{ edition.title }}</h3>
-											{% if edition.publish_date %}
-												<p class="font-bodoni text-xs text-primary-600">{{ edition.publish_date }}</p>
-											{% endif %}
-											{% if edition.publishers|length > 0 %}
-												<p class="font-bodoni text-xs text-primary-500 line-clamp-1">{{ edition.publishers|first }}</p>
-											{% endif %}
-										</div>
-									</a>
-								</article>
-							</li>
-						{% endfor %}
-					</ul>
-				</section>
-			{% endif %}
 		</div>
 	</div>
 {% endblock %}

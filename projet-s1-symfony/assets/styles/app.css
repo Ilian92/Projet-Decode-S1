@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @source "../templates/**/*.{html,twig}";
 @source "../src/**/*.php";
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Puppies+Play&display=swap');
 
 @theme {
     --color-primary-50: #faf7f6;
