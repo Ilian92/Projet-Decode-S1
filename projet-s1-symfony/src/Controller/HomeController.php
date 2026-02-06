@@ -18,15 +18,7 @@ final class HomeController extends AbstractController
 
     #[Route('/', name: 'app_home')]
     public function index(): Response
-    {
-        // Optimized: Use search API instead of subject API (much faster)
-        // Reduced categories from 5 to 3, books from 6 to 4 per category
-        // All requests are cached for 1 hour
-        
-        $popularSubjects = ['fiction', 'science_fiction', 'mystery'];
-        $booksPerCategory = 4;
-        
-        // Fetch bestsellers from database (limited to 6 for minimal section)
+    {        
         $bestsellers = [];
         try {
             $bestsellerBooks = $this->bookRepository->findBestsellers(6);
@@ -56,15 +48,13 @@ final class HomeController extends AbstractController
                 }
             }
         } catch (\Exception $e) {
-            // Continue with empty array
+
         }
 
         try {
-            // Optimized search for editor's picks
             $editorsPickResults = $this->openLibraryService->search([
                 'q' => 'classic',
                 'limit' => 4,
-                'fields' => 'key,title,author_name,cover_i' // Minimal fields
             ]);
             if (isset($editorsPickResults['docs'])) {
                 foreach ($editorsPickResults['docs'] as $work) {
@@ -72,14 +62,17 @@ final class HomeController extends AbstractController
                 }
             }
         } catch (\Exception $e) {
-            // Continue with empty array
+
         }
 
-        // Use search API for categories (much faster than subject API with details)
+        $popularSubjects = ['fiction', 'science_fiction', 'mystery'];
         foreach ($popularSubjects as $subject) {
             try {
-                // Use search API instead of subject API - much faster!
-                $searchResults = $this->openLibraryService->searchBySubject($subject, $booksPerCategory, 0);
+                $searchResults = $this->openLibraryService->search([
+                    'subject' => $subject,
+                    'limit' => 4,
+                    'offset' => 0,
+                ]);
                 
                 $books = [];
                 if (isset($searchResults['docs'])) {
@@ -88,19 +81,16 @@ final class HomeController extends AbstractController
                     }
                 }
                 
-                // Use search result count directly (no extra API call needed)
                 $workCount = $searchResults['numFound'] ?? 0;
                 
                 $categories[] = [
                     'name' => ucfirst(str_replace('_', ' ', $subject)),
                     'key' => $subject,
                     'work_count' => $workCount,
-                    'subcategories' => [], // Skip subcategories for performance
                     'books' => $books,
                 ];
             } catch (\Exception $e) {
-                // Skip this category if there's an error
-                continue;
+
             }
         }
 
