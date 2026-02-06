@@ -61,9 +61,9 @@
 							<div class="flex items-start border-b border-primary-100 pb-3 pt-2">
 								<label class="text-sm font-semibold text-primary-600 w-1/3">Adresse</label>
 								<div class="flex-1">
-									<p class="font-bodoni text-lg text-primary-900">{{ customer.address.streetNumber }} {{ customer.address.streetName }}</p>
-									{% if customer.address.additionalInfo %}
-										<p class="font-bodoni text-primary-700">{{ customer.address.additionalInfo }}</p>
+									<p class="font-bodoni text-lg text-primary-900">{{ customer.address.street }}</p>
+									{% if customer.address.addressDetails %}
+										<p class="font-bodoni text-primary-700">{{ customer.address.addressDetails }}</p>
 									{% endif %}
 									<p class="font-bodoni text-lg text-primary-900 mt-1">{{ customer.address.postalCode }} {{ customer.address.city }}</p>
 									<p class="font-bodoni text-primary-700">{{ customer.address.country }}</p>
@@ -89,11 +89,11 @@
 											<div class="text-right">
 												<p class="font-bodoni font-bold text-primary-900 text-lg">{{ order.totalAmount|number_format(2, ',', ' ') }} €</p>
 												<span class="inline-block px-2 py-1 text-xs font-bold rounded
-													{% if order.status.value == 'pending' %}bg-yellow-200 text-yellow-900
-													{% elseif order.status.value == 'shipped' %}bg-blue-200 text-blue-900
-													{% elseif order.status.value == 'delivered' %}bg-green-200 text-green-900
+													{% if order.status == 'pending' %}bg-yellow-200 text-yellow-900
+													{% elseif order.status == 'shipped' %}bg-blue-200 text-blue-900
+													{% elseif order.status == 'delivered' %}bg-green-200 text-green-900
 													{% else %}bg-gray-200 text-gray-900{% endif %}">
-													{{ order.status.value|upper }}
+													{{ order.status|upper }}
 												</span>
 											</div>
 										</div>
@@ -114,9 +114,9 @@
 												<p class="text-sm text-primary-600">Jusqu'au {{ subscription.endDate|date('d/m/Y') }}</p>
 											{% endif %}
 											<span class="inline-block mt-2 px-3 py-1 text-xs font-bold rounded
-												{% if subscription.status.value == 'active' %}bg-green-200 text-green-900
+												{% if subscription.status == 'active' %}bg-green-200 text-green-900
 												{% else %}bg-gray-200 text-gray-900{% endif %}">
-												{{ subscription.status.value|upper }}
+												{{ subscription.status|upper }}
 											</span>
 										</div>
 									{% endfor %}
