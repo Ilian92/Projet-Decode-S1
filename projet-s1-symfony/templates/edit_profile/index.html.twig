@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil - Mississippi.com{% endblock %}
+
+{% block body %}
+	<section class="py-8 md:py-12 bg-linear-to-br from-primary-50 via-white to-primary-50">
+		<div class="container mx-auto px-4">
+			<div class="text-center mb-8">
+				<h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-2 relative inline-block">
+					<span class="relative z-10">Modifier mon profil</span>
+					<span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 z-0 transform -skew-x-12"></span>
+				</h1>
+				<p class="font-bodoni text-primary-700 mt-4 text-lg">Mettez à jour vos informations personnelles</p>
+			</div>
+
+			<div class="max-w-2xl mx-auto">
+				{% for message in app.flashes('success') %}
+					<div class="bg-contrasted-100 border border-contrasted-600 text-contrasted-900 px-6 py-4 rounded-lg mb-6 flex items-center gap-3">
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+						<span class="font-bodoni">{{ message }}</span>
+					</div>
+				{% endfor %}
+
+				{% for message in app.flashes('error') %}
+					<div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6 flex items-center gap-3">
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+						</svg>
+						<span class="font-bodoni">{{ message }}</span>
+					</div>
+				{% endfor %}
+
+				<div class="bg-white rounded-xl shadow-lg border border-primary-100 overflow-hidden">
+					<div class="bg-primary-900 px-6 py-4 border-b-4 border-secondary-500">
+						<h2 class="font-bodoni text-xl font-bold text-white flex items-center gap-3">
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+							</svg>
+							Informations personnelles
+						</h2>
+					</div>
+
+					<div class="p-8">
+						{{ form_start(editForm, {'attr': {'class': 'space-y-6'}}) }}
+
+						<div>
+							{{ form_label(editForm.firstName, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+							{{ form_widget(editForm.firstName) }}
+							{{ form_errors(editForm.firstName) }}
+						</div>
+
+						<div>
+							{{ form_label(editForm.lastName, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+							{{ form_widget(editForm.lastName) }}
+							{{ form_errors(editForm.lastName) }}
+						</div>
+
+						<div>
+							{{ form_label(editForm.email, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+							{{ form_widget(editForm.email) }}
+							{{ form_errors(editForm.email) }}
+						</div>
+
+						<div>
+							{{ form_label(editForm.phone, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+							{{ form_widget(editForm.phone) }}
+							{{ form_errors(editForm.phone) }}
+						</div>
+
+						<div class="pt-6 border-t border-primary-100">
+							<h3 class="font-bodoni text-lg font-bold text-primary-900 mb-4 flex items-center gap-2">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+								</svg>
+								Changer le mot de passe
+							</h3>
+							<p class="text-sm text-primary-600 mb-4">Laissez ces champs vides si vous ne souhaitez pas modifier votre mot de passe.</p>
+
+							<div class="space-y-4">
+								<div>
+									{{ form_label(editForm.plainPassword.first, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+									{{ form_widget(editForm.plainPassword.first) }}
+									{{ form_errors(editForm.plainPassword.first) }}
+								</div>
+
+								<div>
+									{{ form_label(editForm.plainPassword.second, null, {'label_attr': {'class': 'block text-sm font-semibold text-primary-600 mb-2'}}) }}
+									{{ form_widget(editForm.plainPassword.second) }}
+									{{ form_errors(editForm.plainPassword.second) }}
+								</div>
+							</div>
+						</div>
+
+						<div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-primary-100">
+							<button type="submit" class="w-full sm:flex-1 bg-contrasted-600 hover:bg-contrasted-700 text-white font-bodoni font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+								</svg>
+								<span>Enregistrer les modifications</span>
+							</button>
+
+							<a href="{{ path('app_profile') }}" class="w-full sm:flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bodoni font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+								</svg>
+								<span>Annuler</span>
+							</a>
+						</div>
+
+						{{ form_end(editForm) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
