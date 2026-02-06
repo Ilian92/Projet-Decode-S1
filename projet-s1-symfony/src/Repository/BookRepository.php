@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\Work;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -41,12 +42,7 @@ class BookRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    /**
-     * Find bestseller books based on order line quantities
-     * 
-     * @param int $limit Maximum number of books to return
-     * @return Book[] Returns an array of Book objects
-     */
+
     public function findBestsellers(int $limit = 8): array
     {
         // Get books with their order line counts, ordered by total quantity sold
@@ -66,5 +62,20 @@ class BookRepository extends ServiceEntityRepository
         return array_map(function ($result) {
             return is_array($result) ? $result[0] : $result;
         }, $results);
+    }
+
+    public function findByWorkId(int $workId): array
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.work = :workId')
+            ->setParameter('workId', $workId)
+            ->leftJoin('b.bookPublisher', 'bp')
+            ->addSelect('bp')
+            ->leftJoin('b.work', 'w')
+            ->addSelect('w')
+            ->orderBy('b.publicationDate', 'DESC')
+            ->addOrderBy('b.currentUnitPrice', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

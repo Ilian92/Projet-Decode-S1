@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Enum\ImageSize;
+use App\Enum\ImageType;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -73,10 +74,6 @@ class OpenLibraryService
         return $this->getJson("/works/$workID.json");
     }
 
-    /**
-     * @param int|null $limit  Optional limit for editions
-     * @param int      $offset Optional offset for pagination
-     */
     public function fetchWorkBooks(string $workID, ?int $limit = null, int $offset = 0): array
     {
         $query = [];
@@ -99,111 +96,24 @@ class OpenLibraryService
         return $this->getJson("/authors/$authorID.json");
     }
 
-    /**
-     * ID can be authorID or bookID
-     */
-    public function fetchImage(string $ID, ImageSize $size, bool $isAuthor): string
+
+    public function fetchWorkRatings(string $workID): array
     {
-
-        $t = $isAuthor ? "a" : "b";
-
-        $s = match ($size) {
-            ImageSize::MEDIUM => "M",
-            ImageSize::LARGE => "L",
-            default => "S",
-        };
-
-        try {
-            $response = $this->client->request('GET', $this->apiImageUrl . "$t/olid/$ID-$s.jpg", [
-                'query' => null
-            ]);
-
-            // Throws exception if HTTP status is >= 400
-            $statusCode = $response->getStatusCode();
-            if ($statusCode >= 400) {
-                throw new \Exception("API returned status code $statusCode");
-            }
-
-            return $response->getContent();
-        } catch (TransportExceptionInterface | ClientExceptionInterface | ServerExceptionInterface $e) {
-            throw new \RuntimeException('Error calling Open Library API: ' . $e->getMessage());
-        }
+        return $this->getJson("/works/$workID/ratings.json");
     }
 
     /**
-     * Fetch a subject (category) and its works
-     * 
-     * @param string $subject The subject name (e.g., "love", "fiction", "science_fiction")
-     * @param array $options Options: details (bool), ebooks (bool), published_in (string), limit (int), offset (int)
-     * @return array Subject data with works
+     * ID can be authorID or coverID
      */
-    public function fetchSubject(string $subject, array $options = []): array
+    public function getImageUrl(string $ID, ImageType $type, ImageSize $size): string
     {
-        $query = [];
-        
-        if (isset($options['details']) && $options['details']) {
-            $query['details'] = 'true';
-        }
-        
-        if (isset($options['ebooks']) && $options['ebooks']) {
-            $query['ebooks'] = 'true';
-        }
-        
-        if (isset($options['published_in'])) {
-            $query['published_in'] = $options['published_in'];
-        }
-        
-        if (isset($options['limit'])) {
-            $query['limit'] = $options['limit'];
-        }
-        
-        if (isset($options['offset'])) {
-            $query['offset'] = $options['offset'];
-        }
-        
-        return $this->getJson("/subjects/$subject.json", $query);
+        $idType = $type === ImageType::AUTHOR ? 'olid' : 'id';
+        return $this->apiImageUrl . "{$type->getSuffix()}/$idType/$ID-{$size->getSuffix()}.jpg";
     }
 
-    /**
-     * Fetch subcategories (related subjects) for a given subject
-     * 
-     * @param string $subject The subject name
-     * @return array Array of related subjects
-     */
-    public function fetchSubcategories(string $subject): array
-    {
-        $data = $this->fetchSubject($subject, ['details' => true]);
-        
-        return $data['subjects'] ?? [];
-    }
-
-    /**
-     * Search for books/works
-     * 
-     * @param array $params Search parameters: q, title, author, subject, fields, sort, lang, limit, offset, page
-     * @return array Search results
-     */
     public function search(array $params = []): array
     {
         return $this->getJson("/search.json", $params);
-    }
-
-    /**
-     * Search for works by subject (optimized with minimal fields)
-     * 
-     * @param string $subject Subject name
-     * @param int $limit Number of results
-     * @param int $offset Starting offset
-     * @return array Search results
-     */
-    public function searchBySubject(string $subject, int $limit = 20, int $offset = 0): array
-    {
-        return $this->search([
-            'subject' => $subject,
-            'limit' => $limit,
-            'offset' => $offset,
-            'fields' => 'key,title,author_name,cover_i' // Minimal fields for speed
-        ]);
     }
 
     /**
@@ -223,22 +133,27 @@ class OpenLibraryService
         
         $coverUrl = null;
         if ($coverId) {
-            $coverUrl = "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg";
+            $coverUrl = $this->getImageUrl($coverId, ImageType::BOOK, ImageSize::MEDIUM);
         }
         
         // Handle authors - can be author_key/author_name arrays (search API) or authors array (subject API)
         $authorKey = null;
-        $authorName = 'Unknown Author';
+        $authorName = null;
         
-        if (isset($work['author_key']) && isset($work['author_name'])) {
-            // Search API format
+        if (isset($work['author_name']) && is_array($work['author_name']) && !empty($work['author_name'])) {
+            // Search API format - author_name is an array
+            $authorName = $work['author_name'][0];
             $authorKey = $work['author_key'][0] ?? null;
-            $authorName = $work['author_name'][0] ?? 'Unknown Author';
+        } elseif (isset($work['author_key']) && is_array($work['author_key']) && !empty($work['author_key'])) {
+            // Search API format - only author_key available, try to extract name
+            $authorKey = $work['author_key'][0];
+            // Note: We can't get the name from just the key without an API call
+            $authorName = null;
         } elseif (isset($work['authors']) && is_array($work['authors']) && !empty($work['authors'])) {
             // Subject API format
             $firstAuthor = $work['authors'][0];
             if (is_array($firstAuthor)) {
-                $authorName = $firstAuthor['name'] ?? 'Unknown Author';
+                $authorName = $firstAuthor['name'] ?? null;
                 $authorKey = $firstAuthor['key'] ?? null;
             } else {
                 $authorName = $firstAuthor;
@@ -273,7 +188,7 @@ class OpenLibraryService
         
         $coverUrl = null;
         if ($coverId) {
-            $coverUrl = "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg";
+            $coverUrl = $this->getImageUrl($coverId, ImageType::BOOK, ImageSize::MEDIUM);
         }
         
         $authors = [];
@@ -301,34 +216,6 @@ class OpenLibraryService
         ];
     }
 
-    /**
-     * Get cover image URL by cover ID
-     * 
-     * @param int|null $coverId Cover ID from OpenLibrary
-     * @param ImageSize $size Image size
-     * @return string|null Cover image URL or null
-     */
-    public function getCoverUrl(?int $coverId, ImageSize $size = ImageSize::MEDIUM): ?string
-    {
-        if (!$coverId) {
-            return null;
-        }
-        
-        $s = match ($size) {
-            ImageSize::SMALL => "S",
-            ImageSize::LARGE => "L",
-            default => "M",
-        };
-        
-        return "https://covers.openlibrary.org/b/id/{$coverId}-{$s}.jpg";
-    }
-
-    /**
-     * Extract OLID (Open Library ID) from a key
-     * 
-     * @param string $key OpenLibrary key (e.g., "/works/OL123W" or "/books/OL456M")
-     * @return string|null OLID (e.g., "OL123W" or "OL456M")
-     */
     public function extractOlid(string $key): ?string
     {
         if (preg_match('/\/(?:works|books|authors)\/([^\/]+)/', $key, $matches)) {
