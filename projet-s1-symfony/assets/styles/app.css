@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Puppies+Play&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Puppies+Play&family=Puritan:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 @source "../templates/**/*.{html,twig}";
 @source "../src/**/*.php";
@@ -33,8 +33,8 @@
     --color-contrasted-950: #10231e;
 
     --font-puppies: "Puppies Play", cursive;
-    --font-bodoni: "Gill Sans", sans-serif;
-    --default-font-family: "Gill Sans", sans-serif;
+    --font-bodoni: "Puritan", sans-serif;
+    --default-font-family: "Puritan", sans-serif;
 }
 
 /* Ensure header stays fixed at top */
