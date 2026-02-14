@@ -27,12 +27,17 @@
 				<div class="flex-shrink-0 flex items-center gap-3 relative z-[100]" id="header-user-section" style="z-index: 100;">
 					{% if app.user %}
 						{# Shopping Cart #}
-						<a href="#" id="header-cart-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Panier">
+						<a href="{{ path('cart_show') }}" id="header-cart-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Panier">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
 							</svg>
-							{# Cart badge - can be added later when cart functionality is implemented #}
-							{# <span class="absolute -top-1 -right-1 bg-secondary-800 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span> #}
+							{# Cart badge with item count from cookie #}
+							{% set cartCookie = app.request.cookies.get('mississippi_cart') %}
+							{% set cartItems = cartCookie ? cartCookie|json_decode : {} %}
+							{% set totalItems = cartItems ? cartItems|reduce((carry, quantity) => carry + quantity, 0) : 0 %}
+							{% if totalItems > 0 %}
+								<span class="absolute -top-1 -right-1 bg-secondary-800 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ totalItems }}</span>
+							{% endif %}
 						</a>
 
 						{# User Name #}
@@ -50,6 +55,20 @@
 							</svg>
 						</a>
 					{% else %}
+						{# Shopping Cart (when not logged in) #}
+						<a href="{{ path('cart_show') }}" id="header-cart-btn-guest" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Panier">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+							</svg>
+							{# Cart badge with item count from cookie #}
+							{% set cartCookie = app.request.cookies.get('mississippi_cart') %}
+							{% set cartItems = cartCookie ? cartCookie|json_decode : {} %}
+							{% set totalItems = cartItems ? cartItems|reduce((carry, quantity) => carry + quantity, 0) : 0 %}
+							{% if totalItems > 0 %}
+								<span class="absolute -top-1 -right-1 bg-secondary-800 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ totalItems }}</span>
+							{% endif %}
+						</a>
+
 						{# Login Icon (when not logged in) #}
 						<a href="{{ path('app_login') }}" id="header-login-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Connexion">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">

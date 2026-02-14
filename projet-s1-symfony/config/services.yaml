@@ -27,3 +27,8 @@ services:
             $apiBaseUrl: '%open_library_api%'
             $apiImageUrl: '%open_library_image_api%'
             $cache: '@cache.app'
+
+    App\Service\CartService:
+        arguments:
+            $cartHmacSecret: '%env(CART_HMAC_SECRET)%'
+
