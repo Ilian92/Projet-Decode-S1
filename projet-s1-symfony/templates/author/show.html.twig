@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ author.name }}
+	- Mississippi.com
+{% endblock %}
+
+{% block body %}
+	<div class="bg-white min-h-screen">
+		<div class="container mx-auto px-4 py-6">
+			{# Breadcrumb #}
+			<nav class="font-bodoni text-sm text-primary-600 mb-4" aria-label="Fil d'Ariane">
+				<ol class="flex flex-wrap items-center gap-1">
+					<li>
+						<a href="{{ path('app_home') }}" class="hover:text-secondary-800 underline">Accueil</a>
+					</li>
+					<li aria-hidden="true">›</li>
+					<li>
+						<a href="{{ path('app_search') }}" class="hover:text-secondary-800 underline">Recherche</a>
+					</li>
+					<li aria-hidden="true">›</li>
+					<li class="text-primary-900 font-medium line-clamp-1">{{ author.name }}</li>
+				</ol>
+			</nav>
+
+			{# Author layout: photo left, details right #}
+			<div class="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-12">
+				{# Photo - left column #}
+				<div class="lg:w-80 shrink-0 flex justify-center lg:justify-start">
+					<div class="w-56 sm:w-64 lg:w-80 aspect-3/4 bg-primary-100 rounded-lg shadow-lg overflow-hidden">
+						{% if author.photo_url %}
+							<img src="{{ author.photo_url }}" alt="Photo de {{ author.name }}" class="w-full h-full object-cover">
+						{% else %}
+							<div class="w-full h-full flex items-center justify-center text-primary-400 font-bodoni text-sm">
+								<svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+									<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+								</svg>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+
+				{# Details - right column #}
+				<div class="flex-1 min-w-0">
+					<h1 class="font-sancreek text-2xl md:text-3xl lg:text-4xl font-bold text-primary-900 mb-4">
+						{{ author.name }}
+					</h1>
+
+					{# Birth and death dates #}
+					{% if author.birth_date or author.death_date %}
+						<p class="font-bodoni text-primary-600 mb-4">
+							{% if author.birth_date %}
+								Né(e) le {{ author.birth_date }}
+							{% endif %}
+							{% if author.death_date %}
+								{% if author.birth_date %}
+									-
+								{% endif %}
+								Décédé(e) le {{ author.death_date }}
+							{% endif %}
+						</p>
+					{% endif %}
+
+					{# Biography #}
+					{% if author.biography %}
+						<div class="border-t border-primary-200 pt-6 mt-6">
+							<h2 class="font-sancreek text-lg font-bold text-primary-900 mb-3">Biographie</h2>
+							<div class="font-bodoni text-primary-700 text-sm leading-relaxed prose prose-primary max-w-none">
+								{{ author.biography|nl2br }}
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+
+			{# Works Section #}
+			<section class="border-t border-primary-200 pt-8 mb-12" aria-labelledby="works-heading">
+				<h2 id="works-heading" class="font-sancreek text-xl font-bold text-primary-900 mb-6">
+					Œuvres
+					{% if works|length > 0 %}
+						({{ works|length }})
+					{% endif %}
+				</h2>
+				{% if works|length > 0 %}
+					<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+						{% for work in works %}
+							{% include 'components/work_card.html.twig' with { work: work } %}
+						{% endfor %}
+					</div>
+				{% else %}
+					<div class="text-center py-8">
+						<p class="font-bodoni text-primary-700 mb-2">Aucune œuvre disponible pour l'instant.</p>
+						<p class="font-bodoni text-sm text-primary-600">Les œuvres de cet auteur seront bientôt disponibles.</p>
+					</div>
+				{% endif %}
+			</section>
+
+		</div>
+	</div>
+{% endblock %}
+
+

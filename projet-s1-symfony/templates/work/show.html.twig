@@ -46,7 +46,12 @@
 					<p class="font-bodoni text-primary-600 mb-4">
 						par
 						{% for author in work.authors %}
-							<span class="text-primary-800 font-medium">{{ author.name }}</span>
+							{% if author.key %}
+								{% set authorOlid = author.key|split('/')|last %}
+								<a href="{{ path('app_author', { id: authorOlid }) }}" class="text-primary-800 font-medium hover:text-secondary-800 underline">{{ author.name }}</a>
+							{% else %}
+								<span class="text-primary-800 font-medium">{{ author.name }}</span>
+							{% endif %}
 							{% if not loop.last %},
 							{% endif %}
 						{% endfor %}
