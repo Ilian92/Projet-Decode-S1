@@ -1,0 +1,40 @@
+# config/packages/mcp.yaml
+mcp:
+    app: 'app' # Application name to be exposed to clients
+    version: '1.0.0' # Application version to be exposed to clients
+    description: 'A sample MCP server for time management.' # Application description to be exposed to clients
+    icons:
+        - src: 'https://example.com/icon.png' # Application icon URL
+          mime_type: 'image/png' # MIME type of the icon
+          sizes: ['64x64'] # Sizes of the icon
+    website_url: 'https://example.com' # Application website URL
+    pagination_limit: 50 # Maximum number of items returned per list request (default: 50)
+    instructions: | # Instructions describing server purpose and usage context (for LLMs)
+        This server provides time management capabilities for developers.
+
+        Use when working with timestamps, time zones, or time-based calculations.
+        All timestamps are in UTC unless specified otherwise.
+
+        Example contexts: logging, debugging, time-sensitive operations.
+
+    client_transports:
+        stdio: true # Enable STDIO via command
+        http: true # Enable HTTP transport via controller
+
+    # HTTP transport configuration (optional)
+    http:
+        path: /_mcp # HTTP endpoint path (default: /_mcp)
+        session:
+            store: file # Session store type: 'file' or 'memory' (default: file)
+            directory: '%kernel.cache_dir%/mcp-sessions' # Directory for file store (default: cache_dir/mcp-sessions)
+            ttl: 3600 # Session TTL in seconds (default: 3600)
+
+    # Not supported yet
+    servers:
+        name:
+            transport: 'stdio' # Transport method to use, either 'stdio' or 'http'
+            stdio:
+                command: 'php /path/bin/console mcp:server' # Command to execute to start the server
+                arguments: [] # Arguments to pass to the command
+            http:
+                url: 'http://localhost:8000/_mcp' # URL to HTTP endpoint of MCP server
