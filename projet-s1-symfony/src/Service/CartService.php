@@ -2,7 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Book;
 use App\Repository\BookRepository;
+use App\Repository\WorkRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -11,9 +14,14 @@ class CartService
     private const CART_COOKIE_NAME = 'mississippi_cart';
     private const CART_COOKIE_LIFETIME = 30 * 24 * 60 * 60;
 
+    private const DEFAULT_EDITION_UNIT_PRICE_CENTIMES = 999;
+
     public function __construct(
         private RequestStack $requestStack,
         private BookRepository $bookRepository,
+        private WorkRepository $workRepository,
+        private OpenLibraryService $openLibraryService,
+        private EntityManagerInterface $entityManager,
         private string $cartHmacSecret
     ) {
     }
@@ -42,9 +50,8 @@ class CartService
     {
         $validatedCart = [];
 
-        foreach ($cart as $bookId => $quantity) {
-            $bookId = (int) $bookId;
-            if ($bookId <= 0) {
+        foreach ($cart as $bookOlid => $quantity) {
+            if (!\is_string($bookOlid) || $bookOlid === '') {
                 continue;
             }
 
@@ -53,19 +60,17 @@ class CartService
                 continue;
             }
 
-            $book = $this->bookRepository->find($bookId);
+            $book = $this->bookRepository->find($bookOlid);
             if (!$book) {
                 continue;
             }
 
             $availableStock = $book->getAvailableStock() ?? 0;
-            if ($quantity > $availableStock) {
+            if ($availableStock > 0 && $quantity > $availableStock) {
                 $quantity = $availableStock;
             }
 
-            if ($quantity > 0) {
-                $validatedCart[$bookId] = $quantity;
-            }
+            $validatedCart[$book->getId()] = $quantity;
         }
 
         return $validatedCart;
@@ -133,37 +138,92 @@ class CartService
             ->withSameSite(Cookie::SAMESITE_LAX);
     }
 
-    public function add(int $productId, int $quantity = 1): Cookie
+    public function add(string $bookOlid, string $workOlid, int $quantity = 1): Cookie
     {
-        if ($productId <= 0) {
+        if ($bookOlid === '' || $workOlid === '' || $quantity <= 0) {
             return $this->createCartCookie();
         }
 
-        $book = $this->bookRepository->find($productId);
+        $book = $this->findOrCreateBookByOlid($bookOlid, $workOlid);
         if (!$book) {
             return $this->createCartCookie();
         }
 
+        $olid = $book->getId();
         $availableStock = $book->getAvailableStock() ?? 0;
-        if ($quantity > $availableStock) {
+        if ($availableStock > 0 && $quantity > $availableStock) {
             $quantity = $availableStock;
         }
 
-        if ($quantity <= 0) {
-            return $this->createCartCookie();
-        }
-
         $cart = $this->getCart();
+        $cart[$olid] = ($cart[$olid] ?? 0) + $quantity;
 
-        if (!isset($cart[$productId])) {
-            $cart[$productId] = 0;
+        if ($availableStock > 0 && $cart[$olid] > $availableStock) {
+            $cart[$olid] = $availableStock;
         }
 
-        $cart[$productId] += $quantity;
+        return $this->saveCart($cart);
+    }
 
-        if ($cart[$productId] > $availableStock) {
-            $cart[$productId] = $availableStock;
+    public function findOrCreateBookByOlid(string $bookOlid, string $workOlid): ?Book
+    {
+        if ($bookOlid === '') {
+            return null;
         }
+
+        $book = $this->bookRepository->find($bookOlid);
+        if ($book !== null) {
+            return $book;
+        }
+
+        $work = $this->workRepository->find($workOlid);
+        if (!$work) {
+            return null;
+        }
+
+        try {
+            $editionData = $this->openLibraryService->fetchBook($bookOlid);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $formatted = $this->openLibraryService->formatEditionForFrontend($editionData);
+
+        $book = new Book();
+        $book->setId($bookOlid);
+        $book->setWork($work);
+        $book->setAvailableStock(0);
+        $book->setCurrentUnitPrice(self::DEFAULT_EDITION_UNIT_PRICE_CENTIMES);
+
+        $publishDate = $this->parsePublicationDate($formatted['publish_date'] ?? null);
+        $book->setPublicationDate($publishDate);
+
+        if (!empty($formatted['cover_url'])) {
+            $book->setCoverImageUrl($formatted['cover_url']);
+        }
+
+        $this->entityManager->persist($book);
+        $this->entityManager->flush();
+
+        return $book;
+    }
+
+    private function parsePublicationDate(?string $publishDate): \DateTime
+    {
+        if ($publishDate !== null && preg_match('/\d{4}/', $publishDate, $m)) {
+            $year = (int) $m[0];
+            $year = max(1, min(9999, $year));
+
+            return new \DateTime("$year-01-01");
+        }
+
+        return new \DateTime('today');
+    }
+
+    public function remove(string $editionKey): Cookie
+    {
+        $cart = $this->getCart();
+        unset($cart[$editionKey]);
 
         return $this->saveCart($cart);
     }
@@ -173,27 +233,20 @@ class CartService
         return $this->saveCart($this->getCart());
     }
 
-    public function decrease(int $productId): Cookie
+    public function decrease(string $bookOlid): Cookie
     {
         $cart = $this->getCart();
 
-        if (!isset($cart[$productId])) {
+        if (!isset($cart[$bookOlid])) {
             return $this->createCartCookie();
         }
 
-        $cart[$productId]--;
+        $cart[$bookOlid]--;
 
-        if ($cart[$productId] <= 0) {
-            unset($cart[$productId]);
+        if ($cart[$bookOlid] <= 0) {
+            unset($cart[$bookOlid]);
         }
 
-        return $this->saveCart($cart);
-    }
-
-    public function remove(int $productId): Cookie
-    {
-        $cart = $this->getCart();
-        unset($cart[$productId]);
         return $this->saveCart($cart);
     }
 
@@ -211,8 +264,8 @@ class CartService
         $cart = $this->getCart();
         $cartWithDetails = [];
 
-        foreach ($cart as $bookId => $quantity) {
-            $book = $this->bookRepository->find($bookId);
+        foreach ($cart as $bookOlid => $quantity) {
+            $book = $this->bookRepository->find($bookOlid);
             if ($book) {
                 $cartWithDetails[] = [
                     'book' => $book,
@@ -252,24 +305,24 @@ class CartService
     /**
      * Modifier la quantité d'un article dans le panier
      */
-    public function updateQuantity(int $productId, int $quantity): Cookie
+    public function updateQuantity(string $bookOlid, int $quantity): Cookie
     {
         if ($quantity <= 0) {
-            return $this->remove($productId);
+            return $this->remove($bookOlid);
         }
 
-        $book = $this->bookRepository->find($productId);
+        $book = $this->bookRepository->find($bookOlid);
         if (!$book) {
-            return $this->remove($productId);
+            return $this->remove($bookOlid);
         }
 
         $availableStock = $book->getAvailableStock() ?? 0;
-        if ($quantity > $availableStock) {
+        if ($availableStock > 0 && $quantity > $availableStock) {
             $quantity = $availableStock;
         }
 
         $cart = $this->getCart();
-        $cart[$productId] = $quantity;
+        $cart[$bookOlid] = $quantity;
 
         return $this->saveCart($cart);
     }
@@ -285,9 +338,10 @@ class CartService
     /**
      * Obtenir la quantité d'un livre spécifique dans le panier
      */
-    public function getItemQuantity(int $productId): int
+    public function getItemQuantity(string $bookOlid): int
     {
         $cart = $this->getCart();
-        return $cart[$productId] ?? 0;
+
+        return $cart[$bookOlid] ?? 0;
     }
 }
