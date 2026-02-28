@@ -63,19 +63,4 @@ class BookRepository extends ServiceEntityRepository
             return is_array($result) ? $result[0] : $result;
         }, $results);
     }
-
-    public function findByWorkId(int $workId): array
-    {
-        return $this->createQueryBuilder('b')
-            ->where('b.work = :workId')
-            ->setParameter('workId', $workId)
-            ->leftJoin('b.bookPublisher', 'bp')
-            ->addSelect('bp')
-            ->leftJoin('b.work', 'w')
-            ->addSelect('w')
-            ->orderBy('b.publicationDate', 'DESC')
-            ->addOrderBy('b.currentUnitPrice', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
 }

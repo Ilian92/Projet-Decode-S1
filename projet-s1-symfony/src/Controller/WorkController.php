@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Work;
 use App\Enum\ImageSize;
 use App\Enum\ImageType;
 use App\Repository\BookRepository;
 use App\Repository\WorkRepository;
 use App\Service\OpenLibraryService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +20,8 @@ final class WorkController extends AbstractController
     public function __construct(
         private readonly OpenLibraryService $openLibraryService,
         private readonly WorkRepository $workRepository,
-        private readonly BookRepository $bookRepository
+        private readonly BookRepository $bookRepository,
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 
@@ -88,15 +91,19 @@ final class WorkController extends AbstractController
         $subjects = $work['subjects'] ?? [];
         $subjects = is_array($subjects) ? array_slice($subjects, 0, 10) : [];
 
-        $workTitle = $work['title'] ?? null;
-        $workEntity = null;
-        $workId = null;
-        if ($workTitle) {
-            $workEntity = $this->workRepository->findOneBy(['title' => $workTitle]);
-            if ($workEntity) {
-                $workId = $workEntity->getId();
+        $workTitle = $work['title'] ?? 'Sans titre';
+        $workEntity = $this->workRepository->find($olid);
+        if (!$workEntity) {
+            $workEntity = new Work();
+            $workEntity->setId($olid);
+            $workEntity->setTitle($workTitle);
+            if (isset($description) && $description !== null) {
+                $workEntity->setSummary($description);
             }
+            $this->entityManager->persist($workEntity);
+            $this->entityManager->flush();
         }
+        $workOlid = $workEntity->getId();
 
         $ratings = null;
         try {
@@ -118,18 +125,24 @@ final class WorkController extends AbstractController
 
             $books = [];
             if ($workEntity) {
-                $books = $this->bookRepository->findByWorkId($workEntity->getId());
+                $books = $this->bookRepository->findBy(['work' => $workEntity], ['publicationDate' => 'DESC', 'currentUnitPrice' => 'ASC']);
             }
 
-            $hasBooksInDatabase = !empty($books);
-            $availableBookIds = array_map(fn($book) => $book->getId(), $books);
+            $booksByEditionOlid = [];
+            foreach ($books as $book) {
+                $booksByEditionOlid[$book->getId()] = $book;
+            }
 
             foreach ($entries as $edition) {
                 $formattedEdition = $this->openLibraryService->formatEditionForFrontend($edition);
+                $editionKey = $formattedEdition['key'] ?? null;
+                $bookOlid = $editionKey !== null ? $this->openLibraryService->extractOlid($editionKey) : null;
 
-                $isAvailable = $hasBooksInDatabase;
-                $bookId = $hasBooksInDatabase ? ($availableBookIds[0] ?? null) : null;
+                $bookForEdition = $bookOlid !== null ? ($booksByEditionOlid[$bookOlid] ?? null) : null;
+                $isAvailable = $bookForEdition !== null && (($bookForEdition->getAvailableStock() ?? 0) > 0);
+                $bookId = $bookForEdition?->getId();
 
+                $formattedEdition['book_olid'] = $bookOlid;
                 $formattedEdition['is_available'] = $isAvailable;
                 $formattedEdition['book_id'] = $bookId;
 
@@ -153,7 +166,7 @@ final class WorkController extends AbstractController
                 'ratings' => $ratings,
             ],
             'editions' => $editions,
-            'workId' => $workId,
+            'workOlid' => $workOlid,
         ]);
     }
 }

@@ -106,7 +106,7 @@
 				{% if editions|length > 0 %}
 					<div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
 						{% for edition in editions %}
-							{% include 'components/edition_card.html.twig' with { edition: edition } %}
+							{% include 'components/edition_card.html.twig' with { edition: edition, work_olid: workOlid } %}
 						{% endfor %}
 					</div>
 				{% else %}

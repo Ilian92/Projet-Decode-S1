@@ -15,6 +15,11 @@ class BookType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('id', null, [
+                'label' => 'Open Library Edition ID (e.g. OL13153681M)',
+                'required' => true,
+                'disabled' => $options['is_edit'] ?? false,
+            ])
             ->add('publicationDate')
             ->add('currentUnitPrice')
             ->add('availableStock')
@@ -36,6 +41,7 @@ class BookType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Book::class,
+            'is_edit' => false,
         ]);
     }
 }

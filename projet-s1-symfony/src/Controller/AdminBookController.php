@@ -53,7 +53,7 @@ final class AdminBookController extends AbstractController
     #[Route('/{id}/edit', name: 'app_admin_book_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Book $book, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(BookType::class, $book);
+        $form = $this->createForm(BookType::class, $book, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

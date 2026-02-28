@@ -53,7 +53,7 @@ final class AdminWorkController extends AbstractController
     #[Route('/{id}/edit', name: 'app_admin_work_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Work $work, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(WorkType::class, $work);
+        $form = $this->createForm(WorkType::class, $work, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -168,6 +168,7 @@ class AppFixtures extends Fixture
 
         // ========== WORKS ==========
         $work1 = new Work();
+        $work1->setId('OL_FIXTURE_1W');
         $work1->setTitle('Les Misérables');
         $work1->setSummary('Un ancien forçat, Jean Valjean, cherche la rédemption dans la France du XIXe siècle.');
         $work1->addGenre($genreRomance);
@@ -175,6 +176,7 @@ class AppFixtures extends Fixture
         $manager->persist($work1);
 
         $work2 = new Work();
+        $work2->setId('OL_FIXTURE_2W');
         $work2->setTitle('Harry Potter à l\'école des sorciers');
         $work2->setSummary('Un jeune sorcier découvre son héritage magique et entre à Poudlard.');
         $work2->addGenre($genreFantasy);
@@ -182,6 +184,7 @@ class AppFixtures extends Fixture
         $manager->persist($work2);
 
         $work3 = new Work();
+        $work3->setId('OL_FIXTURE_3W');
         $work3->setTitle('Le Crime de l\'Orient-Express');
         $work3->setSummary('Hercule Poirot enquête sur un meurtre dans un train de luxe.');
         $work3->addGenre($genrePolicier);
@@ -190,6 +193,7 @@ class AppFixtures extends Fixture
         $manager->persist($work3);
 
         $work4 = new Work();
+        $work4->setId('OL_FIXTURE_4W');
         $work4->setTitle('Fondation');
         $work4->setSummary('La saga épique de la chute et de la renaissance d\'un empire galactique.');
         $work4->addGenre($genreSF);
@@ -197,6 +201,7 @@ class AppFixtures extends Fixture
         $manager->persist($work4);
 
         $work5 = new Work();
+        $work5->setId('OL_FIXTURE_5W');
         $work5->setTitle('Notre-Dame de Paris');
         $work5->setSummary('L\'histoire tragique de Quasimodo et Esmeralda dans le Paris médiéval.');
         $work5->addGenre($genreRomance);
@@ -205,6 +210,7 @@ class AppFixtures extends Fixture
 
         // ========== BOOKS ==========
         $book1 = new Book();
+        $book1->setId('OL_FIXTURE_1M');
         $book1->setWork($work1);
         $book1->setBookPublisher($publisher1);
         $book1->setPublicationDate(new \DateTime('1862-04-03'));
@@ -216,6 +222,7 @@ class AppFixtures extends Fixture
         $manager->persist($book1);
 
         $book2 = new Book();
+        $book2->setId('OL_FIXTURE_2M');
         $book2->setWork($work2);
         $book2->setBookPublisher($publisher2);
         $book2->setPublicationDate(new \DateTime('1997-06-26'));
@@ -227,6 +234,7 @@ class AppFixtures extends Fixture
         $manager->persist($book2);
 
         $book3 = new Book();
+        $book3->setId('OL_FIXTURE_3M');
         $book3->setWork($work3);
         $book3->setBookPublisher($publisher3);
         $book3->setPublicationDate(new \DateTime('1934-01-01'));
@@ -238,6 +246,7 @@ class AppFixtures extends Fixture
         $manager->persist($book3);
 
         $book4 = new Book();
+        $book4->setId('OL_FIXTURE_4M');
         $book4->setWork($work4);
         $book4->setBookPublisher($publisher1);
         $book4->setPublicationDate(new \DateTime('1951-05-01'));
@@ -249,6 +258,7 @@ class AppFixtures extends Fixture
         $manager->persist($book4);
 
         $book5 = new Book();
+        $book5->setId('OL_FIXTURE_5M');
         $book5->setWork($work5);
         $book5->setBookPublisher($publisher2);
         $book5->setPublicationDate(new \DateTime('1831-03-16'));

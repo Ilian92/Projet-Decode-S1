@@ -15,6 +15,11 @@ class WorkType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('id', null, [
+                'label' => 'Open Library Work ID (e.g. OL12345W)',
+                'required' => true,
+                'disabled' => $options['is_edit'] ?? false,
+            ])
             ->add('title')
             ->add('summary')
             ->add('genre', EntityType::class, [
@@ -34,6 +39,7 @@ class WorkType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Work::class,
+            'is_edit' => false,
         ]);
     }
 }
