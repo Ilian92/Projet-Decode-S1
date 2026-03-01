@@ -1,66 +1,150 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Commande #{{ order.id }}{% endblock %}
+{% block title %}Commande #{{ order.id }}
+{% endblock %}
 
 {% block body %}
-    <section class="py-8 md:py-12 bg-primary-50">
-        <div class="container mx-auto px-4 max-w-4xl">
-            <div class="mb-8">
-                <h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
-                    <span class="relative inline-block">
-                        <span class="relative z-10">Commande #{{ order.id }}</span>
-                        <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
-                    </span>
-                </h1>
-                <a href="{{ path('app_admin_order_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
-                    Retour à la liste
-                </a>
-            </div>
+	<section class="py-8 md:py-12 bg-primary-50">
+		<div class="container mx-auto px-4 max-w-4xl">
+			{% for message in app.flashes('success') %}
+				<div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800">{{ message }}</div>
+			{% endfor %}
+			{% for message in app.flashes('error') %}
+				<div class="mb-4 p-4 rounded-lg bg-red-100 text-red-800">{{ message }}</div>
+			{% endfor %}
+			<div class="mb-8">
+				<h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+					<span class="relative inline-block">
+						<span class="relative z-10">Commande #{{ order.id }}</span>
+						<span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+					</span>
+				</h1>
+				<a href="{{ path('app_admin_order_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					</svg>
+					Retour à la liste
+				</a>
+			</div>
 
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <table class="min-w-full">
-                    <tbody class="divide-y divide-primary-100">
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">ID</th>
-                            <td class="px-6 py-4 text-sm text-primary-800">{{ order.id }}</td>
-                        </tr>
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de commande</th>
-                            <td class="px-6 py-4 text-sm text-primary-800 font-semibold">{{ order.orderDate ? order.orderDate|date('d/m/Y H:i:s') : '' }}</td>
-                        </tr>
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Statut</th>
-                            <td class="px-6 py-4 text-sm text-primary-600">{{ order.status }}</td>
-                        </tr>
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Montant total</th>
-                            <td class="px-6 py-4 text-sm text-primary-600">{{ order.totalAmount }} €</td>
-                        </tr>
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Frais de livraison</th>
-                            <td class="px-6 py-4 text-sm text-primary-600">{{ order.shippingCost }} €</td>
-                        </tr>
-                        <tr class="hover:bg-primary-50 transition-colors duration-200">
-                            <th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Numéro de suivi</th>
-                            <td class="px-6 py-4 text-sm text-primary-600">{{ order.trackingNumber }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+			<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+				<table class="min-w-full">
+					<tbody class="divide-y divide-primary-100">
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">ID</th>
+							<td class="px-6 py-4 text-sm text-primary-800">{{ order.id }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de commande</th>
+							<td class="px-6 py-4 text-sm text-primary-800 font-semibold">{{ order.orderDate ? order.orderDate|date('d/m/Y H:i:s') : '' }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Statut</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ order.status|order_status_label }}
+								<span class="text-primary-400">({{ order.status }})</span>
+							</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Montant total</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ (order.totalAmount / 100)|number_format(2, ',', ' ') }}
+								€</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Frais de livraison</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ order.shippingCost is not null ? (order.shippingCost / 100)|number_format(2, ',', ' ') ~ ' €' : '—' }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Numéro de suivi</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ order.trackingNumber ?? '—' }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
-            <div class="mt-6 flex gap-4 justify-between items-center">
-                <a href="{{ path('app_admin_order_edit', {'id': order.id}) }}" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                    <span class="font-bodoni font-medium">Modifier</span>
-                </a>
+			<div class="mt-8">
+				<h2 class="font-bodoni text-xl font-bold text-primary-900 mb-4">Livres de la commande</h2>
+				<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+					<table class="min-w-full">
+						<thead class="bg-primary-100">
+							<tr>
+								<th class="px-6 py-3 text-left text-xs font-bold text-primary-900 uppercase tracking-wider">Livre</th>
+								<th class="px-6 py-3 text-right text-xs font-bold text-primary-900 uppercase tracking-wider">Quantité</th>
+								<th class="px-6 py-3 text-right text-xs font-bold text-primary-900 uppercase tracking-wider">Prix unitaire</th>
+								<th class="px-6 py-3 text-right text-xs font-bold text-primary-900 uppercase tracking-wider">Sous-total</th>
+								{% if order.status == 'pending_restock' %}
+									<th class="px-6 py-3 text-right text-xs font-bold text-primary-900 uppercase tracking-wider">En stock</th>
+									<th class="px-6 py-3 text-right text-xs font-bold text-primary-900 uppercase tracking-wider">Manquant</th>
+									<th class="px-6 py-3 text-left text-xs font-bold text-primary-900 uppercase tracking-wider">Réapprovisionner</th>
+								{% endif %}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-primary-100">
+							{% for line in order.orderLine %}
+								<tr class="hover:bg-primary-50 transition-colors duration-200">
+									<td class="px-6 py-4 text-sm text-primary-800 font-medium">
+										{% if line.book %}
+											<a href="{{ path('app_admin_book_show', { id: line.book.id, return_order: order.id }) }}" class="text-primary-700 hover:text-primary-900 font-semibold underline decoration-primary-300 hover:decoration-primary-600 transition-colors">
+												{{ line.book.work ? line.book.work.title : line.book.id }}
+											</a>
+										{% else %}
+											—
+										{% endif %}
+									</td>
+									<td class="px-6 py-4 text-sm text-primary-600 text-right">{{ line.quantity }}</td>
+									<td class="px-6 py-4 text-sm text-primary-600 text-right">{{ line.unitPriceSnapshot is not null ? (line.unitPriceSnapshot / 100)|number_format(2, ',', ' ') ~ ' €' : '—' }}</td>
+									<td class="px-6 py-4 text-sm text-primary-600 text-right">{{ (line.quantity * (line.unitPriceSnapshot ?? 0) / 100)|number_format(2, ',', ' ') }}
+										€</td>
+									{% if order.status == 'pending_restock' %}
+										{% set available = line.book ? (line.book.availableStock ?? 0) : 0 %}
+										{% set missing = line.book ? max(0, line.quantity - available) : 0 %}
+										<td class="px-6 py-4 text-sm text-primary-600 text-right">{{ line.book ? available : '—' }}</td>
+										<td class="px-6 py-4 text-sm text-right {{ missing > 0 ? 'text-amber-700 font-semibold' : 'text-primary-600' }}">{{ line.book ? (missing > 0 ? missing : '—') : '—' }}</td>
+										<td class="px-6 py-4">
+											{% if line.book and missing > 0 %}
+												<a href="{{ path('app_admin_book_show', { id: line.book.id, return_order: order.id }) }}" class="inline-flex items-center gap-1 bg-amber-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-amber-700 transition-colors">
+													<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+													</svg>
+													Réapprovisionner
+												</a>
+											{% else %}
+												—
+											{% endif %}
+										</td>
+									{% endif %}
+								</tr>
+							{% else %}
+								<tr>
+									<td colspan="{{ order.status == 'pending_restock' ? 7 : 4 }}" class="px-6 py-4 text-sm text-primary-500 text-center">Aucune ligne.</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
 
-                {{ include('admin_order/_delete_form.html.twig') }}
-            </div>
-        </div>
-    </section>
+			<div class="mt-6 flex gap-4 justify-between items-center flex-wrap">
+				<div class="flex gap-4 items-center flex-wrap">
+					<a href="{{ path('app_admin_order_edit', {'id': order.id}) }}" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+						</svg>
+						<span class="font-bodoni font-medium">Modifier</span>
+					</a>
+					{% if order.status == 'pending_shipment' %}
+						<form method="post" action="{{ path('app_admin_order_ship', { id: order.id }) }}" class="inline">
+							<input type="hidden" name="_token" value="{{ csrf_token('ship' ~ order.id) }}">
+							<button type="submit" class="inline-flex items-center gap-2 bg-green-600 text-white rounded-lg px-6 py-3.5 text-base font-semibold shadow-lg ring-2 ring-green-500 ring-offset-2 hover:bg-green-700 hover:shadow-xl transition-all duration-300">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+								</svg>
+								<span class="font-bodoni font-semibold">Expédier la commande</span>
+							</button>
+						</form>
+					{% endif %}
+				</div>
+				{{ include('admin_order/_delete_form.html.twig') }}
+			</div>
+		</div>
+	</section>
 {% endblock %}

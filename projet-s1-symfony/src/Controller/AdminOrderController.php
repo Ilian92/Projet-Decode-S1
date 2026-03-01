@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Order;
+use App\Enum\OrderStatus;
 use App\Form\OrderType;
 use App\Repository\OrderRepository;
+use App\Service\OrderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +50,29 @@ final class AdminOrderController extends AbstractController
         return $this->render('admin_order/show.html.twig', [
             'order' => $order,
         ]);
+    }
+
+    #[Route('/{id}/ship', name: 'app_admin_order_ship', methods: ['POST'])]
+    public function ship(Request $request, Order $order, OrderService $orderService): Response
+    {
+        if (!$this->isCsrfTokenValid('ship'.$order->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if ($order->getStatus() !== OrderStatus::PENDING_SHIPMENT->value) {
+            $this->addFlash('error', 'Seules les commandes en préparation peuvent être expédiées.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if (!$order->isFulfillable()) {
+            $this->addFlash('error', 'Impossible d\'expédier : des livres sont manquants (stock insuffisant). Réapprovisionnez les livres concernés.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if ($orderService->ship($order)) {
+            $this->addFlash('success', 'Commande #'.$order->getId().' marquée comme expédiée.');
+        } else {
+            $this->addFlash('error', 'Impossible d\'expédier : des livres sont manquants (stock insuffisant).');
+        }
+        return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/edit', name: 'app_admin_order_edit', methods: ['GET', 'POST'])]

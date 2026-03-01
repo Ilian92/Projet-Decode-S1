@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Customer;
 use App\Service\CartService;
+use App\Service\OrderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +17,8 @@ use Stripe\Stripe;
 class CartController extends AbstractController
 {
     public function __construct(
-        private CartService $cartService
+        private CartService $cartService,
+        private OrderService $orderService
     ) {
     }
 
@@ -26,10 +29,14 @@ class CartController extends AbstractController
     public function show(): Response
     {
         $cartItems = $this->cartService->getCartWithDetails();
+        $subtotalAmount = $this->cartService->getArticleAmount();
+        $shippingCost = $this->cartService->getShippingCost();
         $totalAmount = $this->cartService->getTotalAmount();
 
         return $this->render('cart/index.html.twig', [
             'cartItems' => $cartItems,
+            'subtotalAmount' => $subtotalAmount,
+            'shippingCost' => $shippingCost,
             'totalAmount' => $totalAmount,
         ]);
     }
@@ -172,10 +179,39 @@ class CartController extends AbstractController
         $session = CheckoutSession::create([
             'mode' => 'payment',
             'line_items' => $lineItems,
-            'success_url' => $this->generateUrl('app_home', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?payment=success',
+            'success_url' => $this->generateUrl('cart_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'cancel_url' => $this->generateUrl('cart_show', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
         return $this->redirect($session->url, 303);
+    }
+
+    #[Route('/payment-success', name: 'payment_success', methods: ['GET'])]
+    public function paymentSuccess(): Response
+    {
+        $user = $this->getUser();
+        if (!$user instanceof Customer) {
+            $this->addFlash('error', 'Vous devez être connecté pour finaliser votre commande.');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        $order = $this->orderService->create($user);
+        if ($order === null) {
+            $cartItems = $this->cartService->getCartWithDetails();
+            if (empty($cartItems)) {
+                $this->addFlash('success', 'Votre panier est vide ou a déjà été commandé.');
+            } else {
+                $this->addFlash('error', 'Impossible de créer la commande. Vérifiez que votre adresse de livraison est renseignée dans votre profil.');
+            }
+
+            return $this->redirectToRoute('cart_show');
+        }
+
+        $response = $this->redirectToRoute('app_profile');
+        $response->headers->setCookie($this->cartService->clear());
+        $this->addFlash('success', 'Merci pour votre achat ! Votre commande #' . $order->getId() . ' a été enregistrée.');
+
+        return $response;
     }
 }

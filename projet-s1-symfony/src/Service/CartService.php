@@ -15,6 +15,7 @@ class CartService
     private const CART_COOKIE_LIFETIME = 30 * 24 * 60 * 60;
 
     private const DEFAULT_EDITION_UNIT_PRICE_CENTIMES = 999;
+    private const SHIPPING_COST_CENTIMES = 500;
 
     public function __construct(
         private RequestStack $requestStack,
@@ -277,34 +278,35 @@ class CartService
         return $cartWithDetails;
     }
 
-    /**
-     * Obtenir le montant total du panier (en centimes)
-     */
-    public function getTotalAmount(): int
+    public function getArticleAmount(): int
     {
-        $total = 0;
+        $subtotal = 0;
         $cartWithDetails = $this->getCartWithDetails();
 
         foreach ($cartWithDetails as $item) {
             $price = $item['book']->getCurrentUnitPrice() ?? 0;
-            $total += $price * $item['quantity'];
+            $subtotal += $price * $item['quantity'];
         }
 
-        return $total;
+        return $subtotal;
     }
 
-    /**
-     * Obtenir le nombre total d'articles dans le panier
-     */
+    public function getShippingCost(): int
+    {
+        return self::SHIPPING_COST_CENTIMES;
+    }
+
+    public function getTotalAmount(): int
+    {
+        return $this->getArticleAmount() + $this->getShippingCost();
+    }
+
     public function getTotalItems(): int
     {
         $cart = $this->getCart();
         return array_sum($cart);
     }
 
-    /**
-     * Modifier la quantité d'un article dans le panier
-     */
     public function updateQuantity(string $bookOlid, int $quantity): Cookie
     {
         if ($quantity <= 0) {
@@ -327,17 +329,11 @@ class CartService
         return $this->saveCart($cart);
     }
 
-    /**
-     * Vérifier si le panier est vide
-     */
     public function isEmpty(): bool
     {
         return empty($this->getCart());
     }
 
-    /**
-     * Obtenir la quantité d'un livre spécifique dans le panier
-     */
     public function getItemQuantity(string $bookOlid): int
     {
         $cart = $this->getCart();

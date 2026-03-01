@@ -87,13 +87,15 @@
 												<p class="text-sm text-primary-600">{{ order.orderDate|date('d/m/Y') }}</p>
 											</div>
 											<div class="text-right">
-												<p class="font-bodoni font-bold text-primary-900 text-lg">{{ order.totalAmount|number_format(2, ',', ' ') }} €</p>
+												<p class="font-bodoni font-bold text-primary-900 text-lg">{{ (order.totalAmount / 100)|number_format(2, ',', ' ') }} €</p>
 												<span class="inline-block px-2 py-1 text-xs font-bold rounded
-													{% if order.status == 'pending' %}bg-yellow-200 text-yellow-900
+													{% if order.status == 'pending_restock' %}bg-amber-200 text-amber-900
+													{% elseif order.status == 'pending_shipment' %}bg-yellow-200 text-yellow-900
 													{% elseif order.status == 'shipped' %}bg-blue-200 text-blue-900
 													{% elseif order.status == 'delivered' %}bg-green-200 text-green-900
+													{% elseif order.status == 'cancelled' %}bg-red-200 text-red-900
 													{% else %}bg-gray-200 text-gray-900{% endif %}">
-													{{ order.status|upper }}
+													{{ order.status|order_status_label }}
 												</span>
 											</div>
 										</div>

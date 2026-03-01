@@ -364,7 +364,7 @@ class AppFixtures extends Fixture
         $order3->setAddress($address3);
         $order3->setMonthlyBox($monthlyBox3);
         $order3->setOrderDate(new \DateTime('2026-02-05'));
-        $order3->setStatus('processing');
+        $order3->setStatus('pending_shipment');
         $order3->setTotalAmount(2390);
         $order3->setShippingCost(500);
         $order3->setTrackingNumber('FR456789123');

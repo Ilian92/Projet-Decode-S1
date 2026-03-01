@@ -150,10 +150,19 @@
 
 					<div class="bg-white rounded-xl shadow-lg border border-primary-100 overflow-hidden">
 						<div class="p-6">
-							<div class="flex justify-between items-center mb-6 pb-6 border-b border-primary-100">
-								<h3 class="font-bodoni text-2xl font-bold text-primary-900">Total</h3>
-								<p class="font-bodoni text-3xl font-bold text-secondary-800">{{ (totalAmount / 100)|number_format(2, ',', ' ') }}
-									€</p>
+							<div class="space-y-3 mb-6 pb-6 border-b border-primary-100">
+								<div class="flex justify-between items-center text-primary-700">
+									<span class="font-bodoni font-medium">Sous-total</span>
+									<span>{{ (subtotalAmount / 100)|number_format(2, ',', ' ') }} €</span>
+								</div>
+								<div class="flex justify-between items-center text-primary-700">
+									<span class="font-bodoni font-medium">Frais de livraison</span>
+									<span>{{ (shippingCost / 100)|number_format(2, ',', ' ') }} €</span>
+								</div>
+								<div class="flex justify-between items-center pt-3">
+									<h3 class="font-bodoni text-2xl font-bold text-primary-900">Total</h3>
+									<p class="font-bodoni text-3xl font-bold text-secondary-800">{{ (totalAmount / 100)|number_format(2, ',', ' ') }} €</p>
+								</div>
 							</div>
 
 							<div class="flex flex-col sm:flex-row gap-4">
