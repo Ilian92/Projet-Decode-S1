@@ -166,14 +166,14 @@ jobs:
           export APP_DEBUG=0
 
           echo "Création du fichier .env.local..."
-          cat > .env.local << EOF
+          cat > .env.local << 'ENVEOF'
           APP_ENV=prod
           APP_DEBUG=0
           APP_SECRET=${{ secrets.APP_SECRET }}
           DEFAULT_URI=${{ secrets.DEFAULT_URI }}
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-          EOF
+          ENVEOF
           chmod 600 .env.local
 
           echo "Installation des dépendances PHP..."
