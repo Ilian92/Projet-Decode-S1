@@ -20,6 +20,7 @@ class CartService
     public function __construct(
         private RequestStack $requestStack,
         private BookRepository $bookRepository,
+        private BookService $bookService,
         private WorkRepository $workRepository,
         private OpenLibraryService $openLibraryService,
         private EntityManagerInterface $entityManager,
@@ -77,9 +78,6 @@ class CartService
         return $validatedCart;
     }
 
-    /**
-     * Obtenir le panier depuis le cookie avec validation de signature
-     */
     public function getCart(): array
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -113,8 +111,21 @@ class CartService
             return [];
         }
 
-        return $this->validateCart($cart);
+        $result = [];
+        foreach ($cart as $bookOlid => $quantity) {
+            if (!\is_string($bookOlid) || $bookOlid === '') {
+                continue;
+            }
+            $quantity = (int) $quantity;
+            if ($quantity <= 0) {
+                continue;
+            }
+            $result[$bookOlid] = $quantity;
+        }
+
+        return $result;
     }
+
 
     /**
      * Sauvegarder le panier dans un cookie avec signature HMAC
@@ -145,7 +156,7 @@ class CartService
             return $this->createCartCookie();
         }
 
-        $book = $this->findOrCreateBookByOlid($bookOlid, $workOlid);
+        $book = $this->bookService->createFromOlid($bookOlid);
         if (!$book) {
             return $this->createCartCookie();
         }
@@ -166,60 +177,6 @@ class CartService
         return $this->saveCart($cart);
     }
 
-    public function findOrCreateBookByOlid(string $bookOlid, string $workOlid): ?Book
-    {
-        if ($bookOlid === '') {
-            return null;
-        }
-
-        $book = $this->bookRepository->find($bookOlid);
-        if ($book !== null) {
-            return $book;
-        }
-
-        $work = $this->workRepository->find($workOlid);
-        if (!$work) {
-            return null;
-        }
-
-        try {
-            $editionData = $this->openLibraryService->fetchBook($bookOlid);
-        } catch (\Throwable) {
-            return null;
-        }
-
-        $formatted = $this->openLibraryService->formatEditionForFrontend($editionData);
-
-        $book = new Book();
-        $book->setId($bookOlid);
-        $book->setWork($work);
-        $book->setAvailableStock(0);
-        $book->setCurrentUnitPrice(self::DEFAULT_EDITION_UNIT_PRICE_CENTIMES);
-
-        $publishDate = $this->parsePublicationDate($formatted['publish_date'] ?? null);
-        $book->setPublicationDate($publishDate);
-
-        if (!empty($formatted['cover_url'])) {
-            $book->setCoverImageUrl($formatted['cover_url']);
-        }
-
-        $this->entityManager->persist($book);
-        $this->entityManager->flush();
-
-        return $book;
-    }
-
-    private function parsePublicationDate(?string $publishDate): \DateTime
-    {
-        if ($publishDate !== null && preg_match('/\d{4}/', $publishDate, $m)) {
-            $year = (int) $m[0];
-            $year = max(1, min(9999, $year));
-
-            return new \DateTime("$year-01-01");
-        }
-
-        return new \DateTime('today');
-    }
 
     public function remove(string $editionKey): Cookie
     {
@@ -256,10 +213,6 @@ class CartService
         return $this->saveCart([]);
     }
 
-    /**
-     * Obtenir le panier avec les détails complets des livres
-     * @return array<int, array{book: \App\Entity\Book, quantity: int}>
-     */
     public function getCartWithDetails(): array
     {
         $cart = $this->getCart();

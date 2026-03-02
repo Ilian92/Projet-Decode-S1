@@ -16,6 +16,7 @@ class OrderService
 
     public function __construct(
         private CartService $cartService,
+        private BookService $bookService,
         private OrderRepository $orderRepository,
         private EntityManagerInterface $entityManager
     ) {
@@ -23,7 +24,24 @@ class OrderService
 
     public function create(Customer $customer): ?Order
     {
-        $cartItems = $this->cartService->getCartWithDetails();
+        $cart = $this->cartService->getCart();
+        if (empty($cart)) {
+            return null;
+        }
+
+        $cartItems = [];
+        foreach ($cart as $olid => $quantity) {
+            $book = $this->bookService->createFromOlid($olid);
+            if ($book === null) {
+                continue;
+            }
+            $availableStock = $book->getAvailableStock() ?? 0;
+            if ($availableStock > 0 && $quantity > $availableStock) {
+                $quantity = $availableStock;
+            }
+            $cartItems[] = ['book' => $book, 'quantity' => $quantity];
+        }
+
         if (empty($cartItems)) {
             return null;
         }
