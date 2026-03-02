@@ -21,6 +21,20 @@ enum OrderStatus: string
         };
     }
 
+    /**
+     * Tailwind CSS classes for status badge (bg-* text-*).
+     */
+    public function badgeClass(): string
+    {
+        return match ($this) {
+            self::PENDING_RESTOCK => 'bg-amber-200 text-amber-900',
+            self::PENDING_SHIPMENT => 'bg-yellow-200 text-yellow-900',
+            self::SHIPPED => 'bg-blue-200 text-blue-900',
+            self::DELIVERED => 'bg-green-200 text-green-900',
+            self::CANCELLED => 'bg-red-200 text-red-900',
+        };
+    }
+
     public static function tryFromString(?string $value): ?self
     {
         if ($value === null || $value === '') {

@@ -42,7 +42,7 @@
                                     <a href="{{ path('app_admin_order_show', { id: monthly_box.tableOrder.id }) }}" class="text-contrasted-600 hover:text-contrasted-900 font-medium underline">
                                         Commande #{{ monthly_box.tableOrder.id }}
                                     </a>
-                                    <span class="text-primary-500"> — {{ monthly_box.tableOrder.status|order_status_label }}</span>
+                                    <span class="inline-block ml-2 px-2 py-1 text-xs font-bold rounded {{ monthly_box.tableOrder.status|order_status_badge_class }}">{{ monthly_box.tableOrder.status|order_status_label }}</span>
                                 {% else %}
                                     —
                                 {% endif %}

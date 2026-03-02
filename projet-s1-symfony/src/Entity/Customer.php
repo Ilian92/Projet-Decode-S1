@@ -47,6 +47,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Order>
      */
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
+    #[ORM\OrderBy(['orderDate' => 'DESC', 'id' => 'DESC'])]
     private Collection $orders;
 
     #[ORM\ManyToOne(inversedBy: 'customer')]

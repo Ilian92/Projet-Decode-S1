@@ -40,8 +40,8 @@
 						</tr>
 						<tr class="hover:bg-primary-50 transition-colors duration-200">
 							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Statut</th>
-							<td class="px-6 py-4 text-sm text-primary-600">{{ order.status|order_status_label }}
-								<span class="text-primary-400">({{ order.status }})</span>
+							<td class="px-6 py-4">
+								<span class="inline-block px-3 py-1.5 text-sm font-bold rounded {{ order.status|order_status_badge_class }}">{{ order.status|order_status_label }}</span>
 							</td>
 						</tr>
 						<tr class="hover:bg-primary-50 transition-colors duration-200">
