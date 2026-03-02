@@ -85,11 +85,13 @@ final class AdminMonthlyBoxController extends AbstractController
     }
 
     /**
-     * Exemple request body:
+     * Example request body:
+     * ```json
      * {
      *   "subscription_id": 5,
      *   "book_olid": "OL7353617M"
      * }
+     * ```
      */
     #[Route('/api/create', name: 'app_admin_monthly_box_create', methods: ['POST'])]
     public function apiCreate(
