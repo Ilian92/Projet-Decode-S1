@@ -174,7 +174,7 @@ export default class extends Controller {
 
         if (type === "user") {
             contentDiv.className =
-                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm rounded-br-sm";
+                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-contrasted-200 text-gray-800 border border-contrasted-200 shadow-sm rounded-br-sm";
         } else if (type === "bot") {
             contentDiv.className =
                 "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
