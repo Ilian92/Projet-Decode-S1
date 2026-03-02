@@ -176,6 +176,17 @@ class CartController extends AbstractController
             ];
         }
 
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'unit_amount' => $this->cartService->getShippingCost(),
+                'product_data' => [
+                    'name' => 'Livraison',
+                ],
+            ],
+            'quantity' => 1,
+        ];
+
         $session = CheckoutSession::create([
             'mode' => 'payment',
             'line_items' => $lineItems,
