@@ -130,11 +130,11 @@ export default class extends Controller {
 
     createBotMessageContainer() {
         const messageDiv = document.createElement("div");
-        messageDiv.className = "flex flex-col max-w-[80%] self-start";
+        messageDiv.className = "flex flex-col w-full items-start";
 
         const contentDiv = document.createElement("div");
         contentDiv.className =
-            "message-content py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
+            "message-content py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm max-w-[80%]";
 
         contentDiv.innerHTML = `
             <div class="flex items-center gap-2">
@@ -164,9 +164,9 @@ export default class extends Controller {
         const messageDiv = document.createElement("div");
 
         if (type === "user") {
-            messageDiv.className = "flex flex-col max-w-[80%] self-end";
+            messageDiv.className = "flex flex-col w-full items-end";
         } else {
-            messageDiv.className = "flex flex-col max-w-[80%] self-start";
+            messageDiv.className = "flex flex-col w-full items-start";
         }
 
         const contentDiv = document.createElement("div");
@@ -174,13 +174,13 @@ export default class extends Controller {
 
         if (type === "user") {
             contentDiv.className =
-                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-contrasted-200 text-gray-800 border border-contrasted-200 shadow-sm rounded-br-sm";
+                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-contrasted-200 text-gray-800 border border-contrasted-200 shadow-sm rounded-br-sm max-w-[80%]";
         } else if (type === "bot") {
             contentDiv.className =
-                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
+                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm max-w-[80%]";
         } else {
             contentDiv.className =
-                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-red-100 text-red-800 border border-red-200";
+                "py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-red-100 text-red-800 border border-red-200 max-w-[80%]";
         }
 
         const timeDiv = document.createElement("div");

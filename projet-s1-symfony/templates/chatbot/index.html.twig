@@ -39,10 +39,10 @@
         <div class="flex-1 flex flex-col max-w-5xl w-full mx-auto" data-controller="chatbot">
             {# Messages #}
             <div class="flex-1 bg-primary-50 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 mb-6 overflow-hidden flex flex-col" style="min-height: 500px;">
-                <div class="flex-1 overflow-y-auto p-6 space-y-4" data-chatbot-target="messages">
+                <div class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col" data-chatbot-target="messages">
                     {# Message de bienvenue #}
-                    <div class="flex flex-col max-w-[80%] self-start">
-                        <div class="py-3 px-4 rounded-2xl text-sm leading-6 bg-white text-primary-800 border-2 border-primary-200 shadow-sm rounded-bl-sm">
+                    <div class="flex flex-col w-full items-start">
+                        <div class="py-3 px-4 rounded-2xl text-sm leading-6 bg-white text-primary-800 border-2 border-primary-200 shadow-sm rounded-bl-sm max-w-[80%]">
                             Bonjour ! Je suis votre assistant Database. Je peux vous aider à explorer et interroger la base de données. Comment puis-je vous aider aujourd'hui ?
                         </div>
                         <div class="font-bodoni text-xs text-primary-600 mt-1.5 px-2">
@@ -54,16 +54,16 @@
                 {# Zone de saisie #}
                 <div class="border-t-2 border-primary-200 p-4 bg-white">
                     <form class="flex gap-3" data-action="submit->chatbot#sendMessage">
-                        <input 
-                            type="text" 
-                            class="font-bodoni flex-1 py-3 px-4 border-2 border-primary-300 rounded-full text-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-300" 
+                        <input
+                            type="text"
+                            class="font-bodoni flex-1 py-3 px-4 border-2 border-primary-300 rounded-full text-sm outline-none transition-all focus:border-primary-500 focus:ring-2 focus:ring-primary-300"
                             placeholder="Tapez votre message..."
                             data-chatbot-target="input"
                             data-action="keydown->chatbot#handleKeydown"
                             autocomplete="off"
                         >
-                        <button type="submit" 
-                                class="font-bodoni px-6 py-3 rounded-full bg-secondary-800 hover:bg-secondary-900 border-0 text-white font-medium cursor-pointer flex items-center justify-center gap-2 transition-all hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed" 
+                        <button type="submit"
+                                class="font-bodoni px-6 py-3 rounded-full bg-secondary-800 hover:bg-secondary-900 border-0 text-white font-medium cursor-pointer flex items-center justify-center gap-2 transition-all hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
                                 data-chatbot-target="button">
                             <span>Envoyer</span>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
