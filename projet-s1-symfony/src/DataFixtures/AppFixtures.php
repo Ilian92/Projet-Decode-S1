@@ -320,21 +320,18 @@ class AppFixtures extends Fixture
         $monthlyBox1->setSubscription($subscription1);
         $monthlyBox1->setReferenceMonth('2026-01');
         $monthlyBox1->setCreationDate(new \DateTime('2026-01-05'));
-        $monthlyBox1->setShippingStatus('delivered');
         $manager->persist($monthlyBox1);
 
         $monthlyBox2 = new MonthlyBox();
         $monthlyBox2->setSubscription($subscription1);
         $monthlyBox2->setReferenceMonth('2026-02');
         $monthlyBox2->setCreationDate(new \DateTime('2026-02-05'));
-        $monthlyBox2->setShippingStatus('in_transit');
         $manager->persist($monthlyBox2);
 
         $monthlyBox3 = new MonthlyBox();
         $monthlyBox3->setSubscription($subscription2);
         $monthlyBox3->setReferenceMonth('2026-02');
         $monthlyBox3->setCreationDate(new \DateTime('2026-02-03'));
-        $monthlyBox3->setShippingStatus('preparing');
         $manager->persist($monthlyBox3);
 
         // ========== ORDERS ==========

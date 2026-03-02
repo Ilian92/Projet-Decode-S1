@@ -17,10 +17,15 @@ class MonthlyBoxType extends AbstractType
         $builder
             ->add('referenceMonth')
             ->add('creationDate')
-            ->add('shippingStatus')
             ->add('table_order', EntityType::class, [
                 'class' => Order::class,
-                'choice_label' => 'id',
+                'label' => 'Commande associée',
+                'choice_label' => function (Order $order) {
+                    $date = $order->getOrderDate()?->format('d/m/Y') ?? '—';
+                    return sprintf('Commande #%d - %s - %s', $order->getId(), $date, $order->getStatus() ?? '');
+                },
+                'placeholder' => '— Aucune commande —',
+                'required' => false,
             ])
             ->add('subscription', EntityType::class, [
                 'class' => Subscription::class,

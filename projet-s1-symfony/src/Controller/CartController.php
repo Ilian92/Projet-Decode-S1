@@ -207,9 +207,9 @@ class CartController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $order = $this->orderService->create($user);
+        $cartItems = $this->cartService->getCartWithDetails();
+        $order = $this->orderService->create($user, $cartItems);
         if ($order === null) {
-            $cartItems = $this->cartService->getCartWithDetails();
             if (empty($cartItems)) {
                 $this->addFlash('success', 'Votre panier est vide ou a déjà été commandé.');
             } else {
