@@ -47,6 +47,7 @@ export default class extends Controller {
             const decoder = new TextDecoder();
             let buffer = "";
             let currentEvent = null;
+            let firstToken = true;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -74,6 +75,10 @@ export default class extends Controller {
                             try {
                                 const jsonData = JSON.parse(currentData);
                                 if (jsonData.token) {
+                                    if (firstToken) {
+                                        contentDiv.textContent = "";
+                                        firstToken = false;
+                                    }
                                     contentDiv.textContent += jsonData.token;
                                 }
                             } catch (e) {
@@ -130,7 +135,17 @@ export default class extends Controller {
         const contentDiv = document.createElement("div");
         contentDiv.className =
             "message-content py-3 px-4 rounded-2xl text-sm leading-6 break-words bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-sm";
-        contentDiv.textContent = "";
+
+        contentDiv.innerHTML = `
+            <div class="flex items-center gap-2">
+                <div class="flex gap-1">
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms;"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+                    <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
+                </div>
+                <span class="text-gray-500 text-xs">L'assistant réfléchit...</span>
+            </div>
+        `;
 
         const timeDiv = document.createElement("div");
         timeDiv.className = "message-time text-xs text-gray-400 mt-1.5 px-2";
