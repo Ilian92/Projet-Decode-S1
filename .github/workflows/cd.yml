@@ -41,12 +41,24 @@ jobs:
             ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
 
+      - name: Create .env.local
+        working-directory: projet-s1-symfony
+        run: |
+          cat > .env.local << EOF
+          APP_ENV=prod
+          APP_DEBUG=0
+          APP_SECRET=${{ secrets.APP_SECRET }}
+          DEFAULT_URI=${{ secrets.DEFAULT_URI }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          EOF
+
       - name: Install Composer dependencies
         working-directory: projet-s1-symfony
         env:
           APP_ENV: prod
           APP_DEBUG: "0"
-        run: composer install --no-dev --optimize-autoloader --no-interaction
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
       - name: Install npm dependencies
         working-directory: projet-s1-symfony
@@ -152,6 +164,17 @@ jobs:
 
           export APP_ENV=prod
           export APP_DEBUG=0
+
+          echo "Création du fichier .env.local..."
+          cat > .env.local << EOF
+          APP_ENV=prod
+          APP_DEBUG=0
+          APP_SECRET=${{ secrets.APP_SECRET }}
+          DEFAULT_URI=${{ secrets.DEFAULT_URI }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          EOF
+          chmod 600 .env.local
 
           echo "Installation des dépendances PHP..."
           sudo apt-get update
