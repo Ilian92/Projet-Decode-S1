@@ -38,6 +38,7 @@ jobs:
         with:
           path: |
             projet-s1-symfony/node_modules
+            simple-agent/node_modules
             ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
 
@@ -64,6 +65,10 @@ jobs:
         working-directory: projet-s1-symfony
         run: npm ci
 
+      - name: Install simple-agent npm dependencies
+        working-directory: simple-agent
+        run: npm ci
+
   build:
     needs: ["prepare"]
     name: "Build assets"
@@ -82,6 +87,7 @@ jobs:
         with:
           path: |
             projet-s1-symfony/node_modules
+            simple-agent/node_modules
             ~/.npm
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}-prod
 
@@ -219,6 +225,16 @@ jobs:
           mkdir -p var/cache var/log
           chmod -R 775 var/cache var/log
 
+          echo "Installation des dépendances simple-agent..."
+          cd "/home/ilian/Dev/Projet-Decode-S1/simple-agent"
+          npm ci
+
+          echo "Démarrage/redémarrage de simple-agent avec pm2..."
+          command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2 --unsafe-perm
+          pm2 restart simple-agent 2>/dev/null || pm2 start "npm run server" --name simple-agent
+          pm2 save
+
+          cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
           echo "Déploiement terminé avec succès!"
           EOF
 
