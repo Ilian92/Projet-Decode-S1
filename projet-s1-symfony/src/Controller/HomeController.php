@@ -18,7 +18,7 @@ final class HomeController extends AbstractController
 
     #[Route('/', name: 'app_home')]
     public function index(): Response
-    {        
+    {
         $bestsellers = [];
         try {
             $bestsellerBooks = $this->bookRepository->findBestsellers(6);
@@ -31,13 +31,13 @@ final class HomeController extends AbstractController
                         $firstAuthor = $authors->first();
                         $authorName = $firstAuthor->getFirstName() . ' ' . $firstAuthor->getLastName();
                     }
-                    
+
                     $price = '24,90';
                     if ($book->getCurrentUnitPrice()) {
                         $priceInEuros = $book->getCurrentUnitPrice() / 100;
                         $price = number_format($priceInEuros, 2, ',', ' ');
                     }
-                    
+
                     $bestsellers[] = [
                         'title' => $work->getTitle(),
                         'author' => $authorName,
@@ -51,6 +51,7 @@ final class HomeController extends AbstractController
 
         }
 
+        $editorsPicks = [];
         try {
             $editorsPickResults = $this->openLibraryService->search([
                 'q' => 'classic',
@@ -65,24 +66,21 @@ final class HomeController extends AbstractController
 
         }
 
+        $categories = [];
         $popularSubjects = ['fiction', 'science_fiction', 'mystery'];
         foreach ($popularSubjects as $subject) {
             try {
-                $searchResults = $this->openLibraryService->search([
-                    'subject' => $subject,
-                    'limit' => 4,
-                    'offset' => 0,
-                ]);
-                
+                $subjectResults = $this->openLibraryService->searchSubject($subject, 4, 0);
+
                 $books = [];
-                if (isset($searchResults['docs'])) {
-                    foreach ($searchResults['docs'] as $work) {
+                if (isset($subjectResults['works']) && is_array($subjectResults['works'])) {
+                    foreach ($subjectResults['works'] as $work) {
                         $books[] = $this->openLibraryService->formatWorkForFrontend($work);
                     }
                 }
-                
-                $workCount = $searchResults['numFound'] ?? 0;
-                
+
+                $workCount = $subjectResults['work_count'] ?? 0;
+
                 $categories[] = [
                     'name' => ucfirst(str_replace('_', ' ', $subject)),
                     'key' => $subject,
