@@ -67,7 +67,7 @@ jobs:
 
       - name: Install simple-agent npm dependencies
         working-directory: simple-agent
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
   build:
     needs: ["prepare"]
@@ -227,7 +227,7 @@ jobs:
 
           echo "Installation des dépendances simple-agent..."
           cd "/home/ilian/Dev/Projet-Decode-S1/simple-agent"
-          npm ci
+          npm ci --legacy-peer-deps
 
           echo "Démarrage/redémarrage de simple-agent avec pm2..."
           command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2 --unsafe-perm
