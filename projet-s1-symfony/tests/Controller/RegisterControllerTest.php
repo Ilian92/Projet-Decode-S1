@@ -2,10 +2,24 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Customer;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegisterControllerTest extends WebTestCase
 {
+    protected function tearDown(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $customer = $em->getRepository(Customer::class)->findOneBy(['email' => 'ilian.leboss@mail.com']);
+        if ($customer) {
+            $em->remove($customer);
+            $em->flush();
+        }
+
+        parent::tearDown();
+    }
+
     public function testRegisterPageLoads(): void
     {
         $client = static::createClient();
