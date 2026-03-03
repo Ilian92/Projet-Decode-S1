@@ -232,8 +232,10 @@ jobs:
           EOF
 
       - name: "Start n8n and Cloudflare tunnel"
+        env:
+          CF_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
         run: |
-          ssh rpi 'bash -s' << 'EOF'
+          ssh rpi bash << EOF
           set -euo pipefail
 
           echo "Démarrage/redémarrage de n8n..."
@@ -245,7 +247,6 @@ jobs:
             -p 8001:5678 \
             -e GENERIC_TIMEZONE="Europe/Paris" \
             -e TZ="Europe/Paris" \
-            -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
             -e N8N_RUNNERS_ENABLED=true \
             -e WEBHOOK_URL="https://ilian-igoudjil.decode.school" \
             -e N8N_HOST="ilian-igoudjil.decode.school" \
@@ -265,7 +266,9 @@ jobs:
             sudo install -m 755 /tmp/cloudflared /usr/local/bin/cloudflared
           )
           command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2 --unsafe-perm
-          pm2 restart cloudflare-tunnel 2>/dev/null || pm2 start "cloudflared tunnel run --token ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}" --name cloudflare-tunnel
+          pm2 stop cloudflare-tunnel 2>/dev/null || true
+          pm2 delete cloudflare-tunnel 2>/dev/null || true
+          pm2 start "cloudflared tunnel run --token ${CF_TUNNEL_TOKEN}" --name cloudflare-tunnel
           pm2 save
 
           echo "Services démarrés avec succès!"
