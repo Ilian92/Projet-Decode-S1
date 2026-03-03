@@ -176,6 +176,17 @@ class CartController extends AbstractController
             ];
         }
 
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'unit_amount' => $this->cartService->getShippingCost(),
+                'product_data' => [
+                    'name' => 'Livraison',
+                ],
+            ],
+            'quantity' => 1,
+        ];
+
         $session = CheckoutSession::create([
             'mode' => 'payment',
             'line_items' => $lineItems,
@@ -196,9 +207,9 @@ class CartController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $order = $this->orderService->create($user);
+        $cartItems = $this->cartService->getCartWithDetails();
+        $order = $this->orderService->create($user, $cartItems);
         if ($order === null) {
-            $cartItems = $this->cartService->getCartWithDetails();
             if (empty($cartItems)) {
                 $this->addFlash('success', 'Votre panier est vide ou a déjà été commandé.');
             } else {

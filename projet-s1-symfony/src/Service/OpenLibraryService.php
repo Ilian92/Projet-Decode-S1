@@ -116,6 +116,14 @@ class OpenLibraryService
         return $this->getJson("/search.json", $params);
     }
 
+    public function searchSubject(string $subject, int $limit = 10, int $offset = 0): array
+    {
+        return $this->getJson("/subjects/" . rawurlencode($subject) . ".json", [
+            'limit' => $limit,
+            'offset' => $offset,
+        ]);
+    }
+
     /**
      * Format a work from OpenLibrary API for frontend display
      * Handles both search API format and subject works format
@@ -125,8 +133,8 @@ class OpenLibraryService
      */
     public function formatWorkForFrontend(array $work): array
     {
-        // Handle cover - can be cover_i (search API) or covers array (subject API)
-        $coverId = $work['cover_i'] ?? null;
+        // Handle cover - cover_i (search API), cover_id (subjects API), or covers array
+        $coverId = $work['cover_i'] ?? $work['cover_id'] ?? null;
         if (!$coverId && isset($work['covers']) && !empty($work['covers'])) {
             $coverId = is_array($work['covers']) ? $work['covers'][0] : $work['covers'];
         }

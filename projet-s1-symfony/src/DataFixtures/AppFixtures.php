@@ -301,7 +301,6 @@ class AppFixtures extends Fixture
         $subscription1->setAddress($address2);
         $subscription1->setStartDate(new \DateTime('2025-01-01'));
         $subscription1->setExpectedEndDate(new \DateTime('2025-07-01'));
-        $subscription1->setStatus('active');
         $subscription1->setNextPaymentDate(new \DateTime('2026-03-01'));
         $manager->persist($subscription1);
 
@@ -311,7 +310,6 @@ class AppFixtures extends Fixture
         $subscription2->setAddress($address3);
         $subscription2->setStartDate(new \DateTime('2025-06-01'));
         $subscription2->setExpectedEndDate(new \DateTime('2025-09-01'));
-        $subscription2->setStatus('active');
         $subscription2->setNextPaymentDate(new \DateTime('2026-03-01'));
         $manager->persist($subscription2);
 
@@ -320,21 +318,18 @@ class AppFixtures extends Fixture
         $monthlyBox1->setSubscription($subscription1);
         $monthlyBox1->setReferenceMonth('2026-01');
         $monthlyBox1->setCreationDate(new \DateTime('2026-01-05'));
-        $monthlyBox1->setShippingStatus('delivered');
         $manager->persist($monthlyBox1);
 
         $monthlyBox2 = new MonthlyBox();
         $monthlyBox2->setSubscription($subscription1);
         $monthlyBox2->setReferenceMonth('2026-02');
         $monthlyBox2->setCreationDate(new \DateTime('2026-02-05'));
-        $monthlyBox2->setShippingStatus('in_transit');
         $manager->persist($monthlyBox2);
 
         $monthlyBox3 = new MonthlyBox();
         $monthlyBox3->setSubscription($subscription2);
         $monthlyBox3->setReferenceMonth('2026-02');
         $monthlyBox3->setCreationDate(new \DateTime('2026-02-03'));
-        $monthlyBox3->setShippingStatus('preparing');
         $manager->persist($monthlyBox3);
 
         // ========== ORDERS ==========

@@ -12,6 +12,7 @@ class OrderExtension extends AbstractExtension
     {
         return [
             new TwigFilter('order_status_label', [$this, 'orderStatusLabel']),
+            new TwigFilter('order_status_badge_class', [$this, 'orderStatusBadgeClass']),
         ];
     }
 
@@ -20,5 +21,12 @@ class OrderExtension extends AbstractExtension
         $enum = OrderStatus::tryFromString($status);
 
         return $enum?->label() ?? (string) $status;
+    }
+
+    public function orderStatusBadgeClass(?string $status): string
+    {
+        $enum = OrderStatus::tryFromString($status);
+
+        return $enum?->badgeClass() ?? 'bg-gray-200 text-gray-900';
     }
 }

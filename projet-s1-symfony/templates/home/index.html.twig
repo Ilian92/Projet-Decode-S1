@@ -188,7 +188,7 @@
 	</section>
 
 	{# 3. Monthly Box / Subscription Highlight #}
-	{% include 'components/subscription_box.html.twig' %}
+	{% include 'components/subscription_box.html.twig' with { ctaUrl: path('app_subscription_index'), ctaText: "Voir les offres et s'abonner" } %}
 
 	{# 4. Sélection des libraires #}
 	<section class="bg-primary-100 py-16">
