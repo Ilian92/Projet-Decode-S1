@@ -118,33 +118,33 @@ class AppFixtures extends Fixture
         $genreThriller->setLabel('Thriller');
         $manager->persist($genreThriller);
 
-        // ========== AUTHORS ==========
+        // ========== AUTHORS (Open Library: OL107571A, OL23919A, OL27695A, OL34221A) ==========
         $author1 = new Author();
         $author1->setFirstName('Victor');
         $author1->setLastName('Hugo');
-        $author1->setBiography('Écrivain français majeur du XIXe siècle, connu pour Les Misérables et Notre-Dame de Paris.');
-        $author1->setPhotoUrl('https://example.com/photos/victor-hugo.jpg');
+        $author1->setBiography('Victor Hugo (1802–1885) was a French poet, novelist, and dramatist of the Romantic movement. He is considered one of the greatest French writers; his best-known works are Les Misérables and The Hunchback of Notre-Dame (Notre-Dame de Paris).');
+        $author1->setPhotoUrl('https://covers.openlibrary.org/a/olid/OL107571A-L.jpg');
         $manager->persist($author1);
 
         $author2 = new Author();
-        $author2->setFirstName('J.K.');
+        $author2->setFirstName('J. K.');
         $author2->setLastName('Rowling');
-        $author2->setBiography('Auteure britannique, créatrice de la saga Harry Potter.');
-        $author2->setPhotoUrl('https://example.com/photos/jk-rowling.jpg');
+        $author2->setBiography('Joanne "Jo" Murray, OBE (née Rowling), better known under the pen name J. K. Rowling, is a British author best known as the creator of the Harry Potter fantasy series, the idea for which was conceived whilst on a train trip from Manchester to London in 1990. The Potter books have gained worldwide attention, won multiple awards, sold more than 400 million copies, and been the basis for a popular series of films.');
+        $author2->setPhotoUrl('https://covers.openlibrary.org/a/olid/OL23919A-L.jpg');
         $manager->persist($author2);
 
         $author3 = new Author();
         $author3->setFirstName('Agatha');
         $author3->setLastName('Christie');
-        $author3->setBiography('Romancière britannique, reine du crime, créatrice de Hercule Poirot.');
-        $author3->setPhotoUrl('https://example.com/photos/agatha-christie.jpg');
+        $author3->setBiography('Dame Agatha Mary Clarissa Christie, Lady Mallowan (1890–1976) was an English writer known for her 66 detective novels and 14 short story collections. She created the characters Hercule Poirot and Miss Marple, and is the best-selling fiction writer of all time.');
+        $author3->setPhotoUrl('https://covers.openlibrary.org/a/olid/OL27695A-L.jpg');
         $manager->persist($author3);
 
         $author4 = new Author();
         $author4->setFirstName('Isaac');
         $author4->setLastName('Asimov');
-        $author4->setBiography('Écrivain américano-russe, maître de la science-fiction.');
-        $author4->setPhotoUrl('https://example.com/photos/isaac-asimov.jpg');
+        $author4->setBiography('Asimov was born in Petrovichi, Russia (1920) and emigrated to Brooklyn as a child. He taught himself to read at five and began writing stories by eleven. He earned a Ph.D. in biochemistry from Columbia and became a full-time writer in 1958. A highly prolific author, he wrote or edited more than 500 books, including the Foundation series and the Robot series.');
+        $author4->setPhotoUrl('https://covers.openlibrary.org/a/olid/OL34221A-L.jpg');
         $manager->persist($author4);
 
         // ========== PUBLISHERS ==========
@@ -166,106 +166,106 @@ class AppFixtures extends Fixture
         $publisher3->setWebsite('https://www.livredepoche.com');
         $manager->persist($publisher3);
 
-        // ========== WORKS ==========
+        // ========== WORKS (Open Library work IDs) ==========
         $work1 = new Work();
-        $work1->setId('OL_FIXTURE_1W');
+        $work1->setId('OL1063588W');
         $work1->setTitle('Les Misérables');
-        $work1->setSummary('Un ancien forçat, Jean Valjean, cherche la rédemption dans la France du XIXe siècle.');
+        $work1->setSummary('In this story of the trials of the peasant Jean Valjean—a man unjustly imprisoned, baffled by destiny, and hounded by his nemesis, the magnificently realized, ambiguously malevolent police detective Javert—Hugo achieves the sort of rare imaginative resonance that allows a work of art to transcend its genre.');
         $work1->addGenre($genreRomance);
         $work1->addAuthor($author1);
         $manager->persist($work1);
 
         $work2 = new Work();
-        $work2->setId('OL_FIXTURE_2W');
-        $work2->setTitle('Harry Potter à l\'école des sorciers');
-        $work2->setSummary('Un jeune sorcier découvre son héritage magique et entre à Poudlard.');
+        $work2->setId('OL82563W');
+        $work2->setTitle('Harry Potter and the Philosopher\'s Stone');
+        $work2->setSummary('Harry Potter, an orphan raised by his aunt and uncle, discovers on his eleventh birthday that he is a wizard. He is summoned to Hogwarts School of Witchcraft and Wizardry, where he finds friends, confronts the dark legacy of his parents\' murder, and uncovers the truth about the Philosopher\'s Stone.');
         $work2->addGenre($genreFantasy);
         $work2->addAuthor($author2);
         $manager->persist($work2);
 
         $work3 = new Work();
-        $work3->setId('OL_FIXTURE_3W');
-        $work3->setTitle('Le Crime de l\'Orient-Express');
-        $work3->setSummary('Hercule Poirot enquête sur un meurtre dans un train de luxe.');
+        $work3->setId('OL471576W');
+        $work3->setTitle('Murder on the Orient Express');
+        $work3->setSummary('Hercule Poirot investigates a murder aboard the Orient Express. With the train stuck in a snowdrift and the killer among the passengers, the Belgian detective must unravel a web of secrets and alibis.');
         $work3->addGenre($genrePolicier);
         $work3->addGenre($genreThriller);
         $work3->addAuthor($author3);
         $manager->persist($work3);
 
         $work4 = new Work();
-        $work4->setId('OL_FIXTURE_4W');
-        $work4->setTitle('Fondation');
-        $work4->setSummary('La saga épique de la chute et de la renaissance d\'un empire galactique.');
+        $work4->setId('OL45883W');
+        $work4->setTitle('Foundation');
+        $work4->setSummary('The first novel in Isaac Asimov\'s acclaimed Foundation series. Psychohistorian Hari Seldon predicts the fall of the Galactic Empire and establishes two Foundations at opposite ends of the galaxy to preserve knowledge and shorten the coming dark age.');
         $work4->addGenre($genreSF);
         $work4->addAuthor($author4);
         $manager->persist($work4);
 
         $work5 = new Work();
-        $work5->setId('OL_FIXTURE_5W');
-        $work5->setTitle('Notre-Dame de Paris');
-        $work5->setSummary('L\'histoire tragique de Quasimodo et Esmeralda dans le Paris médiéval.');
+        $work5->setId('OL15202030W');
+        $work5->setTitle('Notre Dame de Paris');
+        $work5->setSummary('Set in medieval Paris, the novel tells the tragic story of the beautiful gypsy Esmeralda and the deformed bell-ringer Quasimodo, who loves her. It explores themes of fate, obsession, and the Gothic architecture of the cathedral itself.');
         $work5->addGenre($genreRomance);
         $work5->addAuthor($author1);
         $manager->persist($work5);
 
-        // ========== BOOKS ==========
+        // ========== BOOKS (Open Library edition IDs & cover URLs) ==========
         $book1 = new Book();
-        $book1->setId('OL_FIXTURE_1M');
+        $book1->setId('OL24225109M');
         $book1->setWork($work1);
         $book1->setBookPublisher($publisher1);
         $book1->setPublicationDate(new \DateTime('1862-04-03'));
         $book1->setReleaseDate(new \DateTime('2020-01-15'));
         $book1->setCurrentUnitPrice(1590);
         $book1->setAvailableStock(50);
-        $book1->setCoverImageUrl('https://example.com/covers/les-miserables.jpg');
+        $book1->setCoverImageUrl('https://covers.openlibrary.org/b/id/12721865-L.jpg');
         $book1->setWeightGrams(850);
         $manager->persist($book1);
 
         $book2 = new Book();
-        $book2->setId('OL_FIXTURE_2M');
+        $book2->setId('OL61027601M');
         $book2->setWork($work2);
         $book2->setBookPublisher($publisher2);
         $book2->setPublicationDate(new \DateTime('1997-06-26'));
         $book2->setReleaseDate(new \DateTime('2021-09-01'));
         $book2->setCurrentUnitPrice(1290);
         $book2->setAvailableStock(120);
-        $book2->setCoverImageUrl('https://example.com/covers/harry-potter-1.jpg');
+        $book2->setCoverImageUrl('https://covers.openlibrary.org/b/id/15155833-L.jpg');
         $book2->setWeightGrams(320);
         $manager->persist($book2);
 
         $book3 = new Book();
-        $book3->setId('OL_FIXTURE_3M');
+        $book3->setId('OL32440766M');
         $book3->setWork($work3);
         $book3->setBookPublisher($publisher3);
         $book3->setPublicationDate(new \DateTime('1934-01-01'));
         $book3->setReleaseDate(new \DateTime('2019-05-10'));
         $book3->setCurrentUnitPrice(890);
         $book3->setAvailableStock(75);
-        $book3->setCoverImageUrl('https://example.com/covers/orient-express.jpg');
+        $book3->setCoverImageUrl('https://covers.openlibrary.org/b/id/11100465-L.jpg');
         $book3->setWeightGrams(280);
         $manager->persist($book3);
 
         $book4 = new Book();
-        $book4->setId('OL_FIXTURE_4M');
+        $book4->setId('OL7353617M');
         $book4->setWork($work4);
         $book4->setBookPublisher($publisher1);
         $book4->setPublicationDate(new \DateTime('1951-05-01'));
         $book4->setReleaseDate(new \DateTime('2022-03-15'));
         $book4->setCurrentUnitPrice(1190);
         $book4->setAvailableStock(60);
-        $book4->setCoverImageUrl('https://example.com/covers/fondation.jpg');
+        $book4->setCoverImageUrl('https://covers.openlibrary.org/b/olid/OL7353617M-L.jpg');
         $book4->setWeightGrams(410);
         $manager->persist($book4);
 
         $book5 = new Book();
-        $book5->setId('OL_FIXTURE_5M');
+        $book5->setId('OL11036667M');
         $book5->setWork($work5);
         $book5->setBookPublisher($publisher2);
         $book5->setPublicationDate(new \DateTime('1831-03-16'));
         $book5->setReleaseDate(new \DateTime('2020-11-20'));
         $book5->setCurrentUnitPrice(1390);
         $book5->setAvailableStock(45);
-        $book5->setCoverImageUrl('https://example.com/covers/notre-dame.jpg');
+        $book5->setCoverImageUrl('https://covers.openlibrary.org/b/id/2626880-L.jpg');
         $book5->setWeightGrams(550);
         $manager->persist($book5);
 
