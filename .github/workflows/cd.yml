@@ -172,14 +172,7 @@ jobs:
           export APP_DEBUG=0
 
           echo "Création du fichier .env.local..."
-          cat > .env.local << 'ENVEOF'
-          APP_ENV=prod
-          APP_DEBUG=0
-          APP_SECRET=${{ secrets.APP_SECRET }}
-          DEFAULT_URI=${{ secrets.DEFAULT_URI }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-          ENVEOF
+          printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=${{ secrets.APP_SECRET }}\nDEFAULT_URI=${{ secrets.DEFAULT_URI }}\nDATABASE_URL=${{ secrets.DATABASE_URL }}\nMAILER_DSN=${{ secrets.MAILER_DSN }}\nSTRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}\n' > .env.local
           chmod 600 .env.local
 
           echo "Installation des dépendances PHP..."
@@ -188,7 +181,7 @@ jobs:
 
           # Supprimer vendor/ pour éviter les conflits de permissions
           sudo rm -rf vendor/
-          composer install --no-dev --optimize-autoloader --no-interaction
+          composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
           echo "Installation des dépendances Node.js..."
           sudo apt install nodejs npm -y
@@ -319,4 +312,3 @@ jobs:
           else
             echo "Échec du déploiement"
           fi
- 
