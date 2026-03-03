@@ -26,6 +26,13 @@
 				{# User section: Cart, Name, Disconnect (if logged in) or Login icon (if not) #}
 				<div class="flex-shrink-0 flex items-center gap-3 relative z-[100]" id="header-user-section" style="z-index: 100;">
 					{% if app.user %}
+						{# Chatbot IA #}
+						<a href="{{ path('app_chat') }}" id="header-chatbot-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Chatbot IA" title="Chatbot IA">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z"/>
+							</svg>
+						</a>
+
 						{# Shopping Cart #}
 						<a href="{{ path('cart_show') }}" id="header-cart-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-primary-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Panier ({{ cart_item_count }} article{{ cart_item_count != 1 ? 's' : '' }})">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-700" fill="none" viewbox="0 0 24 24" stroke="currentColor">
