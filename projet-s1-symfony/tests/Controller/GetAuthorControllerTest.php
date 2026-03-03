@@ -8,6 +8,18 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GetAuthorControllerTest extends WebTestCase
 {
+    protected function tearDown(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $authors = $em->getRepository(Author::class)->findAll();
+        foreach ($authors as $author) {
+            $em->remove($author);
+        }
+        $em->flush();
+
+        parent::tearDown();
+    }
+
     public function testGetAuthorReturnsSuccess(): void
     {
         $client = static::createClient();
@@ -33,7 +45,7 @@ class GetAuthorControllerTest extends WebTestCase
 
         $this->assertResponseHeaderSame('content-type', 'application/json');
     }
-    
+
     public function testGetAuthorNotFound(): void
     {
         $client = static::createClient();

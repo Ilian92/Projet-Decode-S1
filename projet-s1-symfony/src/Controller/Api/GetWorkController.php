@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class GetWorkController extends AbstractController
 {
     #[Route('/database/get/work/{id}', name: 'app_get_work', methods: ['GET'])]
-    public function index(int $id, WorkRepository $workRepository): Response
+    public function index(string $id, WorkRepository $workRepository): Response
     {
         $work = $workRepository->find($id);
 
