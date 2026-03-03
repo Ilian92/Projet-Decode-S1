@@ -161,4 +161,46 @@ final class AdminMonthlyBoxController extends AbstractController
             'book_olid' => $book->getId(),
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/api/subscription-data', name: 'app_admin_monthly_box_subscription_data', methods: ['GET'])]
+    public function apiSubscriptionData(
+        SubscriptionRepository $subscriptionRepository
+    ): JsonResponse {
+        $activeSubscriptions = $subscriptionRepository->findBy(['status' => 'active']);
+
+        $result = [];
+        foreach ($activeSubscriptions as $subscription) {
+            $customer = $subscription->getCustomer();
+            if ($customer === null) {
+                continue;
+            }
+
+            $workOlids = [];
+            foreach ($customer->getOrders() as $order) {
+                foreach ($order->getOrderLine() as $orderLine) {
+                    $book = $orderLine->getBook();
+                    $work = $book?->getWork();
+                    $workId = $work?->getId();
+                    if ($workId === null) {
+                        continue;
+                    }
+                    if (!in_array($workId, $workOlids, true)) {
+                        $workOlids[] = $workId;
+                    }
+                    if (\count($workOlids) >= 3) {
+                        break 2;
+                    }
+                }
+            }
+
+            $result[] = [
+                'subscription_id' => $subscription->getId(),
+                'work_olids' => $workOlids,
+            ];
+        }
+
+        return new JsonResponse([
+            'subscriptions' => $result,
+        ]);
+    }
 }
