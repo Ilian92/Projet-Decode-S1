@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de cookies — Mississippi.com{% endblock %}
+
+{% block body %}
+    {# Hero Banner #}
+    <section class="relative py-16 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-primary-700/90"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80');"></div>
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-72 h-72 bg-secondary-800 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-contrasted-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="font-bodoni text-4xl md:text-5xl font-bold text-white mb-4">Politique de cookies</h1>
+            <p class="font-bodoni text-lg text-primary-100 max-w-xl mx-auto">Comment nous utilisons les cookies pour améliorer votre expérience</p>
+        </div>
+    </section>
+
+    {# Content #}
+    <section class="py-16 bg-primary-100">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <div class="space-y-8">
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">1</span>
+                        Qu'est-ce qu'un cookie ?
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, smartphone, tablette) lors de votre visite sur un site web. Il permet au site de mémoriser vos actions et préférences (identifiant de session, langue, taille de police, etc.) sur une période donnée, afin que vous n'ayez pas à les resaisir à chaque visite.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">2</span>
+                        Types de cookies utilisés
+                    </h2>
+
+                    <div class="space-y-5">
+                        <div class="rounded-xl p-8 bg-primary-50 border border-primary-100">
+                            <h3 class="font-bodoni font-bold text-primary-900 mb-2">Cookies strictement nécessaires</h3>
+                            <p class="text-primary-700 text-sm leading-relaxed">Ces cookies sont indispensables au fonctionnement du site. Ils permettent notamment la gestion de votre session, la sécurisation de votre connexion (CSRF) et le bon déroulement de votre panier. Ils ne peuvent pas être désactivés.</p>
+                        </div>
+                        <div class="rounded-xl p-8 bg-primary-50 border border-primary-100">
+                            <h3 class="font-bodoni font-bold text-primary-900 mb-2">Cookies de performance</h3>
+                            <p class="text-primary-700 text-sm leading-relaxed">Ces cookies collectent des informations anonymisées sur la façon dont les visiteurs utilisent le site (pages les plus consultées, messages d'erreur, etc.) afin de nous aider à améliorer son fonctionnement.</p>
+                        </div>
+                        <div class="rounded-xl p-8 bg-primary-50 border border-primary-100">
+                            <h3 class="font-bodoni font-bold text-primary-900 mb-2">Cookies de personnalisation</h3>
+                            <p class="text-primary-700 text-sm leading-relaxed">Ces cookies permettent au site de mémoriser vos préférences (langue, région) et de personnaliser votre expérience de navigation, par exemple en affichant des recommandations adaptées à vos lectures passées.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">3</span>
+                        Durée de conservation des cookies
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Les cookies de session sont supprimés lorsque vous fermez votre navigateur. Les cookies persistants ont une durée de vie maximale de <strong>13 mois</strong>, conformément aux recommandations de la CNIL.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">4</span>
+                        Gérer vos préférences
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed mb-4">
+                        Vous pouvez à tout moment modifier vos préférences en matière de cookies via les paramètres de votre navigateur. Voici comment procéder pour les navigateurs courants :
+                    </p>
+                    <ul class="text-primary-700 leading-relaxed space-y-2 ml-4 list-disc list-inside">
+                        <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" class="text-secondary-800 hover:underline">Google Chrome</a></li>
+                        <li><a href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" target="_blank" rel="noopener noreferrer" class="text-secondary-800 hover:underline">Mozilla Firefox</a></li>
+                        <li><a href="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" class="text-secondary-800 hover:underline">Apple Safari</a></li>
+                        <li><a href="https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge" target="_blank" rel="noopener noreferrer" class="text-secondary-800 hover:underline">Microsoft Edge</a></li>
+                    </ul>
+                    <p class="text-primary-700 leading-relaxed mt-4">
+                        Notez que la désactivation de certains cookies peut affecter votre expérience de navigation sur notre site.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">5</span>
+                        En savoir plus
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Pour en savoir plus sur la protection de vos données personnelles, consultez notre <a href="{{ path('app_legal_confidential') }}" class="text-secondary-800 hover:underline">politique de confidentialité</a>. Pour toute question relative aux cookies, contactez-nous à <a href="mailto:privacy@mississippi.com" class="text-secondary-800 hover:underline">privacy@mississippi.com</a>.
+                    </p>
+                </div>
+
+            </div>
+
+            <p class="text-center text-primary-400 text-sm mt-10">Dernière mise à jour : {{ "now"|date("d/m/Y") }}</p>
+        </div>
+    </section>
+{% endblock %}

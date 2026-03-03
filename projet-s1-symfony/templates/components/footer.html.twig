@@ -9,10 +9,11 @@
         </div>
 
         <nav aria-label="Footer" class="mt-2 md:mt-0">
-            <ul class="flex gap-4 text-sm">
-                <li><a href="#" class="hover:underline">About</a></li>
-                <li><a href="#" class="hover:underline">Terms</a></li>
-                <li><a href="#" class="hover:underline">Privacy</a></li>
+            <ul class="flex flex-wrap gap-4 text-sm">
+                <li><a href="{{ path('app_legal_mentions') }}" class="hover:underline">Mentions légales</a></li>
+                <li><a href="{{ path('app_legal_confidential') }}" class="hover:underline">Confidentialité</a></li>
+                <li><a href="{{ path('app_legal_cookie') }}" class="hover:underline">Cookies</a></li>
+                <li><a href="{{ path('app_legal_sales') }}" class="hover:underline">CGV</a></li>
             </ul>
         </nav>
 
