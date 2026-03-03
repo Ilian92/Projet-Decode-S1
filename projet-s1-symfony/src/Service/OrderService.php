@@ -15,16 +15,31 @@ class OrderService
     private const SHIPPING_COST_CENTIMES = 500;
 
     public function __construct(
-        private CartService $cartService,
-        private OrderRepository $orderRepository,
         private EntityManagerInterface $entityManager
     ) {
     }
 
-    public function create(Customer $customer): ?Order
+    public function create(Customer $customer, array $bookItems, ?string $stripePaymentIntentId = null): ?Order
     {
-        $cartItems = $this->cartService->getCartWithDetails();
-        if (empty($cartItems)) {
+        if (empty($bookItems)) {
+            return null;
+        }
+
+        $items = [];
+        foreach ($bookItems as $item) {
+            $book = $item['book'] ?? null;
+            $quantity = (int) ($item['quantity'] ?? 0);
+            if (!$book instanceof Book || $quantity <= 0) {
+                continue;
+            }
+            $availableStock = $book->getAvailableStock() ?? 0;
+            if ($availableStock > 0 && $quantity > $availableStock) {
+                $quantity = $availableStock;
+            }
+            $items[] = ['book' => $book, 'quantity' => $quantity];
+        }
+
+        if (empty($items)) {
             return null;
         }
 
@@ -40,9 +55,12 @@ class OrderService
         $order->setStatus(OrderStatus::PENDING_RESTOCK->value);
         $order->setShippingCost(self::SHIPPING_COST_CENTIMES);
         $order->setTrackingNumber('');
+        if ($stripePaymentIntentId !== null) {
+            $order->setStripePaymentIntentId($stripePaymentIntentId);
+        }
 
         $subtotal = 0;
-        foreach ($cartItems as $item) {
+        foreach ($items as $item) {
             $book = $item['book'];
             $quantity = $item['quantity'];
             $unitPrice = $book->getCurrentUnitPrice() ?? 0;

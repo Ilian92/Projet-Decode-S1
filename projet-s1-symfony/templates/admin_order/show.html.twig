@@ -40,8 +40,8 @@
 						</tr>
 						<tr class="hover:bg-primary-50 transition-colors duration-200">
 							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Statut</th>
-							<td class="px-6 py-4 text-sm text-primary-600">{{ order.status|order_status_label }}
-								<span class="text-primary-400">({{ order.status }})</span>
+							<td class="px-6 py-4">
+								<span class="inline-block px-3 py-1.5 text-sm font-bold rounded {{ order.status|order_status_badge_class }}">{{ order.status|order_status_label }}</span>
 							</td>
 						</tr>
 						<tr class="hover:bg-primary-50 transition-colors duration-200">
@@ -141,6 +141,20 @@
 								<span class="font-bodoni font-semibold">Expédier la commande</span>
 							</button>
 						</form>
+					{% endif %}
+					{% if order.stripePaymentIntentId and order.status != 'refunded' %}
+						{% include 'components/refund_modal.html.twig' with {
+							modal_id: 'admin-order-refund-modal-' ~ order.id,
+							form_id: 'admin-order-refund-form-' ~ order.id,
+							action: path('app_admin_order_refund', { id: order.id }),
+							csrf_token: csrf_token('refund' ~ order.id),
+							button_label: 'Rembourser la commande',
+							button_classes: 'inline-flex items-center gap-2 bg-purple-600 text-white rounded-lg px-6 py-3 shadow-sm hover:bg-purple-700 transition-all duration-300',
+							title: 'Rembourser la commande',
+							description: 'Rembourser cette commande via Stripe ? Le client sera crédité sous quelques jours.',
+							confirm_label: 'Oui, rembourser',
+							confirm_classes: 'flex-1 px-4 py-3 rounded-lg font-bodoni font-semibold bg-purple-700 text-white hover:bg-purple-800 transition-colors'
+						} %}
 					{% endif %}
 				</div>
 				{{ include('admin_order/_delete_form.html.twig') }}

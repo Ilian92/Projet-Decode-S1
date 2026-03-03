@@ -19,9 +19,6 @@ class MonthlyBox
     #[ORM\Column]
     private ?\DateTime $creationDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $shippingStatus = null;
-
     #[ORM\OneToOne(mappedBy: 'monthlyBox', cascade: ['persist', 'remove'])]
     private ?Order $table_order = null;
 
@@ -53,18 +50,6 @@ class MonthlyBox
     public function setCreationDate(\DateTime $creationDate): static
     {
         $this->creationDate = $creationDate;
-
-        return $this;
-    }
-
-    public function getShippingStatus(): ?string
-    {
-        return $this->shippingStatus;
-    }
-
-    public function setShippingStatus(string $shippingStatus): static
-    {
-        $this->shippingStatus = $shippingStatus;
 
         return $this;
     }

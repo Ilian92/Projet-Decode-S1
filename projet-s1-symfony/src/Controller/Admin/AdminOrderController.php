@@ -7,6 +7,7 @@ use App\Enum\OrderStatus;
 use App\Form\OrderType;
 use App\Repository\OrderRepository;
 use App\Service\OrderService;
+use App\Service\StripeRefundService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,6 +72,29 @@ final class AdminOrderController extends AbstractController
             $this->addFlash('success', 'Commande #'.$order->getId().' marquée comme expédiée.');
         } else {
             $this->addFlash('error', 'Impossible d\'expédier : des livres sont manquants (stock insuffisant).');
+        }
+        return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/refund', name: 'app_admin_order_refund', methods: ['POST'])]
+    public function refund(Request $request, Order $order, StripeRefundService $stripeRefundService): Response
+    {
+        if (!$this->isCsrfTokenValid('refund' . $order->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if ($order->getStripePaymentIntentId() === null || $order->getStripePaymentIntentId() === '') {
+            $this->addFlash('error', 'Cette commande n\'a pas de paiement Stripe associé (ancienne commande ou paiement hors Stripe). Remboursement impossible.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if ($order->getStatus() === OrderStatus::REFUNDED->value) {
+            $this->addFlash('error', 'Cette commande a déjà été remboursée.');
+            return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
+        }
+        if ($stripeRefundService->refundOrder($order)) {
+            $this->addFlash('success', 'Commande #' . $order->getId() . ' remboursée avec succès. Le client recevra le remboursement sous quelques jours.');
+        } else {
+            $this->addFlash('error', 'Le remboursement Stripe a échoué. Vérifiez la clé Stripe et que le paiement est bien remboursable.');
         }
         return $this->redirectToRoute('app_admin_order_show', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
     }

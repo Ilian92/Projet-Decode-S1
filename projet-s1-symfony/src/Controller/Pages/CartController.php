@@ -176,10 +176,21 @@ class CartController extends AbstractController
             ];
         }
 
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'eur',
+                'unit_amount' => $this->cartService->getShippingCost(),
+                'product_data' => [
+                    'name' => 'Livraison',
+                ],
+            ],
+            'quantity' => 1,
+        ];
+
         $session = CheckoutSession::create([
             'mode' => 'payment',
             'line_items' => $lineItems,
-            'success_url' => $this->generateUrl('cart_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'success_url' => $this->generateUrl('cart_payment_success', [], UrlGeneratorInterface::ABSOLUTE_URL) . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $this->generateUrl('cart_show', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
@@ -187,7 +198,7 @@ class CartController extends AbstractController
     }
 
     #[Route('/payment-success', name: 'payment_success', methods: ['GET'])]
-    public function paymentSuccess(): Response
+    public function paymentSuccess(Request $request): Response
     {
         $user = $this->getUser();
         if (!$user instanceof Customer) {
@@ -196,9 +207,27 @@ class CartController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $order = $this->orderService->create($user);
+        $sessionId = $request->query->getString('session_id');
+        $stripePaymentIntentId = null;
+        if ($sessionId !== '') {
+            $secretKey = $_ENV['STRIPE_SECRET_KEY'] ?? null;
+            if ($secretKey) {
+                Stripe::setApiKey($secretKey);
+                try {
+                    $session = CheckoutSession::retrieve($sessionId, ['expand' => ['payment_intent']]);
+                    if ($session->mode === 'payment' && isset($session->payment_intent)) {
+                        $pi = $session->payment_intent;
+                        $stripePaymentIntentId = is_object($pi) ? $pi->id : $pi;
+                    }
+                } catch (\Throwable) {
+                    // Continue without payment intent; order can still be created but won't be refundable via Stripe
+                }
+            }
+        }
+
+        $cartItems = $this->cartService->getCartWithDetails();
+        $order = $this->orderService->create($user, $cartItems, $stripePaymentIntentId);
         if ($order === null) {
-            $cartItems = $this->cartService->getCartWithDetails();
             if (empty($cartItems)) {
                 $this->addFlash('success', 'Votre panier est vide ou a déjà été commandé.');
             } else {

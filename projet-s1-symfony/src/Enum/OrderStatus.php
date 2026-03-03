@@ -9,6 +9,7 @@ enum OrderStatus: string
     case SHIPPED = 'shipped';
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
+    case REFUNDED = 'refunded';
 
     public function label(): string
     {
@@ -18,6 +19,22 @@ enum OrderStatus: string
             self::SHIPPED => 'Expédié',
             self::DELIVERED => 'Livré',
             self::CANCELLED => 'Annulée',
+            self::REFUNDED => 'Remboursée',
+        };
+    }
+
+    /**
+     * Tailwind CSS classes for status badge (bg-* text-*).
+     */
+    public function badgeClass(): string
+    {
+        return match ($this) {
+            self::PENDING_RESTOCK => 'bg-amber-200 text-amber-900',
+            self::PENDING_SHIPMENT => 'bg-yellow-200 text-yellow-900',
+            self::SHIPPED => 'bg-blue-200 text-blue-900',
+            self::DELIVERED => 'bg-green-200 text-green-900',
+            self::CANCELLED => 'bg-red-200 text-red-900',
+            self::REFUNDED => 'bg-purple-200 text-purple-900',
         };
     }
 

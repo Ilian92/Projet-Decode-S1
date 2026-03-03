@@ -108,250 +108,42 @@
 		</div>
 	</nav>
 	<script>
-		(function () { // Prevent multiple executions
-if (window.headerDebugInitialized) {
-console.log('[HEADER DEBUG] Script already initialized, skipping...');
-return;
-}
-window.headerDebugInitialized = true;
+		(function () {
+			if (window.headerClickHandlerAttached) return;
+			window.headerClickHandlerAttached = true;
 
-console.log('[HEADER DEBUG] Script loaded');
+			if (!window.headerClickHandler) {
+				window.headerClickHandler = function (e) {
+					const path = e.composedPath();
+					const cartBtn = document.getElementById('header-cart-btn');
+					const logoutBtn = document.getElementById('header-logout-btn');
+					const loginBtn = document.getElementById('header-login-btn');
 
-// Function to attach debug listeners
-function attachDebugListeners() {
-console.log('[HEADER DEBUG] Attaching listeners...');
+					let clickedButton = null;
+					for (let i = 0; i < path.length; i++) {
+						const element = path[i];
+						if (element === cartBtn) {
+							clickedButton = { type: 'cart', element: cartBtn };
+							break;
+						}
+						if (element === logoutBtn) {
+							clickedButton = { type: 'logout', element: logoutBtn };
+							break;
+						}
+						if (element === loginBtn) {
+							clickedButton = { type: 'login', element: loginBtn };
+							break;
+						}
+					}
 
-// Debug: Check if elements exist
-const userSection = document.getElementById('header-user-section');
-console.log('[HEADER DEBUG] User section found:', !! userSection);
+					if (clickedButton && clickedButton.type !== 'cart' && e.defaultPrevented) {
+						window.location.href = clickedButton.element.href;
+					}
+				};
+			}
 
-// Cart button
-const cartBtn = document.getElementById('header-cart-btn');
-if (cartBtn) {
-console.log('[HEADER DEBUG] Cart button found:', cartBtn);
-// Remove old listeners by cloning and replacing
-const newCartBtn = cartBtn.cloneNode(true);
-cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
-
-newCartBtn.addEventListener('click', function (e) {
-console.log('[HEADER DEBUG] Cart button CLICKED directly!', e);
-console.log('[HEADER DEBUG] Cart button href:', this.href);
-// Prevent default since it's just a placeholder (#)
-e.preventDefault();
-console.log('[HEADER DEBUG] Cart button - preventDefault called (placeholder link)');
-});
-newCartBtn.addEventListener('mousedown', function (e) {
-console.log('[HEADER DEBUG] Cart button MOUSEDOWN', e);
-});
-newCartBtn.addEventListener('mouseup', function (e) {
-console.log('[HEADER DEBUG] Cart button MOUSEUP', e);
-});
-} else {
-console.log('[HEADER DEBUG] Cart button NOT found');
-}
-
-// Logout button
-const logoutBtn = document.getElementById('header-logout-btn');
-if (logoutBtn) {
-console.log('[HEADER DEBUG] Logout button found:', logoutBtn);
-// Remove old listeners by cloning and replacing
-const newLogoutBtn = logoutBtn.cloneNode(true);
-logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-
-newLogoutBtn.addEventListener('click', function (e) {
-console.log('[HEADER DEBUG] Logout button CLICKED directly!', e);
-console.log('[HEADER DEBUG] Logout button href:', this.href);
-// Let the link navigate normally - don't prevent default
-});
-newLogoutBtn.addEventListener('mousedown', function (e) {
-console.log('[HEADER DEBUG] Logout button MOUSEDOWN', e);
-});
-newLogoutBtn.addEventListener('mouseup', function (e) {
-console.log('[HEADER DEBUG] Logout button MOUSEUP', e);
-});
-} else {
-console.log('[HEADER DEBUG] Logout button NOT found');
-}
-
-// Login button
-const loginBtn = document.getElementById('header-login-btn');
-if (loginBtn) {
-console.log('[HEADER DEBUG] Login button found:', loginBtn);
-// Remove old listeners by cloning and replacing
-const newLoginBtn = loginBtn.cloneNode(true);
-loginBtn.parentNode.replaceChild(newLoginBtn, loginBtn);
-
-newLoginBtn.addEventListener('click', function (e) {
-console.log('[HEADER DEBUG] Login button CLICKED directly!', e);
-console.log('[HEADER DEBUG] Login button href:', this.href);
-// Let the link navigate normally - don't prevent default
-});
-newLoginBtn.addEventListener('mousedown', function (e) {
-console.log('[HEADER DEBUG] Login button MOUSEDOWN', e);
-});
-newLoginBtn.addEventListener('mouseup', function (e) {
-console.log('[HEADER DEBUG] Login button MOUSEUP', e);
-});
-} else {
-console.log('[HEADER DEBUG] Login button NOT found');
-}
-
-// User name div
-const userNameDiv = document.getElementById('header-user-name');
-if (userNameDiv) {
-console.log('[HEADER DEBUG] User name div found:', userNameDiv);
-userNameDiv.addEventListener('click', function (e) {
-console.log('[HEADER DEBUG] User name div CLICKED!', e);
-});
-} else {
-console.log('[HEADER DEBUG] User name div NOT found');
-}
-
-// Debug: Check z-index and pointer-events
-if (userSection) {
-const computedStyle = window.getComputedStyle(userSection);
-console.log('[HEADER DEBUG] User section z-index:', computedStyle.zIndex);
-console.log('[HEADER DEBUG] User section pointer-events:', computedStyle.pointerEvents);
-console.log('[HEADER DEBUG] User section position:', computedStyle.position);
-}
-}
-
-// Use event delegation for clicks (works even after Turbo navigation)
-// Store handler reference to prevent duplicates
-if (!window.headerClickHandler) {
-window.headerClickHandler = function (e) {
-const target = e.target;
-const path = e.composedPath();
-
-// Check if click is on header buttons by traversing the path
-const cartBtn = document.getElementById('header-cart-btn');
-const logoutBtn = document.getElementById('header-logout-btn');
-const loginBtn = document.getElementById('header-login-btn');
-
-// Check if any element in the path is one of our buttons
-let clickedButton = null;
-for (let i = 0; i < path.length; i++) {
-const element = path[i];
-if (element === cartBtn) {
-clickedButton = {
-type: 'cart',
-element: cartBtn
-};
-break;
-}
-if (element === logoutBtn) {
-clickedButton = {
-type: 'logout',
-element: logoutBtn
-};
-break;
-}
-if (element === loginBtn) {
-clickedButton = {
-type: 'login',
-element: loginBtn
-};
-break;
-}
-}
-
-if (clickedButton) {
-console.log('[HEADER DEBUG]', clickedButton.type, 'button CLICKED via delegation!', e);
-console.log('[HEADER DEBUG] Button href:', clickedButton.element.href);
-console.log('[HEADER DEBUG] Default prevented?', e.defaultPrevented);
-
-// Check if something is blocking
-if (clickedButton.element instanceof Element) {
-const computedStyle = window.getComputedStyle(clickedButton.element);
-console.log('[HEADER DEBUG] Button computed styles:', {
-pointerEvents: computedStyle.pointerEvents,
-zIndex: computedStyle.zIndex,
-position: computedStyle.position,
-display: computedStyle.display,
-visibility: computedStyle.visibility
-});
-}
-
-// If default was prevented by something else, try to restore navigation
-if (clickedButton.type !== 'cart' && e.defaultPrevented) {
-console.log('[HEADER DEBUG] Default was prevented, attempting manual navigation');
-window.location.href = clickedButton.element.href;
-}
-}
-
-console.log('[HEADER DEBUG] Global click detected:', {
-target: target,
-targetId: target.id || '',
-targetTag: target.tagName || '',
-clickedButton: clickedButton ? clickedButton.type : null,
-path: path.map(el => {
-if (el instanceof Element) {
-return {
-tag: el.tagName,
-id: el.id || ''
-};
-}
-return {type: el.constructor.name};
-})
-});
-};
-
-// Use bubble phase instead of capture to not interfere
-document.addEventListener('click', window.headerClickHandler, false);
-}
-
-// Initial attachment with delay to ensure DOM is ready
-function init() {
-setTimeout(function () {
-attachDebugListeners();
-}, 50);
-}
-
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', init);
-} else {
-init();
-}
-
-// Re-attach on Turbo navigation
-if (typeof Turbo !== 'undefined') {
-document.addEventListener('turbo:load', function () {
-console.log('[HEADER DEBUG] turbo:load event fired');
-setTimeout(attachDebugListeners, 100);
-});
-document.addEventListener('turbo:render', function () {
-console.log('[HEADER DEBUG] turbo:render event fired');
-setTimeout(attachDebugListeners, 100);
-});
-document.addEventListener('turbo:frame-render', function () {
-console.log('[HEADER DEBUG] turbo:frame-render event fired');
-setTimeout(attachDebugListeners, 100);
-});
-}
-
-// Also listen for DOM mutations (fallback)
-const observer = new MutationObserver(function (mutations) {
-mutations.forEach(function (mutation) {
-if (mutation.addedNodes.length) {
-const hasHeaderElements = Array.from(mutation.addedNodes).some(node => {
-if (node.nodeType === 1) { // Element node
-return node.querySelector && (node.querySelector('#header-cart-btn') || node.querySelector('#header-logout-btn') || node.querySelector('#header-login-btn') || node.id === 'header-user-section');
-}
-return false;
-});
-if (hasHeaderElements) {
-console.log('[HEADER DEBUG] Header elements detected in mutation, reattaching...');
-setTimeout(attachDebugListeners, 10);
-}
-}
-});
-});
-
-observer.observe(document.body, {
-childList: true,
-subtree: true
-});
-})();
+			document.addEventListener('click', window.headerClickHandler, false);
+		})();
 	</script>
 
 </header>

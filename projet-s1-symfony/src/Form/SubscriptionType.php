@@ -18,7 +18,6 @@ class SubscriptionType extends AbstractType
         $builder
             ->add('startDate')
             ->add('expectedEndDate')
-            ->add('status')
             ->add('nextPaymentDate')
             ->add('address', EntityType::class, [
                 'class' => Address::class,

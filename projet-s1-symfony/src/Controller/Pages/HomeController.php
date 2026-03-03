@@ -51,6 +51,7 @@ final class HomeController extends AbstractController
 
         }
 
+        $editorsPicks = [];
         try {
             $editorsPickResults = $this->openLibraryService->search([
                 'q' => 'classic',
@@ -65,23 +66,20 @@ final class HomeController extends AbstractController
 
         }
 
+        $categories = [];
         $popularSubjects = ['fiction', 'science_fiction', 'mystery'];
         foreach ($popularSubjects as $subject) {
             try {
-                $searchResults = $this->openLibraryService->search([
-                    'subject' => $subject,
-                    'limit' => 4,
-                    'offset' => 0,
-                ]);
+                $subjectResults = $this->openLibraryService->searchSubject($subject, 4, 0);
 
                 $books = [];
-                if (isset($searchResults['docs'])) {
-                    foreach ($searchResults['docs'] as $work) {
+                if (isset($subjectResults['works']) && is_array($subjectResults['works'])) {
+                    foreach ($subjectResults['works'] as $work) {
                         $books[] = $this->openLibraryService->formatWorkForFrontend($work);
                     }
                 }
 
-                $workCount = $searchResults['numFound'] ?? 0;
+                $workCount = $subjectResults['work_count'] ?? 0;
 
                 $categories[] = [
                     'name' => ucfirst(str_replace('_', ' ', $subject)),
