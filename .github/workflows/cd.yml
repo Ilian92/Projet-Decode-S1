@@ -233,6 +233,25 @@ jobs:
           command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2 --unsafe-perm
           pm2 restart simple-agent 2>/dev/null || pm2 start "npm run server" --name simple-agent
 
+          echo "Démarrage/redémarrage de n8n..."
+          docker stop n8n 2>/dev/null || true
+          docker rm n8n 2>/dev/null || true
+          docker run -d \
+            --name n8n \
+            --restart unless-stopped \
+            -p 8001:5678 \
+            -e GENERIC_TIMEZONE="Europe/Paris" \
+            -e TZ="Europe/Paris" \
+            -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
+            -e N8N_RUNNERS_ENABLED=true \
+            -e WEBHOOK_URL="https://ilian-igoudjil.decode.school" \
+            -e N8N_HOST="ilian-igoudjil.decode.school" \
+            -e N8N_PORT="5678" \
+            -e N8N_PROTOCOL="https" \
+            -e N8N_SECURE_COOKIE="false" \
+            -v n8n_data:/home/node/.n8n \
+            docker.n8n.io/n8nio/n8n
+
           echo "Démarrage/redémarrage du tunnel Cloudflare..."
           command -v cloudflared >/dev/null 2>&1 || (
             curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /tmp/cloudflared
