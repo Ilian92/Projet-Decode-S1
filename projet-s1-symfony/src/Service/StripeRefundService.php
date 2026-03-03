@@ -27,6 +27,10 @@ class StripeRefundService
             return false;
         }
 
+        if ($order->getStatus() === OrderStatus::PAYMENT_PENDING->value) {
+            return false;
+        }
+
         if ($this->stripeSecretKey === '') {
             return false;
         }

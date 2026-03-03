@@ -36,3 +36,7 @@ services:
         arguments:
             $stripeSecretKey: '%env(default::STRIPE_SECRET_KEY)%'
 
+    App\Controller\StripeWebhookController:
+        arguments:
+            $webhookSecret: '%env(default::STRIPE_WEBHOOK_SECRET)%'
+

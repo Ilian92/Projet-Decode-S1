@@ -24,7 +24,8 @@
 	{% endif %}
 	{% set coverImageUrl = work.cover_url ?? null %}
 	{% set workKey = work.key %}
-	{% set workUrl = workKey ? path('app_work_show', { id: workKey|split('/')|last }) : null %}
+	{% set workOlid = workKey ? workKey|split('/')|last : null %}
+	{% set workUrl = workOlid ? path('app_work_show', { id: workOlid }) : null %}
 	{% set price = null %}
 	{% set summary = null %}
 {% else %}
@@ -121,13 +122,24 @@
 				</span>
 			{% endif %}
 			{% if workUrl and (buttonText|default('Ajouter')) == 'Voir' %}
-				<span class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block">
+				<a href="{{ workUrl }}" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block">
 					{{ buttonText }}
-				</span>
-			{% else %}
-				<button type="button" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap">
+				</a>
+			{% elseif workUrl and workOlid and (buttonText|default('Ajouter')) == 'Ajouter' %}
+				<form method="post" action="{{ path('cart_add_by_work') }}" class="inline">
+					<input type="hidden" name="work_olid" value="{{ workOlid }}">
+					<button type="submit" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap" aria-label="Ajouter {{ workTitle }} au panier">
+						{{ buttonText|default('Ajouter') }}
+					</button>
+				</form>
+			{% elseif workUrl %}
+				<a href="{{ workUrl }}" class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block">
 					{{ buttonText|default('Ajouter') }}
-				</button>
+				</a>
+			{% else %}
+				<span class="{{ buttonClass|default('bg-secondary-800 hover:bg-secondary-900') }} text-white px-3 py-1.5 rounded-md text-xs font-bodoni font-medium transition-colors duration-200 whitespace-nowrap inline-block opacity-75 cursor-not-allowed" title="Indisponible">
+					{{ buttonText|default('Ajouter') }}
+				</span>
 			{% endif %}
 		</div>
 	</div>

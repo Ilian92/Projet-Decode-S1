@@ -142,7 +142,7 @@
 							</button>
 						</form>
 					{% endif %}
-					{% if order.stripePaymentIntentId and order.status != 'refunded' %}
+					{% if order.stripePaymentIntentId and order.status != 'refunded' and order.status != 'payment_pending' %}
 						{% include 'components/refund_modal.html.twig' with {
 							modal_id: 'admin-order-refund-modal-' ~ order.id,
 							form_id: 'admin-order-refund-form-' ~ order.id,

@@ -52,11 +52,13 @@ class OrderService
         $order->setCustomer($customer);
         $order->setAddress($address);
         $order->setOrderDate(new \DateTime());
-        $order->setStatus(OrderStatus::PENDING_RESTOCK->value);
         $order->setShippingCost(self::SHIPPING_COST_CENTIMES);
         $order->setTrackingNumber('');
         if ($stripePaymentIntentId !== null) {
             $order->setStripePaymentIntentId($stripePaymentIntentId);
+            $order->setStatus(OrderStatus::PAYMENT_PENDING->value);
+        } else {
+            $order->setStatus(OrderStatus::PENDING_RESTOCK->value);
         }
 
         $subtotal = 0;

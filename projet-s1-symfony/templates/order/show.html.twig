@@ -25,6 +25,9 @@
 					Passée le
 					{{ order.orderDate|date('d/m/Y à H:i') }}
 				</p>
+				<p class="font-bodoni text-lg font-semibold text-primary-800 mt-3 inline-block px-4 py-2 rounded-lg {{ order.status|order_status_badge_class }}">
+					{{ order.status|order_status_description }}
+				</p>
 			</div>
 
 			<div class="grid gap-6 lg:grid-cols-3 max-w-6xl mx-auto">
@@ -123,7 +126,7 @@
 									€
 								</span>
 							</div>
-							{% if order.stripePaymentIntentId and order.status != 'refunded' %}
+							{% if order.stripePaymentIntentId and order.status != 'refunded' and order.status != 'payment_pending' %}
 								<div class="mt-4 pt-4 border-t border-primary-100">
 									{% include 'components/refund_modal.html.twig' with {
 										modal_id: 'order-refund-modal-' ~ order.id,

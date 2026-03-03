@@ -4,6 +4,7 @@ namespace App\Controller\Pages;
 
 use App\Entity\Customer;
 use App\Service\CartService;
+use App\Service\OpenLibraryService;
 use App\Service\OrderService;
 use Stripe\Checkout\Session as CheckoutSession;
 use Stripe\Stripe;
@@ -18,6 +19,7 @@ class CartController extends AbstractController
 {
     public function __construct(
         private CartService $cartService,
+        private OpenLibraryService $openLibraryService,
         private OrderService $orderService
     ) {
     }
@@ -63,6 +65,54 @@ class CartController extends AbstractController
 
         $cookie = $this->cartService->add($bookOlid, $workOlid, $quantity);
 
+        $this->addFlash('success', 'Le livre a été ajouté au panier !');
+
+        $referer = $request->headers->get('referer');
+        $response = $referer
+            ? $this->redirect($referer)
+            : $this->redirectToRoute('cart_show');
+        $response->headers->setCookie($cookie);
+
+        return $response;
+    }
+
+    /**
+     * Ajouter la première édition d'une œuvre au panier (depuis une carte œuvre sans édition choisie).
+     */
+    #[Route('/add-by-work', name: 'add_by_work', methods: ['POST'])]
+    public function addByWork(Request $request): Response
+    {
+        $workOlid = $request->request->getString('work_olid');
+        $workOlid = $this->openLibraryService->extractOlid($workOlid) ?? $workOlid;
+
+        if ($workOlid === '') {
+            $this->addFlash('error', 'Œuvre non reconnue.');
+
+            return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+        }
+
+        try {
+            $editionsResponse = $this->openLibraryService->fetchWorkBooks($workOlid, 1, 0);
+            $entries = $editionsResponse['entries'] ?? [];
+            $first = $entries[0] ?? null;
+            if (!$first || empty($first['key'])) {
+                $this->addFlash('error', 'Aucune édition disponible pour cette œuvre.');
+
+                return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+            }
+            $bookOlid = $this->openLibraryService->extractOlid($first['key']);
+            if (!$bookOlid) {
+                $this->addFlash('error', 'Édition non reconnue.');
+
+                return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+            }
+        } catch (\Throwable $e) {
+            $this->addFlash('error', 'Impossible de charger les éditions.');
+
+            return $this->redirect($request->headers->get('referer', $this->generateUrl('app_home')));
+        }
+
+        $cookie = $this->cartService->add($bookOlid, $workOlid, 1);
         $this->addFlash('success', 'Le livre a été ajouté au panier !');
 
         $referer = $request->headers->get('referer');
@@ -237,9 +287,9 @@ class CartController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $response = $this->redirectToRoute('app_profile');
+        $response = $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
         $response->headers->setCookie($this->cartService->clear());
-        $this->addFlash('success', 'Merci pour votre achat ! Votre commande #' . $order->getId() . ' a été enregistrée.');
+        $this->addFlash('success', 'Votre commande #' . $order->getId() . ' a été enregistrée. Nous confirmons votre paiement sous peu.');
 
         return $response;
     }

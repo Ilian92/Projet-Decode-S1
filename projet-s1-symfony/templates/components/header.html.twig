@@ -95,55 +95,7 @@
 					<a href="{{ path('app_search', { subject: key }) }}" class="font-bodoni text-contrasted-400 hover:text-contrasted-600 font-medium hover:text-2xl transition-all duration-200 whitespace-nowrap">{{ label }}</a>
 				{% endfor %}
 			</div>
-
-			{# Séparateur #}
-			<div class="h-8 w-px bg-contrasted-400"></div>
-
-			{# Liens utilitaires #}
-			<div class="flex items-center gap-6">
-				<a href="#" class="font-bodoni text-primary-500 hover:text-primary-700 hover:text-2xl font-medium transition-all duration-200 whitespace-nowrap">Livres d'occasion</a>
-				<a href="#" class="font-bodoni text-primary-500 hover:text-primary-700 hover:text-2xl font-medium transition-all duration-200 whitespace-nowrap">Ebooks</a>
-				<a href="#" class="font-bodoni text-primary-500 hover:text-primary-700 hover:text-2xl font-medium transition-all duration-200 whitespace-nowrap">Sélections</a>
-			</div>
 		</div>
 	</nav>
-	<script>
-		(function () {
-			if (window.headerClickHandlerAttached) return;
-			window.headerClickHandlerAttached = true;
-
-			if (!window.headerClickHandler) {
-				window.headerClickHandler = function (e) {
-					const path = e.composedPath();
-					const cartBtn = document.getElementById('header-cart-btn');
-					const logoutBtn = document.getElementById('header-logout-btn');
-					const loginBtn = document.getElementById('header-login-btn');
-
-					let clickedButton = null;
-					for (let i = 0; i < path.length; i++) {
-						const element = path[i];
-						if (element === cartBtn) {
-							clickedButton = { type: 'cart', element: cartBtn };
-							break;
-						}
-						if (element === logoutBtn) {
-							clickedButton = { type: 'logout', element: logoutBtn };
-							break;
-						}
-						if (element === loginBtn) {
-							clickedButton = { type: 'login', element: loginBtn };
-							break;
-						}
-					}
-
-					if (clickedButton && clickedButton.type !== 'cart' && e.defaultPrevented) {
-						window.location.href = clickedButton.element.href;
-					}
-				};
-			}
-
-			document.addEventListener('click', window.headerClickHandler, false);
-		})();
-	</script>
 
 </header>

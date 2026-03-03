@@ -131,7 +131,8 @@
 						{% include 'components/minimal_book_card.html.twig' with {
                         title: book.title,
                         author: book.author,
-                        imageUrl: book.cover_url|default('https://picsum.photos/200/300?random=' ~ loop.index)
+                        imageUrl: book.cover_url|default('https://picsum.photos/200/300?random=' ~ loop.index),
+                        bookUrl: book.work_id is defined ? path('app_work_show', { id: book.work_id }) : null
                     } %}
 					{% endfor %}
 				{% else %}
