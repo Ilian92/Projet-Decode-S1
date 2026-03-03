@@ -68,6 +68,10 @@ services:
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
       N8N_RUNNERS_ENABLED: "true"
       WEBHOOK_URL: "https://ilian-igoudjil.decode.school"
+      N8N_HOST: "ilian-igoudjil.decode.school"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "https"
+      N8N_SECURE_COOKIE: "false"
     volumes:
       - n8n_data:/home/node/.n8n
   ###< n8n ###
