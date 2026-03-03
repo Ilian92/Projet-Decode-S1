@@ -166,7 +166,7 @@ final class AdminMonthlyBoxController extends AbstractController
     public function apiSubscriptionData(
         SubscriptionRepository $subscriptionRepository
     ): JsonResponse {
-        $activeSubscriptions = $subscriptionRepository->findBy(['status' => 'active']);
+        $activeSubscriptions = $subscriptionRepository->findActiveSubscriptions();
 
         $result = [];
         foreach ($activeSubscriptions as $subscription) {
@@ -195,6 +195,7 @@ final class AdminMonthlyBoxController extends AbstractController
 
             $result[] = [
                 'subscription_id' => $subscription->getId(),
+                'status' => $subscription->getStatus(),
                 'work_olids' => $workOlids,
             ];
         }

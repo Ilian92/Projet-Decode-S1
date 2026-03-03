@@ -1,0 +1,193 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Box surprise personnalisée - Mississippi.com{% endblock %}
+
+{% block body %}
+	{# Hero : box surprise + IA #}
+	<section class="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-contrasted-900 via-contrasted-800 to-contrasted-900 text-white">
+		<div class="absolute inset-0 opacity-10">
+			<div class="absolute top-0 left-1/4 w-96 h-96 bg-secondary-500 rounded-full blur-3xl"></div>
+			<div class="absolute bottom-0 right-1/4 w-80 h-80 bg-primary-400 rounded-full blur-3xl"></div>
+		</div>
+		<div class="container mx-auto px-4 relative z-10">
+			<div class="max-w-4xl mx-auto text-center">
+				<span class="inline-block bg-white/20 backdrop-blur-sm text-contrasted-50 font-bodoni text-sm font-semibold px-4 py-2 rounded-full mb-6">
+					Livrés chez vous chaque mois
+				</span>
+				<h1 class="font-bodoni text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+					Des livres <span class="text-secondary-300">surprise</span> pensés pour vous
+				</h1>
+				<p class="font-bodoni text-lg md:text-xl text-contrasted-100 leading-relaxed max-w-2xl mx-auto mb-8">
+					Notre <strong>intelligence artificielle</strong> apprend à vous connaître au fil de vos achats et de vos envies. Chaque mois, elle choisit pour vous des livres qui pourraient vous plaire — une box personnalisée et surprise, livrée à votre porte.
+				</p>
+				<a href="#offres" class="inline-flex items-center gap-2 bg-secondary-800 hover:bg-secondary-700 text-white font-bodoni font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+					Voir les formules
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+					</svg>
+				</a>
+			</div>
+		</div>
+	</section>
+
+	{# Comment ça marche #}
+	<section class="py-14 md:py-20 bg-primary-50">
+		<div class="container mx-auto px-4">
+			<h2 class="font-bodoni text-2xl md:text-3xl font-bold text-primary-900 text-center mb-12">
+				Comment ça marche ?
+			</h2>
+			<div class="grid md:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto">
+				<div class="text-center">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-200 flex items-center justify-center">
+						<svg class="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+						</svg>
+					</div>
+					<h3 class="font-bodoni font-bold text-primary-900 text-lg mb-2">On apprend à vous connaître</h3>
+					<p class="font-bodoni text-primary-700 text-sm">Chaque achat, chaque coup de cœur sur le site nourrit notre IA. Plus vous lisez et achetez, plus elle affine votre profil.
+					</p>
+				</div>
+				<div class="text-center">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-contrasted-200 flex items-center justify-center">
+						<svg class="w-8 h-8 text-contrasted-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+						</svg>
+					</div>
+					<h3 class="font-bodoni font-bold text-primary-900 text-lg mb-2">L’IA choisit vos livres</h3>
+					<p class="font-bodoni text-primary-700 text-sm">Chaque mois, notre algorithme sélectionne pour vous des ouvrages inédits qui correspondent à vos goûts — de vrais coups de cœur en devenir.
+					</p>
+				</div>
+				<div class="text-center">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-secondary-200 flex items-center justify-center">
+						<svg class="w-8 h-8 text-secondary-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8 4-8-4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+						</svg>
+					</div>
+					<h3 class="font-bodoni font-bold text-primary-900 text-lg mb-2">La box arrive chez vous</h3>
+					<p class="font-bodoni text-primary-700 text-sm">Votre sélection surprise est emballée avec soin et livrée à votre domicile. À vous la découverte sans effort.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{# Flash messages #}
+	<section class="bg-primary-50">
+		<div class="container mx-auto px-4">
+			{% for message in app.flashes('error') %}
+				<div class="max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-xl flex items-center gap-3">
+					<svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span class="font-bodoni">{{ message }}</span>
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('success') %}
+				<div class="max-w-2xl mx-auto mb-6 bg-contrasted-100 border border-contrasted-600 text-contrasted-900 px-6 py-4 rounded-xl flex items-center gap-3">
+					<svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span class="font-bodoni">{{ message }}</span>
+				</div>
+			{% endfor %}
+		</div>
+	</section>
+
+	{# Offres #}
+	<section id="offres" class="py-14 md:py-20 bg-gradient-to-b from-primary-50 to-white scroll-mt-20">
+		<div class="container mx-auto px-4">
+			<div class="text-center mb-12">
+				<h2 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-3">
+					Choisissez votre formule
+				</h2>
+				<p class="font-bodoni text-primary-700 text-lg max-w-xl mx-auto">
+					Une box surprise personnalisée par notre IA, à votre rythme. Paiement sécurisé avec Stripe.
+				</p>
+			</div>
+
+			<div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+				{% for offer in offers %}
+					<div class="group bg-white rounded-2xl shadow-lg border-2 border-primary-100 overflow-hidden flex flex-col hover:shadow-xl hover:border-primary-300 transition-all duration-300">
+						<div class="bg-primary-900 px-6 py-5 border-b-4 border-secondary-500">
+							<h3 class="font-bodoni text-xl font-bold text-white">{{ offer.offerName }}</h3>
+						</div>
+						<div class="p-6 flex-1 flex flex-col">
+							<p class="font-bodoni text-primary-700 text-sm mb-5 flex-1">{{ offer.description }}</p>
+							<ul class="space-y-3 mb-6">
+								<li class="flex items-center gap-3 font-bodoni text-primary-800 text-sm">
+									<span class="w-6 h-6 rounded-full bg-contrasted-100 flex items-center justify-center flex-shrink-0">
+										<svg class="w-3.5 h-3.5 text-contrasted-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+										</svg>
+									</span>
+									{{ offer.includedBooksCount }} livre{{ offer.includedBooksCount > 1 ? 's' : '' }} surprise par mois
+								</li>
+								<li class="flex items-center gap-3 font-bodoni text-primary-800 text-sm">
+									<span class="w-6 h-6 rounded-full bg-contrasted-100 flex items-center justify-center flex-shrink-0">
+										<svg class="w-3.5 h-3.5 text-contrasted-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+										</svg>
+									</span>
+									Sélection personnalisée par notre IA
+								</li>
+								<li class="flex items-center gap-3 font-bodoni text-primary-800 text-sm">
+									<span class="w-6 h-6 rounded-full bg-contrasted-100 flex items-center justify-center flex-shrink-0">
+										<svg class="w-3.5 h-3.5 text-contrasted-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+										</svg>
+									</span>
+									Engagement {{ offer.commitmentMonths }} mois
+								</li>
+							</ul>
+							<div class="mt-auto pt-4 border-t border-primary-100">
+								<div class="font-puppies text-3xl font-bold text-primary-900 mb-4">
+									{{ (offer.monthlyPrice / 100)|number_format(2, ',', ' ') }} €
+									<span class="font-bodoni text-base font-normal text-primary-600">/ mois</span>
+								</div>
+								{% if app.user %}
+									<form action="{{ path('app_subscription_checkout', { id: offer.id }) }}" method="post" class="mt-2" data-turbo="false">
+										<input type="hidden" name="_token" value="{{ csrf_token('subscription_checkout_' ~ offer.id) }}">
+										<button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-secondary-800 hover:bg-secondary-900 text-white font-bodoni font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg group-hover:scale-[1.02]">
+											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+											</svg>
+											S’abonner avec Stripe
+										</button>
+									</form>
+								{% else %}
+									<a href="{{ path('app_login') }}" class="block w-full text-center font-bodoni font-semibold px-6 py-3.5 rounded-xl border-2 border-primary-400 text-primary-700 hover:bg-primary-50 transition-colors duration-200">
+										Se connecter pour souscrire
+									</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				{% else %}
+					<div class="md:col-span-3 text-center py-16 bg-primary-50 rounded-2xl border border-primary-200">
+						<p class="font-bodoni text-primary-600 text-lg">Aucune offre d’abonnement disponible pour le moment.</p>
+					</div>
+				{% endfor %}
+			</div>
+
+			<div class="max-w-2xl mx-auto mt-14 p-6 md:p-8 bg-white rounded-2xl border border-primary-200 shadow-sm">
+				<p class="font-bodoni text-primary-700 text-sm text-center">
+					<strong>Paiement sécurisé par Stripe.</strong> Vos données bancaires ne transitent jamais sur nos serveurs. Vous pouvez annuler votre abonnement à tout moment.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	{# Rappel valeur : personnalisation + surprise #}
+	<section class="py-14 md:py-20 bg-contrasted-900 text-white">
+		<div class="container mx-auto px-4">
+			<div class="max-w-3xl mx-auto text-center">
+				<h2 class="font-bodoni text-2xl md:text-3xl font-bold mb-4">
+					Une box 100 % personnalisée, 100 % surprise
+				</h2>
+				<p class="font-bodoni text-contrasted-100 text-lg leading-relaxed">
+					Pas de liste prédéfinie : notre IA s’adapte à vous. Chaque box est unique et pensée pour vous faire découvrir des livres que vous n’auriez peut-être pas choisis seuls — et qui pourraient devenir vos prochains favoris.
+				</p>
+			</div>
+		</div>
+	</section>
+{% endblock %}

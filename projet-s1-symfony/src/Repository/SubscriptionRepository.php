@@ -16,6 +16,19 @@ class SubscriptionRepository extends ServiceEntityRepository
         parent::__construct($registry, Subscription::class);
     }
 
+    public function findActiveSubscriptions(): array
+    {
+        $today = new \DateTime('today');
+
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.startDate <= :today')
+            ->andWhere('s.expectedEndDate >= :today')
+            ->setParameter('today', $today)
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Subscription[] Returns an array of Subscription objects
     //     */

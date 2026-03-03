@@ -22,8 +22,8 @@ class Subscription
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $expectedEndDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripeSubscriptionId = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $nextPaymentDate = null;
@@ -79,12 +79,29 @@ class Subscription
 
     public function getStatus(): ?string
     {
-        return $this->status;
+        $start = $this->startDate;
+        $end = $this->expectedEndDate;
+        if ($start === null || $end === null) {
+            return 'unknown';
+        }
+        $today = new \DateTime('today');
+        if ($today >= $start && $today <= $end) {
+            return 'active';
+        }
+        if ($today < $start) {
+            return 'pending';
+        }
+        return 'expired';
     }
 
-    public function setStatus(string $status): static
+    public function getStripeSubscriptionId(): ?string
     {
-        $this->status = $status;
+        return $this->stripeSubscriptionId;
+    }
+
+    public function setStripeSubscriptionId(?string $stripeSubscriptionId): static
+    {
+        $this->stripeSubscriptionId = $stripeSubscriptionId;
 
         return $this;
     }

@@ -301,7 +301,6 @@ class AppFixtures extends Fixture
         $subscription1->setAddress($address2);
         $subscription1->setStartDate(new \DateTime('2025-01-01'));
         $subscription1->setExpectedEndDate(new \DateTime('2025-07-01'));
-        $subscription1->setStatus('active');
         $subscription1->setNextPaymentDate(new \DateTime('2026-03-01'));
         $manager->persist($subscription1);
 
@@ -311,7 +310,6 @@ class AppFixtures extends Fixture
         $subscription2->setAddress($address3);
         $subscription2->setStartDate(new \DateTime('2025-06-01'));
         $subscription2->setExpectedEndDate(new \DateTime('2025-09-01'));
-        $subscription2->setStatus('active');
         $subscription2->setNextPaymentDate(new \DateTime('2026-03-01'));
         $manager->persist($subscription2);
 
