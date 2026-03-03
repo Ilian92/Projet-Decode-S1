@@ -157,7 +157,7 @@ jobs:
           docker compose stop webapp 2>/dev/null || true
 
           # Démarrer uniquement database et mailer
-          docker compose up -d database mailer n8n
+          docker compose up -d database mailer
 
           echo "Correction des permissions des fichiers créés par Docker..."
           sudo chown -R ilian:ilian . 2>/dev/null || true
