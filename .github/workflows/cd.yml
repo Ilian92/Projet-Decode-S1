@@ -157,7 +157,7 @@ jobs:
           docker compose stop webapp 2>/dev/null || true
 
           # Démarrer uniquement database et mailer
-          docker compose up -d database mailer
+          docker compose up -d database mailer n8n
 
           echo "Correction des permissions des fichiers créés par Docker..."
           sudo chown -R ilian:ilian . 2>/dev/null || true
@@ -232,6 +232,14 @@ jobs:
           echo "Démarrage/redémarrage de simple-agent avec pm2..."
           command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2 --unsafe-perm
           pm2 restart simple-agent 2>/dev/null || pm2 start "npm run server" --name simple-agent
+
+          echo "Démarrage/redémarrage du tunnel Cloudflare..."
+          command -v cloudflared >/dev/null 2>&1 || (
+            curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /tmp/cloudflared
+            sudo install -m 755 /tmp/cloudflared /usr/local/bin/cloudflared
+          )
+          pm2 restart cloudflare-tunnel 2>/dev/null || pm2 start "cloudflared tunnel run --token ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}" --name cloudflare-tunnel
+
           pm2 save
 
           cd "/home/ilian/Dev/Projet-Decode-S1/projet-s1-symfony"
