@@ -32,6 +32,9 @@ class Order
     #[ORM\Column(length: 255)]
     private ?string $trackingNumber = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripePaymentIntentId = null;
+
     /**
      * @var Collection<int, OrderLine>
      */
@@ -140,6 +143,18 @@ class Order
     public function setTrackingNumber(string $trackingNumber): static
     {
         $this->trackingNumber = $trackingNumber;
+
+        return $this;
+    }
+
+    public function getStripePaymentIntentId(): ?string
+    {
+        return $this->stripePaymentIntentId;
+    }
+
+    public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
+    {
+        $this->stripePaymentIntentId = $stripePaymentIntentId;
 
         return $this;
     }

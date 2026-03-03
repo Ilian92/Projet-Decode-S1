@@ -19,7 +19,7 @@ class OrderService
     ) {
     }
 
-    public function create(Customer $customer, array $bookItems): ?Order
+    public function create(Customer $customer, array $bookItems, ?string $stripePaymentIntentId = null): ?Order
     {
         if (empty($bookItems)) {
             return null;
@@ -55,6 +55,9 @@ class OrderService
         $order->setStatus(OrderStatus::PENDING_RESTOCK->value);
         $order->setShippingCost(self::SHIPPING_COST_CENTIMES);
         $order->setTrackingNumber('');
+        if ($stripePaymentIntentId !== null) {
+            $order->setStripePaymentIntentId($stripePaymentIntentId);
+        }
 
         $subtotal = 0;
         foreach ($items as $item) {

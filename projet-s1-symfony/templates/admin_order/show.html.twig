@@ -142,6 +142,20 @@
 							</button>
 						</form>
 					{% endif %}
+					{% if order.stripePaymentIntentId and order.status != 'refunded' %}
+						{% include 'components/refund_modal.html.twig' with {
+							modal_id: 'admin-order-refund-modal-' ~ order.id,
+							form_id: 'admin-order-refund-form-' ~ order.id,
+							action: path('app_admin_order_refund', { id: order.id }),
+							csrf_token: csrf_token('refund' ~ order.id),
+							button_label: 'Rembourser la commande',
+							button_classes: 'inline-flex items-center gap-2 bg-purple-600 text-white rounded-lg px-6 py-3 shadow-sm hover:bg-purple-700 transition-all duration-300',
+							title: 'Rembourser la commande',
+							description: 'Rembourser cette commande via Stripe ? Le client sera crédité sous quelques jours.',
+							confirm_label: 'Oui, rembourser',
+							confirm_classes: 'flex-1 px-4 py-3 rounded-lg font-bodoni font-semibold bg-purple-700 text-white hover:bg-purple-800 transition-colors'
+						} %}
+					{% endif %}
 				</div>
 				{{ include('admin_order/_delete_form.html.twig') }}
 			</div>
