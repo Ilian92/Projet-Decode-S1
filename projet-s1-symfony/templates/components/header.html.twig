@@ -36,13 +36,13 @@
 							{% endif %}
 						</a>
 
-						{# User Name #}
-						<div id="header-user-name" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 hover:bg-white transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;">
+						{# Profile Icon + User Name #}
+						<a href="{{ path('app_profile') }}" id="header-user-name" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 hover:bg-white transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Mon profil" title="Mon profil">
 							<span class="font-bodoni text-primary-700 text-sm font-medium">
 								{{ app.user.firstName }}
 								{{ app.user.lastName }}
 							</span>
-						</div>
+						</a>
 
 						{# Disconnect Button #}
 						<a href="{{ path('app_logout') }}" id="header-logout-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-red-100 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Déconnexion" title="Déconnexion">
