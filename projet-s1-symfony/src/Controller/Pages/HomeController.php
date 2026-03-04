@@ -44,6 +44,7 @@ final class HomeController extends AbstractController
                         'cover_url' => $book->getCoverImageUrl(),
                         'price' => $price,
                         'id' => $book->getId(),
+                        'work_id' => $work->getId(),
                     ];
                 }
             }
