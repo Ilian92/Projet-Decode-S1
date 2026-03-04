@@ -21,7 +21,7 @@ final class AdminOrderController extends AbstractController
     public function index(OrderRepository $orderRepository): Response
     {
         return $this->render('admin_order/index.html.twig', [
-            'orders' => $orderRepository->findAll(),
+            'orders' => $orderRepository->findBy([], ['orderDate' => 'DESC'] ),
         ]);
     }
 
