@@ -1,5 +1,5 @@
 {# Minimal Book Card Component - Small card for featured books
-   
+
    Parameters:
    - title: Book title (required)
    - author: Author name (required)
@@ -8,12 +8,12 @@
 #}
 <article class="group cursor-pointer transform hover:scale-105 transition-all duration-300">
 	{% if bookUrl is defined and bookUrl %}
-		<a href="{{ bookUrl }}" class="block" aria-label="Voir {{ title }}">
+		<a href="{{ bookUrl }}" class="block w-24" aria-label="Voir {{ title }}">
 	{% endif %}
 	<div class="w-24 h-32 md:w-28 md:h-36 bg-primary-100 rounded shadow-2xl hover:shadow-4xl transition-shadow duration-300 overflow-hidden ring-2 ring-transparent hover:ring-secondary-500/40 transition-all">
-		<img 
-			src="{{ imageUrl|default('https://picsum.photos/200/300?random=' ~ random(1000)) }}" 
-			alt="Couverture de {{ title }}" 
+		<img
+			src="{{ imageUrl|default('https://picsum.photos/200/300?random=' ~ random(1000)) }}"
+			alt="Couverture de {{ title }}"
 			width="200"
 			height="300"
 			loading="lazy"
