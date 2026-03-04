@@ -160,15 +160,13 @@ class BookService
             $firstName = \count($parts) > 0 ? implode(' ', $parts) : '';
 
             $author = $this->authorRepository->findOneBy([
-                'firstName' => $firstName,
+                'firstName' => $firstName !== '' ? $firstName : $lastName,
                 'lastName' => $lastName,
             ]);
 
             if (!$author instanceof Author) {
                 $author = new Author();
-                if ($firstName !== '') {
-                    $author->setFirstName($firstName);
-                }
+                $author->setFirstName($firstName !== '' ? $firstName : $lastName);
                 $author->setLastName($lastName);
 
                 if (isset($authorData['bio'])) {

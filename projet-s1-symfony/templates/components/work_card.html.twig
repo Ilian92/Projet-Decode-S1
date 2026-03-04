@@ -25,7 +25,9 @@
 	{% set coverImageUrl = work.cover_url ?? null %}
 	{% set workKey = work.key %}
 	{% set workOlid = workKey ? workKey|split('/')|last : null %}
-	{% set workUrl = workOlid ? path('app_work_show', { id: workOlid }) : null %}
+	{# Only generate a route URL if the OLID matches the route requirement pattern #}
+	{% set isValidWorkOlid = workOlid and (workOlid matches '/^OL[0-9A-Z]+W$/') %}
+	{% set workUrl = isValidWorkOlid ? path('app_work_show', { id: workOlid }) : null %}
 	{% set price = null %}
 	{% set summary = null %}
 {% else %}
