@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions générales de vente — Mississippi.com{% endblock %}
+
+{% block body %}
+    {# Hero Banner #}
+    <section class="relative py-16 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-primary-700/90"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80');"></div>
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-72 h-72 bg-secondary-800 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-contrasted-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="font-bodoni text-4xl md:text-5xl font-bold text-white mb-4">Conditions générales de vente</h1>
+            <p class="font-bodoni text-lg text-primary-100 max-w-xl mx-auto">Les règles qui régissent vos achats sur Mississippi.com</p>
+        </div>
+    </section>
+
+    {# Content #}
+    <section class="py-16 bg-primary-100">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <div class="space-y-8">
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">1</span>
+                        Objet et champ d'application
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Les présentes conditions générales de vente (CGV) régissent les ventes de livres neufs et d'occasion, d'ebooks et d'abonnements réalisées par <strong>Mississippi SAS</strong> (ci-après « Mississippi ») via le site <strong>mississippi.com</strong> auprès de tout acheteur non professionnel (ci-après « le Client »). Toute commande passée sur le site implique l'acceptation pleine et entière des présentes CGV.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">2</span>
+                        Produits et disponibilité
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Les offres présentées sur le site sont valables dans la limite des stocks disponibles. Mississippi s'engage à afficher en temps réel la disponibilité des articles. En cas d'indisponibilité d'un produit après validation de votre commande, Mississippi vous en informera par e-mail dans les meilleurs délais et procédera au remboursement intégral si aucune alternative n'est acceptée.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">3</span>
+                        Prix
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Les prix sont indiqués en euros TTC (toutes taxes comprises). Mississippi se réserve le droit de modifier ses prix à tout moment ; les produits seront facturés sur la base des tarifs en vigueur au moment de la validation de la commande. Les frais de livraison sont indiqués séparément lors du processus de commande.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">4</span>
+                        Commande et paiement
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed mb-3">Le processus de commande se déroule comme suit :</p>
+                    <ol class="text-primary-700 leading-relaxed space-y-2 ml-4 list-decimal list-inside">
+                        <li>Sélection des articles et ajout au panier.</li>
+                        <li>Validation du panier et choix de l'adresse de livraison.</li>
+                        <li>Choix du mode de livraison.</li>
+                        <li>Règlement sécurisé par carte bancaire via notre prestataire Stripe.</li>
+                        <li>Confirmation de commande par e-mail.</li>
+                    </ol>
+                    <p class="text-primary-700 leading-relaxed mt-3">Le paiement est exigible intégralement au jour de la commande. Mississippi ne conserve aucune donnée bancaire.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">5</span>
+                        Livraison
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed mb-3">
+                        Les commandes sont expédiées à l'adresse indiquée lors de la commande, en France métropolitaine et dans les DOM-TOM. Les délais indicatifs de livraison sont :
+                    </p>
+                    <ul class="text-primary-700 leading-relaxed space-y-2 ml-4 list-disc list-inside">
+                        <li><strong>Livraison standard :</strong> 3 à 5 jours ouvrés.</li>
+                        <li><strong>Livraison express :</strong> 1 à 2 jours ouvrés.</li>
+                        <li><strong>Ebooks :</strong> disponibles immédiatement après paiement.</li>
+                    </ul>
+                    <p class="text-primary-700 leading-relaxed mt-3">En cas de retard constaté, vous pouvez nous contacter à <a href="mailto:contact@mississippi.com" class="text-secondary-800 hover:underline">contact@mississippi.com</a>.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">6</span>
+                        Droit de rétractation
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Conformément à l'article L. 221-18 du Code de la consommation, le Client dispose d'un délai de <strong>14 jours calendaires</strong> à compter de la réception de sa commande pour exercer son droit de rétractation, sans justification ni pénalité. Les frais de retour sont à la charge du Client. Les ebooks téléchargés ne sont pas soumis au droit de rétractation (article L. 221-28 du Code de la consommation).
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">7</span>
+                        Garanties et réclamations
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Tous les produits vendus par Mississippi bénéficient de la garantie légale de conformité (articles L. 217-4 à L. 217-14 du Code de la consommation) et de la garantie contre les vices cachés (articles 1641 à 1649 du Code civil). Pour toute réclamation, contactez notre service client à <a href="mailto:contact@mississippi.com" class="text-secondary-800 hover:underline">contact@mississippi.com</a> dans un délai de 30 jours suivant la réception.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8 border border-primary-200">
+                    <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
+                        <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-secondary-800 text-white text-lg font-bold shrink-0">8</span>
+                        Loi applicable et litiges
+                    </h2>
+                    <p class="text-primary-700 leading-relaxed">
+                        Les présentes CGV sont soumises à la loi française. En cas de litige, le Client peut recourir gratuitement à un médiateur de la consommation. À défaut de résolution amiable, les tribunaux compétents de Paris seront seuls compétents.
+                    </p>
+                </div>
+
+            </div>
+
+            <p class="text-center text-primary-400 text-sm mt-10">Dernière mise à jour : {{ "now"|date("d/m/Y") }}</p>
+        </div>
+    </section>
+{% endblock %}

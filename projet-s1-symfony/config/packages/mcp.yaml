@@ -1,0 +1,39 @@
+# config/packages/mcp.yaml
+mcp:
+    app: 'Mississippi Bookstore API' # Application name to be exposed to clients
+    version: '1.0.0' # Application version to be exposed to clients
+    description: 'Serveur MCP pour accéder aux données de la librairie Mississippi (œuvres et auteurs)' # Application description to be exposed to clients
+    icons:
+        - src: 'https://example.com/icon.png' # Application icon URL
+          mime_type: 'image/png' # MIME type of the icon
+          sizes: ['64x64'] # Sizes of the icon
+    website_url: 'https://example.com' # Application website URL
+    pagination_limit: 50 # Maximum number of items returned per list request (default: 50)
+    instructions: | # Instructions describing server purpose and usage context (for LLMs)
+        Ce serveur MCP fournit un accès aux données de la librairie Mississippi.
+
+        Il permet de récupérer des informations sur :
+        - Les œuvres littéraires (works) : titre, résumé, genres, auteurs, livres disponibles
+        - Les auteurs (authors) : nom, prénom, biographie, photo, œuvres associées
+
+        Utilisez les tools disponibles pour :
+        - get_works : Obtenir la liste complète des œuvres
+        - get_work : Obtenir les détails d'une œuvre spécifique par son ID
+        - get_work_by_title : Rechercher une œuvre par son titre (exact ou partiel)
+        - get_authors : Obtenir la liste complète des auteurs
+        - get_author : Obtenir les détails d'un auteur spécifique par son ID
+        - get_author_by_name : Rechercher un auteur par son prénom et/ou nom (exact ou partiel)
+
+        Toutes les réponses sont au format JSON.
+
+    client_transports:
+        stdio: true # Enable STDIO via command
+        http: true # Enable HTTP transport via controller
+
+    # HTTP transport configuration (optional)
+    http:
+        path: /_mcp # HTTP endpoint path (default: /_mcp)
+        session:
+            store: file # Session store type: 'file' or 'memory' (default: file)
+            directory: '%kernel.cache_dir%/mcp-sessions' # Directory for file store (default: cache_dir/mcp-sessions)
+            ttl: 3600 # Session TTL in seconds (default: 3600)

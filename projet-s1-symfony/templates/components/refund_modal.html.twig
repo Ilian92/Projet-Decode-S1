@@ -1,0 +1,96 @@
+{# 
+  - modal_id        : string unique pour ce modal (ex: 'order-refund-modal-123')
+  - form_id         : string unique pour le formulaire (ex: 'order-refund-form-123')
+  - action          : URL de soumission du formulaire
+  - csrf_token      : jeton CSRF pour ce formulaire
+  - button_label    : texte du bouton d'ouverture
+  - button_classes  : classes Tailwind pour le bouton d'ouverture
+  - title           : titre de la modal
+  - description     : texte de description dans la modal
+  - confirm_label   : texte du bouton de confirmation
+  - confirm_classes : classes Tailwind pour le bouton de confirmation
+#}
+
+<form id="{{ form_id }}" method="post" action="{{ action }}" class="hidden">
+	<input type="hidden" name="_token" value="{{ csrf_token }}">
+</form>
+
+<button type="button" data-refund-modal-open="{{ modal_id }}" class="{{ button_classes }}">
+	<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+		<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+	</svg>
+	<span class="font-bodoni font-medium">
+		{{ button_label }}
+	</span>
+</button>
+
+<div id="{{ modal_id }}" class="fixed inset-0 z-50 hidden items-center justify-center p-4" aria-modal="true" role="dialog" aria-labelledby="{{ modal_id }}-title">
+	<div class="absolute inset-0 bg-primary-900/60 backdrop-blur-sm" data-refund-modal-close="{{ modal_id }}"></div>
+
+	<div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-primary-100">
+		<h2 id="{{ modal_id }}-title" class="font-bodoni text-xl font-bold text-primary-900 mb-3">
+			{{ title }}
+		</h2>
+
+		<p class="text-primary-700 font-bodoni">
+			{{ description }}
+		</p>
+
+		<div class="flex gap-3 mt-6">
+			<button type="button" data-refund-modal-close="{{ modal_id }}" class="flex-1 px-4 py-3 rounded-lg font-bodoni font-semibold bg-primary-100 text-primary-800 hover:bg-primary-200 transition-colors">
+				Annuler
+			</button>
+			<button type="button" data-refund-confirm="{{ modal_id }}" class="{{ confirm_classes }}">
+				{{ confirm_label }}
+			</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	(function () {
+var modalId = '{{ modal_id }}';
+var modal = document.getElementById(modalId);
+var form = document.getElementById('{{ form_id }}');
+if (! modal || ! form) {
+return;
+}
+
+function openModal() {
+modal.classList.remove('hidden');
+modal.classList.add('flex');
+document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+modal.classList.add('hidden');
+modal.classList.remove('flex');
+document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-refund-modal-open="' + modalId + '"]').forEach(function (btn) {
+btn.addEventListener('click', openModal);
+});
+
+document.querySelectorAll('[data-refund-modal-close="' + modalId + '"]').forEach(function (el) {
+el.addEventListener('click', closeModal);
+});
+
+var confirmBtn = document.querySelector('[data-refund-confirm="' + modalId + '"]');
+if (confirmBtn) {
+confirmBtn.addEventListener('click', function () {
+if (form.requestSubmit) {
+form.requestSubmit();
+} else {
+form.submit();
+}
+});
+}
+
+modal.addEventListener('keydown', function (e) {
+if (e.key === 'Escape') {
+closeModal();
+}
+});
+})();
+</script>

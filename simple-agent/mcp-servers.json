@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mississippi-bookstore": {
+      "command": "symfony",
+      "args": ["console", "mcp:server"],
+      "cwd": "/Users/ilian/Dev/Decode/Projet-Decode-S1/projet-s1-symfony",
+      "env": {},
+      "description": "Serveur MCP pour la librairie Mississippi"
+    }
+  }
+}
+
+

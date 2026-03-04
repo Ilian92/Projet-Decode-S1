@@ -1,0 +1,219 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier - Mississippi.com
+{% endblock %}
+
+{% block body %}
+	<section class="py-8 md:py-12 bg-linear-to-br from-primary-50 via-white to-primary-50">
+		<div class="container mx-auto px-4">
+			<div class="text-center mb-8">
+				<h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-2 relative inline-block">
+					<span class="relative z-10">Mon Panier</span>
+					<span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 z-0 transform -skew-x-12"></span>
+				</h1>
+				<p class="font-bodoni text-primary-700 mt-4 text-lg">
+					{% if cartItems|length > 0 %}
+						{{ cartItems|length }}
+						article{{ cartItems|length > 1 ? 's' : '' }}
+						dans votre panier
+					{% else %}
+						Votre panier est vide
+					{% endif %}
+				</p>
+			</div>
+
+			{% for message in app.flashes('success') %}
+				<div class="max-w-4xl mx-auto mb-6 bg-contrasted-100 border border-contrasted-600 text-contrasted-900 px-6 py-4 rounded-lg flex items-center gap-3">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+					</svg>
+					<span class="font-bodoni">{{ message }}</span>
+				</div>
+			{% endfor %}
+
+			{% if cartItems|length > 0 %}
+				<div class="max-w-4xl mx-auto">
+					<div class="bg-white rounded-xl shadow-lg border border-primary-100 overflow-hidden mb-6">
+						<div class="bg-primary-900 px-6 py-4 border-b-4 border-secondary-500">
+							<h2 class="font-bodoni text-xl font-bold text-white flex items-center gap-3">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+								</svg>
+								Articles du panier
+							</h2>
+						</div>
+
+						<div class="divide-y divide-primary-100">
+							{% for item in cartItems %}
+								{% set book = item.book %}
+								{% set work = book.work %}
+								{% set quantity = item.quantity %}
+								{% set price = book.currentUnitPrice %}
+								{% set subtotal = price * quantity %}
+
+								<div class="p-6 hover:bg-primary-50 transition-colors duration-200">
+									<div class="flex flex-col md:flex-row gap-6">
+										<div class="flex-shrink-0">
+											{% if book.coverImageUrl %}
+												<img src="{{ book.coverImageUrl }}" alt="{{ work.title }}" class="w-24 h-32 object-cover rounded-lg shadow-md">
+											{% else %}
+												<div class="w-24 h-32 bg-primary-200 rounded-lg shadow-md flex items-center justify-center">
+													<svg class="w-12 h-12 text-primary-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+													</svg>
+												</div>
+											{% endif %}
+										</div>
+
+										<div class="flex-1">
+											<h3 class="font-bodoni text-xl font-bold text-primary-900 mb-2">{{ work.title }}</h3>
+
+											{% if work.author|length > 0 %}
+												<p class="text-sm text-primary-600 mb-2">
+													Par
+													{% for author in work.author %}
+														<span class="font-semibold">{{ author.firstName }}
+															{{ author.lastName }}</span>
+														{% if not loop.last %},
+														{% endif %}
+													{% endfor %}
+												</p>
+											{% endif %}
+
+											{% if book.publicationDate %}
+												<p class="text-sm text-primary-500">
+													Publié le
+													{{ book.publicationDate|date('d/m/Y') }}
+												</p>
+											{% endif %}
+
+											{% if book.availableStock and book.availableStock > 0 %}
+												<p class="text-sm text-contrasted-600 mt-2 flex items-center gap-1">
+													<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+													</svg>
+													{{ book.availableStock }}
+													en stock
+												</p>
+											{% else %}
+												<p class="text-sm text-amber-600 mt-2 flex items-center gap-1">
+													<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+													</svg>
+													Sur commande
+												</p>
+											{% endif %}
+										</div>
+
+										<div class="flex flex-col items-end justify-between min-w-[200px]">
+											<div class="text-right">
+												<p class="text-sm text-primary-600">Prix unitaire</p>
+												<p class="font-bodoni text-lg font-bold text-primary-900">{{ (price / 100)|number_format(2, ',', ' ') }}
+													€</p>
+
+												{% if quantity > 1 %}
+													<p class="text-sm text-primary-600 mt-2">Sous-total</p>
+													<p class="font-bodoni text-xl font-bold text-secondary-800">{{ (subtotal / 100)|number_format(2, ',', ' ') }}
+														€</p>
+												{% endif %}
+											</div>
+
+											<div class="flex flex-col gap-3 w-full">
+												<form action="{{ path('cart_update') }}" method="POST" class="flex items-center gap-2">
+													<input type="hidden" name="book_olid" value="{{ item.book.id }}">
+													<label class="text-sm text-primary-600 font-semibold">Qté:</label>
+													<input type="number" name="quantity" value="{{ quantity }}" min="1" {% if book.availableStock > 0 %} max="{{ book.availableStock }}" {% endif %} class="w-20 px-3 py-2 border border-primary-200 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-transparent text-center font-bodoni">
+													<button type="submit" class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200 flex items-center gap-1 text-sm">
+														<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+														</svg>
+														Modifier
+													</button>
+												</form>
+
+												<form action="{{ path('cart_remove') }}" method="POST">
+													<input type="hidden" name="book_olid" value="{{ item.book.id }}">
+													<button type="submit" class="w-full px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm font-semibold">
+														<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+														</svg>
+														Retirer
+													</button>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+
+					<div class="bg-white rounded-xl shadow-lg border border-primary-100 overflow-hidden">
+						<div class="p-6">
+							<div class="space-y-3 mb-6 pb-6 border-b border-primary-100">
+								<div class="flex justify-between items-center text-primary-700">
+									<span class="font-bodoni font-medium">Sous-total</span>
+									<span>{{ (subtotalAmount / 100)|number_format(2, ',', ' ') }} €</span>
+								</div>
+								<div class="flex justify-between items-center text-primary-700">
+									<span class="font-bodoni font-medium">Frais de livraison</span>
+									<span>{{ (shippingCost / 100)|number_format(2, ',', ' ') }} €</span>
+								</div>
+								<div class="flex justify-between items-center pt-3">
+									<h3 class="font-bodoni text-2xl font-bold text-primary-900">Total</h3>
+									<p class="font-bodoni text-3xl font-bold text-secondary-800">{{ (totalAmount / 100)|number_format(2, ',', ' ') }} €</p>
+								</div>
+							</div>
+
+							<div class="flex flex-col sm:flex-row gap-4">
+								<a href="{{ path('app_home') }}" class="flex-1 bg-primary-100 hover:bg-primary-200 text-primary-900 font-bodoni font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+									</svg>
+									Continuer mes achats
+								</a>
+
+								<form action="{{ path('cart_checkout') }}" method="POST" class="flex-1" data-turbo="false">
+									<button type="submit" class="w-full bg-contrasted-600 hover:bg-contrasted-700 text-white font-bodoni font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+										<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+										</svg>
+										Passer la commande
+									</button>
+								</form>
+							</div>
+
+							<form action="{{ path('cart_clear') }}" method="POST" class="mt-4" onsubmit="return confirm('Êtes-vous sûr de vouloir vider votre panier ?');">
+								<button type="submit" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bodoni font-semibold py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+									</svg>
+									Vider le panier
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+
+			{% else %}
+				<div class="max-w-2xl mx-auto">
+					<div class="bg-white rounded-xl shadow-lg border border-primary-100 overflow-hidden p-12 text-center">
+						<svg class="w-24 h-24 mx-auto text-primary-300 mb-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+						</svg>
+
+						<h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-4">Votre panier est vide</h2>
+						<p class="text-primary-600 mb-8">Découvrez notre sélection de livres et commencez vos achats !</p>
+
+						<a href="{{ path('app_home') }}" class="inline-flex items-center gap-2 bg-contrasted-600 hover:bg-contrasted-700 text-white font-bodoni font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+							</svg>
+							Découvrir nos livres
+						</a>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

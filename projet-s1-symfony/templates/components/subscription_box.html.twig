@@ -1,0 +1,74 @@
+{# Subscription Box Component
+   
+   Parameters:
+   - title: Main heading (default: "Recevez une sélection de livres chaque mois")
+   - description: Description text (optional)
+   - benefits: Array of benefit strings (optional, uses defaults if not provided)
+   - price: Monthly price (default: "49€")
+   - imageUrl: Box image URL (default: placeholder)
+   - ctaText: Button text (default: "Découvrir l'abonnement")
+   - ctaUrl: Button link URL (default: "#")
+#}
+
+<section class="bg-gradient-to-br from-contrasted-900 via-contrasted-800 to-contrasted-900 text-white py-20 relative overflow-hidden">
+    {# Decorative elements #}
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="inline-block bg-contrasted-400 text-contrasted-950 font-bodoni text-sm font-bold px-3 py-1 rounded-full mb-4">
+                        Abonnement mensuel
+                    </span>
+                    <h2 class="font-bodoni text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                        {{ title|default('Recevez une sélection de livres chaque mois') }}
+                    </h2>
+                    {% if description is defined and description %}
+                    <p class="font-bodoni text-lg text-contrasted-100 mb-8 leading-relaxed">
+                        {{ description }}
+                    </p>
+                    {% else %}
+                    <p class="font-bodoni text-lg text-contrasted-100 mb-8 leading-relaxed">
+                        Laissez-vous surprendre par notre équipe de libraires qui sélectionne pour vous les meilleurs ouvrages du moment. 
+                        Une box personnalisée livrée directement chez vous.
+                    </p>
+                    {% endif %}
+                    <ul class="space-y-4 mb-8">
+                        {% set defaultBenefits = ['Sélection experte de 3-4 livres', 'Livraison gratuite', 'Prix préférentiel', 'Annulation à tout moment'] %}
+                        {% for benefit in benefits|default(defaultBenefits) %}
+                        <li class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-contrasted-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="font-bodoni text-base text-contrasted-50">{{ benefit }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{{ ctaUrl|default('#') }}" class="inline-block bg-secondary-800 hover:bg-secondary-900 text-white font-bodoni font-medium px-8 py-4 rounded-md transition-colors duration-200 shadow-lg hover:shadow-xl text-lg">
+                        {{ ctaText|default('Découvrir l\'abonnement') }}
+                    </a>
+                </div>
+                <div class="relative">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-8 border border-white/20">
+                        <img 
+                            src="{{ imageUrl|default('https://picsum.photos/600/800?random=100') }}" 
+                            alt="Box mensuelle Mississippi" 
+                            width="600"
+                            height="800"
+                            loading="lazy"
+                            class="w-full rounded-lg shadow-2xl"
+                        >
+                    </div>
+                    <div class="absolute -bottom-4 -right-4 bg-secondary-800 rounded-full p-6 shadow-xl">
+                        <span class="font-puppies text-3xl font-bold">{{ price|default('49€') }}</span>
+                        <span class="font-bodoni text-sm block">/mois</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

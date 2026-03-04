@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    open_library_api: 'https://openlibrary.org/'
+    open_library_image_api: 'https://covers.openlibrary.org/'
+    app.subject_filters: !php/const App\Constant\SubjectFilters::FILTERS
 
 services:
     # default configuration for services in *this* file
@@ -18,3 +21,22 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+# config/services.yaml
+    App\Service\OpenLibraryService:
+        arguments:
+            $apiBaseUrl: '%open_library_api%'
+            $apiImageUrl: '%open_library_image_api%'
+            $cache: '@cache.app'
+
+    App\Service\CartService:
+        arguments:
+            $cartHmacSecret: '%env(CART_HMAC_SECRET)%'
+
+    App\Service\StripeRefundService:
+        arguments:
+            $stripeSecretKey: '%env(default::STRIPE_SECRET_KEY)%'
+
+    App\Controller\StripeWebhookController:
+        arguments:
+            $webhookSecret: '%env(default::STRIPE_WEBHOOK_SECRET)%'
+

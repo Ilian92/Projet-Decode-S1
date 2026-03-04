@@ -1,0 +1,41 @@
+{# Rating Stars Component
+   
+   Parameters:
+   - rating: Float rating value (0-5) (required)
+   - count: Optional number of ratings
+   - size: Optional size class (default: 'w-3.5 h-3.5')
+#}
+{% set ratingValue = rating|default(0) %}
+{% set ratingCount = count|default(0) %}
+{% set starSize = size|default('w-3.5 h-3.5') %}
+{% set fullStars = ratingValue|round(0, 'floor') %}
+{% set hasHalfStar = (ratingValue - fullStars) >= 0.5 %}
+{% set emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0) %}
+
+<div class="flex items-center gap-0.5">
+	{% for i in 1..fullStars %}
+		<svg class="{{ starSize }} text-yellow-400 fill-current" viewbox="0 0 20 20">
+			<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+		</svg>
+	{% endfor %}
+	{% if hasHalfStar %}
+		<div class="{{ starSize }} relative">
+			<svg class="{{ starSize }} text-yellow-400 fill-current opacity-30 absolute inset-0" viewbox="0 0 20 20">
+				<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+			</svg>
+			<div class="absolute inset-0 overflow-hidden" style="width: 50%;">
+				<svg class="{{ starSize }} text-yellow-400 fill-current" viewbox="0 0 20 20">
+					<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+				</svg>
+			</div>
+		</div>
+	{% endif %}
+	{% for i in 1..emptyStars %}
+		<svg class="{{ starSize }} text-yellow-400 fill-current opacity-30" viewbox="0 0 20 20">
+			<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+		</svg>
+	{% endfor %}
+	{% if ratingCount > 0 %}
+		<span class="font-bodoni text-xs text-primary-600 ml-1">({{ ratingValue|number_format(1, ',', ' ') }})</span>
+	{% endif %}
+</div>

@@ -1,0 +1,52 @@
+{# Categories Section Component - Displays 3 categories side by side
+   
+   Parameters:
+   - categories: Array of category objects with name, books, work_count
+#}
+
+<section class="bg-gradient-to-br from-white via-primary-50/40 to-white py-16 relative overflow-hidden">
+	{# Decorative elements similar to subscription #}
+	<div class="absolute inset-0 opacity-5">
+		<div class="absolute top-0 left-0 w-96 h-96 bg-primary-300 rounded-full blur-3xl"></div>
+		<div class="absolute bottom-0 right-0 w-96 h-96 bg-primary-200 rounded-full blur-3xl"></div>
+	</div>
+	
+	<div class="container mx-auto px-4 relative z-10">
+		{% include 'components/section_header.html.twig' with {
+            title: null,
+            subtitle: 'Découvrez une sélection de livres par genre',
+            centered: true,
+            showViewAll: false
+        } %}
+
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+			{% for category in categories|slice(0, 3) %}
+				<div class="bg-primary-50 rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-300">
+					<h3 class="font-bodoni text-xl font-bold text-primary-900 mb-2">
+						{{ category.name }}
+					</h3>
+					<p class="font-bodoni text-sm text-primary-600 mb-4">
+						{{ category.work_count }}
+						livres disponibles
+					</p>
+
+					{% if category.books is defined and category.books|length > 0 %}
+						<div class="flex flex-wrap gap-4 justify-center">
+							{% for book in category.books|slice(0, 4) %}
+								{% include 'components/work_card.html.twig' with {
+                                    work: book
+                                } %}
+							{% endfor %}
+						</div>
+					{% else %}
+						<div class="flex flex-wrap gap-4 justify-center">
+							{% for i in 1..4 %}
+								{# No placeholder cards - only show real data #}
+							{% endfor %}
+						</div>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>

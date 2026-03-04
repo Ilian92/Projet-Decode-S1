@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin — Mississippi.com{% endblock %}
+
+{% block body %}
+    {# Hero Banner #}
+    <section class="relative py-14 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-primary-700/90"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" style="background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80');"></div>
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-72 h-72 bg-secondary-800 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-contrasted-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="font-bodoni text-4xl md:text-5xl font-bold text-white mb-3">Dashboard Administration</h1>
+            <p class="font-bodoni text-lg text-primary-100 max-w-xl mx-auto">Gérez l'ensemble du contenu et des données de Mississippi.com</p>
+        </div>
+    </section>
+
+    {# Dashboard Grid #}
+    <section class="py-16 bg-primary-100">
+        <div class="container mx-auto px-4 max-w-6xl">
+
+            {# Catalogue #}
+            <div class="mb-12">
+                <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-6 pb-3 border-b-2 border-secondary-800/30">
+                    Catalogue
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                    <a href="{{ path('app_admin_book_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Livres</p>
+                            <p class="text-primary-500 text-sm">Gérer le catalogue de livres</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_work_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Œuvres</p>
+                            <p class="text-primary-500 text-sm">Gérer les œuvres littéraires</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_author_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Auteurs</p>
+                            <p class="text-primary-500 text-sm">Gérer les auteurs</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_genre_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Genres</p>
+                            <p class="text-primary-500 text-sm">Gérer les genres littéraires</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_book_publisher_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Éditeurs</p>
+                            <p class="text-primary-500 text-sm">Gérer les maisons d'édition</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            {# Commandes & Clients #}
+            <div class="mb-12">
+                <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-6 pb-3 border-b-2 border-secondary-800/30">
+                    Commandes & Clients
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                    <a href="{{ path('app_admin_order_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Commandes</p>
+                            <p class="text-primary-500 text-sm">Gérer et suivre les commandes</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_order_line_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Lignes de commande</p>
+                            <p class="text-primary-500 text-sm">Détail des articles commandés</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_customer_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Clients</p>
+                            <p class="text-primary-500 text-sm">Gérer les comptes clients</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_address_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Adresses</p>
+                            <p class="text-primary-500 text-sm">Gérer les adresses de livraison</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            {# Abonnements #}
+            <div class="mb-12">
+                <h2 class="font-bodoni text-2xl font-bold text-primary-900 mb-6 pb-3 border-b-2 border-secondary-800/30">
+                    Abonnements
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                    <a href="{{ path('app_admin_subscription_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Abonnements</p>
+                            <p class="text-primary-500 text-sm">Gérer les abonnements clients</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_subscription_offer_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Offres d'abonnement</p>
+                            <p class="text-primary-500 text-sm">Gérer les formules proposées</p>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_admin_monthly_box_index') }}" class="group bg-white rounded-2xl shadow-sm border border-primary-200 p-6 hover:shadow-md hover:border-secondary-800/40 transition-all duration-200 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary-800/10 flex items-center justify-center group-hover:bg-secondary-800/20 transition-colors">
+                            <svg class="w-6 h-6 text-secondary-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bodoni font-bold text-primary-900 text-lg group-hover:text-secondary-800 transition-colors">Box mensuelles</p>
+                            <p class="text-primary-500 text-sm">Gérer les box du mois</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}

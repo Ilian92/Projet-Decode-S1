@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\OrderStatus;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,6 +31,9 @@ class Order
 
     #[ORM\Column(length: 255)]
     private ?string $trackingNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $stripePaymentIntentId = null;
 
     /**
      * @var Collection<int, OrderLine>
@@ -80,6 +84,33 @@ class Order
         return $this;
     }
 
+    public function isFulfillable(): bool
+    {
+        $demandByBook = [];
+        $booksById = [];
+        foreach ($this->orderLine as $line) {
+            $book = $line->getBook();
+            if ($book === null) {
+                return false;
+            }
+            $id = $book->getId();
+            $demandByBook[$id] = ($demandByBook[$id] ?? 0) + $line->getQuantity();
+            $booksById[$id] = $book;
+        }
+        foreach ($demandByBook as $bookId => $quantity) {
+            $book = $booksById[$bookId] ?? null;
+            if ($book === null) {
+                return false;
+            }
+            $available = $book->getAvailableStock() ?? 0;
+            if ($available < $quantity) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function getTotalAmount(): ?int
     {
         return $this->totalAmount;
@@ -112,6 +143,18 @@ class Order
     public function setTrackingNumber(string $trackingNumber): static
     {
         $this->trackingNumber = $trackingNumber;
+
+        return $this;
+    }
+
+    public function getStripePaymentIntentId(): ?string
+    {
+        return $this->stripePaymentIntentId;
+    }
+
+    public function setStripePaymentIntentId(?string $stripePaymentIntentId): static
+    {
+        $this->stripePaymentIntentId = $stripePaymentIntentId;
 
         return $this;
     }

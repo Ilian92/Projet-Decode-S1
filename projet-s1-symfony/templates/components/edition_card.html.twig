@@ -1,0 +1,43 @@
+{# Edition Card Component
+   
+   Parameters:
+   - edition: Array with edition data (required)
+     - title: Edition title
+     - cover_url: Cover image URL
+     - publishers: Array of publisher names
+     - publish_date: Publication date
+     - is_available: Boolean indicating if edition is in stock
+     - book_olid: Open Library book/edition OLID (e.g. OL7353617M)
+   - work_olid: Open Library work OLID (e.g. OL12345W)
+#}
+<article class="bg-white rounded-lg border border-primary-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+	<div class="p-2">
+		<div class="aspect-3/4 bg-primary-100 rounded overflow-hidden mb-2">
+			{% if edition.cover_url %}
+				<img src="{{ edition.cover_url }}" alt="Couverture {{ edition.title }}" class="w-full h-full object-cover">
+			{% else %}
+				<div class="w-full h-full flex items-center justify-center text-primary-400 font-bodoni text-xs p-1 text-center">Pas de couverture</div>
+			{% endif %}
+		</div>
+		<h3 class="font-bodoni text-xs font-bold text-primary-900 mb-1 line-clamp-2">{{ edition.title ?? 'Sans titre' }}</h3>
+		{% if edition.publishers and edition.publishers|length > 0 %}
+			<p class="font-bodoni text-[10px] text-primary-500 mb-1 line-clamp-1">{{ edition.publishers[0] }}</p>
+		{% endif %}
+		{% if edition.publish_date %}
+			{% set publishYear = edition.publish_date|length > 4 ? edition.publish_date|slice(0, 4) : edition.publish_date %}
+			<p class="font-bodoni text-[10px] text-primary-600 mb-1.5">{{ publishYear }}</p>
+		{% endif %}
+		{% if work_olid and edition.book_olid %}
+			<form method="post" action="{{ path('cart_add') }}">
+				<input type="hidden" name="book_olid" value="{{ edition.book_olid }}">
+				<input type="hidden" name="work_olid" value="{{ work_olid }}">
+				<input type="hidden" name="quantity" value="1">
+				<button type="submit" class="w-full bg-secondary-800 hover:bg-secondary-900 text-white px-2 py-1.5 rounded text-[10px] font-bodoni font-medium transition-colors duration-200">
+					{{ edition.is_available ? 'Ajouter au panier' : 'Commander' }}
+				</button>
+			</form>
+		{% elseif not work_olid %}
+			<span class="block w-full bg-primary-300 text-primary-700 px-2 py-1.5 rounded text-[10px] font-bodoni text-center">Indisponible</span>
+		{% endif %}
+	</div>
+</article>

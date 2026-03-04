@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau livre{% endblock %}
+
+{% block body %}
+    <section class="py-8 md:py-12 bg-primary-50">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <div class="mb-8">
+                <h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+                    <span class="relative inline-block">
+                        <span class="relative z-10">Créer un nouveau livre</span>
+                        <span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+                    </span>
+                </h1>
+                <a href="{{ path('app_admin_book_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Retour à la liste
+                </a>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                {{ include('admin_book/_form.html.twig') }}
+            </div>
+        </div>
+    </section>
+{% endblock %}

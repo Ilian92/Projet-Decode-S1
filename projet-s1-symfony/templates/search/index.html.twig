@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{% if query %}
+		Recherche : "{{ query }}" - Mississippi.com
+	{% else %}
+		Recherche - Mississippi.com
+	{% endif %}
+{% endblock %}
+
+{% block body %}
+	<div class="bg-white min-h-screen">
+		<div class="container mx-auto px-4 py-6">
+			{# Breadcrumb (Amazon-style) #}
+			<nav class="font-bodoni text-sm text-primary-600 mb-4" aria-label="Fil d'Ariane">
+				<ol class="flex flex-wrap items-center gap-1">
+					<li><a href="{{ path('app_home') }}" class="hover:text-secondary-800 underline">Accueil</a></li>
+					<li aria-hidden="true">›</li>
+					<li>
+						{% if query or subject %}
+							<span class="text-primary-900 font-medium">Résultats de recherche</span>
+						{% else %}
+							<span class="text-primary-900 font-medium">Recherche</span>
+						{% endif %}
+					</li>
+				</ol>
+			</nav>
+
+			{# Main search bar (prominent, Amazon-style) #}
+			<div class="mb-6">
+				<form action="{{ path('app_search') }}" method="get" class="flex gap-2 max-w-2xl">
+					<input type="hidden" name="subject" value="{{ subject }}">
+					<input type="search" name="q" value="{{ query }}"
+						placeholder="Rechercher un livre, un auteur..."
+						class="font-bodoni flex-1 px-4 py-3 rounded-l-md border-2 border-primary-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-primary-800"
+						aria-label="Recherche">
+					<button type="submit"
+						class="bg-secondary-800 hover:bg-secondary-900 text-white px-6 py-3 rounded-r-md font-bodoni font-medium transition-colors flex items-center gap-2">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+						</svg>
+						Rechercher
+					</button>
+				</form>
+			</div>
+
+			<div class="flex flex-col lg:flex-row gap-8">
+				{# Left sidebar - Filters (Amazon "Department" style) #}
+				<aside class="lg:w-56 shrink-0" aria-label="Filtres">
+					<div class="bg-primary-50 rounded-lg p-4 shadow-sm sticky top-24">
+						<h2 class="font-sancreek text-lg font-bold text-primary-900 mb-3 border-b border-primary-200 pb-2">
+							Filtrer par catégorie
+						</h2>
+						<ul class="space-y-1">
+							<li>
+								<a href="{{ path('app_search', { q: query, sort: sort }) }}"
+									class="font-bodoni text-sm block py-1.5 px-2 rounded {{ subject == '' ? 'bg-primary-200 text-primary-900 font-medium' : 'text-primary-700 hover:bg-primary-100' }}">
+									Toutes les catégories
+								</a>
+							</li>
+							{% for key, label in subjectFilters %}
+								<li>
+									<a href="{{ path('app_search', { q: query, subject: key, sort: sort }) }}"
+										class="font-bodoni text-sm block py-1.5 px-2 rounded {{ subject == key ? 'bg-primary-200 text-primary-900 font-medium' : 'text-primary-700 hover:bg-primary-100' }}">
+										{{ label }}
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</aside>
+
+				{# Main results area #}
+				<div class="flex-1 min-w-0">
+					{% if hasSearched %}
+						{# Results header: count + sort (Amazon-style) #}
+						<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+							<p class="font-bodoni text-primary-700">
+								{% if totalResults == 0 %}
+									Aucun résultat
+									{% if query %} pour "{{ query }}"{% endif %}
+									{% if subject %} dans {{ subjectFilters[subject] ?? subject }}{% endif %}.
+								{% else %}
+									<span class="font-semibold text-primary-900">{{ totalResults }}</span> résultat{{ totalResults > 1 ? 's' : '' }}
+									{% if query %} pour "{{ query }}"{% endif %}
+									{% if subject %} dans {{ subjectFilters[subject] ?? subject }}{% endif %}
+								{% endif %}
+							</p>
+							{% if totalResults > 0 %}
+								<div class="flex items-center gap-2">
+									<label for="sort-select" class="font-bodoni text-sm text-primary-700 whitespace-nowrap">Trier par :</label>
+									<form method="get" class="inline" id="sort-form">
+										<input type="hidden" name="q" value="{{ query }}">
+										<input type="hidden" name="subject" value="{{ subject }}">
+										<select name="sort" id="sort-select"
+											class="font-bodoni text-sm px-3 py-2 rounded-md border-2 border-primary-300 bg-white text-primary-800 focus:border-primary-500 focus:outline-none"
+											onchange="this.form.submit()">
+											{% for value, label in sortOptions %}
+												<option value="{{ value }}" {{ sort == value ? 'selected' : '' }}>{{ label }}</option>
+											{% endfor %}
+										</select>
+									</form>
+								</div>
+							{% endif %}
+						</div>
+
+						{% if totalResults > 0 %}
+							{# Grid of book cards (Amazon-style product grid) #}
+							<ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 md:gap-6 list-none p-0 m-0">
+								{% for book in results %}
+									<li>
+										{% include 'components/work_card.html.twig' with {
+											work: book,
+											buttonText: 'Voir'
+										} %}
+									</li>
+								{% endfor %}
+							</ul>
+
+							{# Pagination (Amazon-style) #}
+							{% if totalPages > 1 %}
+								<nav class="mt-8 flex justify-center" aria-label="Pagination des résultats">
+									<ul class="flex flex-wrap items-center justify-center gap-2">
+										{% if page > 1 %}
+											<li>
+												<a href="{{ path('app_search', { q: query, subject: subject, sort: sort, page: page - 1 }) }}"
+													class="font-bodoni inline-flex items-center px-3 py-2 rounded-md border-2 border-primary-300 bg-white text-primary-700 hover:bg-primary-50 transition-colors">
+													‹ Précédent
+												</a>
+											</li>
+										{% endif %}
+
+										{% set startPage = max(1, page - 2) %}
+										{% set endPage = min(totalPages, page + 2) %}
+										{% for p in startPage..endPage %}
+											<li>
+												{% if p == page %}
+													<span class="font-bodoni inline-flex items-center px-3 py-2 rounded-md bg-secondary-800 text-white font-medium" aria-current="page">{{ p }}</span>
+												{% else %}
+													<a href="{{ path('app_search', { q: query, subject: subject, sort: sort, page: p }) }}"
+														class="font-bodoni inline-flex items-center px-3 py-2 rounded-md border-2 border-primary-300 bg-white text-primary-700 hover:bg-primary-50 transition-colors">{{ p }}</a>
+												{% endif %}
+											</li>
+										{% endfor %}
+
+										{% if page < totalPages %}
+											<li>
+												<a href="{{ path('app_search', { q: query, subject: subject, sort: sort, page: page + 1 }) }}"
+													class="font-bodoni inline-flex items-center px-3 py-2 rounded-md border-2 border-primary-300 bg-white text-primary-700 hover:bg-primary-50 transition-colors">
+													Suivant ›
+												</a>
+											</li>
+										{% endif %}
+									</ul>
+								</nav>
+							{% endif %}
+						{% else %}
+							{# Empty state #}
+							<div class="bg-primary-50 rounded-lg p-8 text-center">
+								<p class="font-bodoni text-primary-700 mb-4">Essayez d'autres mots-clés ou une autre catégorie.</p>
+								<a href="{{ path('app_search') }}" class="inline-block bg-secondary-800 hover:bg-secondary-900 text-white px-6 py-3 rounded-md font-bodoni font-medium transition-colors">
+									Effacer la recherche
+								</a>
+							</div>
+						{% endif %}
+					{% else %}
+						{# No search yet - prompt #}
+						<div class="bg-primary-50 rounded-lg p-8 text-center">
+							<p class="font-bodoni text-primary-700 text-lg mb-2">Recherchez un livre ou un auteur ci-dessus.</p>
+							<p class="font-bodoni text-primary-600 text-sm">Utilisez les filtres à gauche pour affiner par catégorie.</p>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Livre #{{ book.id }}
+{% endblock %}
+
+{% block body %}
+	<section class="py-8 md:py-12 bg-primary-50">
+		<div class="container mx-auto px-4 max-w-4xl">
+			{% for message in app.flashes('success') %}
+				<div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800">{{ message }}</div>
+			{% endfor %}
+			{% for message in app.flashes('error') %}
+				<div class="mb-4 p-4 rounded-lg bg-red-100 text-red-800">{{ message }}</div>
+			{% endfor %}
+			<div class="mb-8">
+				<h1 class="font-bodoni text-3xl md:text-4xl font-bold text-primary-900 mb-4">
+					<span class="relative inline-block">
+						<span class="relative z-10">Livre #{{ book.id }}</span>
+						<span class="absolute bottom-0 left-0 right-0 h-2 bg-secondary-500/30 -z-0 transform -skew-x-12"></span>
+					</span>
+				</h1>
+				{% if return_order %}
+					<a href="{{ path('app_admin_order_show', { id: return_order }) }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200 mr-4">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+						</svg>
+						Retour à la commande #{{ return_order }}
+					</a>
+				{% endif %}
+				<a href="{{ path('app_admin_book_index') }}" class="inline-flex items-center gap-2 text-primary-700 hover:text-primary-900 transition-colors duration-200">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+					</svg>
+					Retour à la liste
+				</a>
+			</div>
+
+			<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+				<table class="min-w-full">
+					<tbody class="divide-y divide-primary-100">
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">ID</th>
+							<td class="px-6 py-4 text-sm text-primary-800">{{ book.id }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de publication</th>
+							<td class="px-6 py-4 text-sm text-primary-800 font-semibold">{{ book.publicationDate ? book.publicationDate|date('Y-m-d') : '' }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Prix unitaire</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ book.currentUnitPrice }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Stock disponible</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ book.availableStock }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">URL image de couverture</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ book.coverImageUrl }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Poids (grammes)</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ book.weightGrams }}</td>
+						</tr>
+						<tr class="hover:bg-primary-50 transition-colors duration-200">
+							<th class="px-6 py-4 bg-primary-100 text-left text-sm font-bold text-primary-900 uppercase tracking-wider w-1/3">Date de sortie</th>
+							<td class="px-6 py-4 text-sm text-primary-600">{{ book.releaseDate ? book.releaseDate|date('Y-m-d') : '' }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="mt-8 bg-white rounded-lg shadow-lg overflow-hidden p-6">
+				<h2 class="font-bodoni text-xl font-bold text-primary-900 mb-4">Réapprovisionner</h2>
+				<form method="post" action="{{ path('app_admin_book_restock', { id: book.id }) }}" class="inline-flex flex-wrap items-end gap-4">
+					<input type="hidden" name="_token" value="{{ csrf_token('restock' ~ book.id) }}">
+					{% if return_order %}
+						<input type="hidden" name="return_order" value="{{ return_order }}">
+					{% endif %}
+					<div>
+						<label for="new_quantity" class="block text-sm font-bold text-primary-900 mb-1">Nouveau stock</label>
+						<input type="number" id="new_quantity" name="new_quantity" value="{{ book.availableStock ?? 0 }}" min="0" class="w-28 px-4 py-2 border border-primary-200 rounded-lg focus:ring-2 focus:ring-secondary-500">
+					</div>
+					<button type="submit" class="inline-flex items-center gap-2 bg-amber-600 text-white rounded-lg px-5 py-2.5 font-bodoni font-semibold hover:bg-amber-700 transition-colors duration-200">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+						</svg>
+						Réapprovisionner
+					</button>
+				</form>
+			</div>
+
+			<div class="mt-6 flex gap-4 justify-between items-center flex-wrap">
+				{% if book.work %}
+					<a href="{{ path('app_work_show', { id: book.work.id }) }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary-500 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-primary-600 transition-all duration-300">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+						</svg>
+						<span class="font-bodoni font-medium">Voir la page publique de l'œuvre</span>
+					</a>
+				{% endif %}
+				<a href="{{ path('app_admin_book_edit', {'id': book.id}) }}" class="inline-flex items-center gap-2 bg-contrasted-900 text-white rounded-lg px-6 py-3 shadow-sm hover:shadow-md hover:bg-contrasted-800 transition-all duration-300">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+					</svg>
+					<span class="font-bodoni font-medium">Modifier</span>
+				</a>
+
+				{{ include('admin_book/_delete_form.html.twig') }}
+			</div>
+		</div>
+	</section>
+{% endblock %}

@@ -2,18 +2,39 @@
 
 namespace App\Repository;
 
+use App\Entity\Book;
 use App\Entity\Order;
+use App\Enum\OrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Order>
- */
 class OrderRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Order::class);
+    }
+
+    public function findOneByStripePaymentIntentId(string $stripePaymentIntentId): ?Order
+    {
+        return $this->createQueryBuilder('o')
+            ->andWhere('o.stripePaymentIntentId = :pi')
+            ->setParameter('pi', $stripePaymentIntentId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findByBookStatus(Book $book, OrderStatus $status): array
+    {
+        return $this->createQueryBuilder('o')
+            ->innerJoin('o.orderLine', 'ol')
+            ->andWhere('o.status = :status')
+            ->andWhere('ol.book = :book')
+            ->setParameter('status', $status->value)
+            ->setParameter('book', $book)
+            ->orderBy('o.orderDate', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

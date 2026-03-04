@@ -19,34 +19,35 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'last_name', length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'first_name', length: 255)]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(name: 'email', length: 180)]
     private ?string $email;
 
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(name: 'password_hash', length: 255)]
     private ?string $passwordHash = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(name: 'phone', length: 20)]
     private ?string $phone = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'registration_date')]
     private ?\DateTime $registrationDate = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(name: 'last_login', nullable: true)]
     private ?\DateTime $lastLogin = null;
 
     /**
      * @var Collection<int, Order>
      */
     #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
+    #[ORM\OrderBy(['orderDate' => 'DESC', 'id' => 'DESC'])]
     private Collection $orders;
 
     #[ORM\ManyToOne(inversedBy: 'customer')]
