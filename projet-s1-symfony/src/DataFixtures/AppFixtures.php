@@ -342,6 +342,7 @@ class AppFixtures extends Fixture
         $order1->setTotalAmount(3990);
         $order1->setShippingCost(500);
         $order1->setTrackingNumber('FR123456789');
+        $order1->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order1);
 
         $order2 = new Order();
@@ -352,6 +353,7 @@ class AppFixtures extends Fixture
         $order2->setTotalAmount(2680);
         $order2->setShippingCost(500);
         $order2->setTrackingNumber('FR987654321');
+        $order2->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order2);
 
         $order3 = new Order();
@@ -363,6 +365,7 @@ class AppFixtures extends Fixture
         $order3->setTotalAmount(2390);
         $order3->setShippingCost(500);
         $order3->setTrackingNumber('FR456789123');
+        $order3->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order3);
 
         // ========== ORDER LINES ==========
