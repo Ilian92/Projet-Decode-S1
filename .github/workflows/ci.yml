@@ -80,7 +80,7 @@ jobs:
 
       - name: Create .env.test.local
         run: |
-          printf 'APP_ENV=test\nAPP_SECRET=test_secret\nCART_HMAC_SECRET=test-secret-key\nDATABASE_URL=sqlite://%%kernel.project_dir%%/var/data_test.db\n' > .env.test.local
+          printf 'APP_ENV=test\nAPP_SECRET=test_secret\nCART_HMAC_SECRET=test-secret-key\nDATABASE_URL=sqlite:///%%kernel.project_dir%%/var/data_test.db\n' > .env.test.local
 
       - name: Run unit tests (Entity + Service)
         run: php bin/phpunit tests/Entity tests/Service --testdox

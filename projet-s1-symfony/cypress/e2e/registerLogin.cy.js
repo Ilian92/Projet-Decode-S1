@@ -46,6 +46,6 @@ describe("Inscription", () => {
         cy.get("#username").type(wrongEmail);
         cy.get("#password").type(password, { log: false });
         cy.contains("button", "Se connecter").click();
-        cy.contains("p", "Invalid credentials.").should("be.visible");
+        cy.contains("p", "invalides").should("be.visible");
     });
 });

@@ -16,7 +16,7 @@ describe("Recherche de livre", () => {
 
         cy.wait(1000);
 
-        cy.get("article").first().find("a").click();
+        cy.get("article").first().find("a").first().click();
 
         cy.get("h1").should("contain", "Red Rising");
     });
