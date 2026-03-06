@@ -83,7 +83,16 @@ jobs:
           printf 'APP_ENV=test\nAPP_SECRET=test_secret\nCART_HMAC_SECRET=test-secret-key\nDATABASE_URL=sqlite:///%%kernel.project_dir%%/var/data_test.db\n' > .env.test.local
 
       - name: Run unit tests (Entity + Service)
-        run: php bin/phpunit tests/Entity tests/Service --testdox
+        run: |
+          mkdir -p var
+          php bin/phpunit tests/Entity tests/Service --testdox --log-junit var/phpunit-unit.xml
+
+      - name: Publish unit test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: projet-s1-symfony/var/phpunit-unit.xml
+          check_name: "Unit test results"
 
   functional-tests:
     needs: ["prepare"]
@@ -132,7 +141,16 @@ jobs:
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
 
       - name: Run functional tests (Controller)
-        run: php bin/phpunit tests/Controller --testdox
+        run: |
+          mkdir -p var
+          php bin/phpunit tests/Controller --testdox --log-junit var/phpunit-functional.xml
+
+      - name: Publish functional test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: projet-s1-symfony/var/phpunit-functional.xml
+          check_name: "Functional test results"
 
   e2e-tests:
     needs: ["prepare"]

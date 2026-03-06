@@ -18,6 +18,6 @@ describe("Recherche de livre", () => {
 
         cy.get("article").first().find("a").first().click();
 
-        cy.get("h1").should("contain", "Red Rising");
+        cy.get("main h1").should("contain", "Red Rising");
     });
 });
