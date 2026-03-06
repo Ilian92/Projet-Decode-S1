@@ -5,8 +5,13 @@ namespace App\Tests\Service;
 use App\Entity\Book;
 use App\Entity\Order;
 use App\Enum\OrderStatus;
+use App\Repository\AuthorRepository;
+use App\Repository\BookRepository;
+use App\Repository\GenreRepository;
 use App\Repository\OrderRepository;
+use App\Repository\WorkRepository;
 use App\Service\BookService;
+use App\Service\OpenLibraryService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -14,13 +19,32 @@ class BookServiceTest extends TestCase
 {
     private OrderRepository $orderRepository;
     private EntityManagerInterface $entityManager;
+    private BookRepository $bookRepository;
+    private WorkRepository $workRepository;
+    private AuthorRepository $authorRepository;
+    private GenreRepository $genreRepository;
+    private OpenLibraryService $openLibraryService;
     private BookService $bookService;
 
     protected function setUp(): void
     {
         $this->orderRepository = $this->createMock(OrderRepository::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->bookService = new BookService($this->orderRepository, $this->entityManager);
+        $this->bookRepository = $this->createMock(BookRepository::class);
+        $this->workRepository = $this->createMock(WorkRepository::class);
+        $this->authorRepository = $this->createMock(AuthorRepository::class);
+        $this->genreRepository = $this->createMock(GenreRepository::class);
+        $this->openLibraryService = $this->createMock(OpenLibraryService::class);
+
+        $this->bookService = new BookService(
+            $this->orderRepository,
+            $this->entityManager,
+            $this->bookRepository,
+            $this->workRepository,
+            $this->authorRepository,
+            $this->genreRepository,
+            $this->openLibraryService
+        );
     }
 
     public function testRestockUpdatesBookStockAndFlushes(): void
@@ -29,12 +53,12 @@ class BookServiceTest extends TestCase
         $book->setId('olid-test');
         $book->setAvailableStock(5);
 
-        $this->entityManager->expects(self::exactly(2))
+        $this->entityManager->expects(self::once())
             ->method('flush');
 
         $this->orderRepository->expects(self::once())
             ->method('findByBookStatus')
-            ->with($book, OrderStatus::PENDING_SHIPMENT)
+            ->with($book, OrderStatus::PENDING_RESTOCK)
             ->willReturn([]);
 
         $this->bookService->restock($book, 10);

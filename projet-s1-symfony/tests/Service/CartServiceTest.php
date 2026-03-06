@@ -90,16 +90,6 @@ class CartServiceTest extends TestCase
 
     public function testGetCartReturnsValidatedCartWhenCookieValid(): void
     {
-        $book = new Book();
-        $book->setId('olid1');
-        $book->setAvailableStock(10);
-        $book->setCurrentUnitPrice(999);
-
-        $this->bookRepository->expects(self::once())
-            ->method('find')
-            ->with('olid1')
-            ->willReturn($book);
-
         $cartJson = json_encode(['olid1' => 2]);
         $cartData = base64_encode($cartJson);
         $signature = hash_hmac('sha256', $cartData, self::CART_HMAC_SECRET);
@@ -149,15 +139,6 @@ class CartServiceTest extends TestCase
 
     public function testGetTotalItemsSumsQuantities(): void
     {
-        $book = new Book();
-        $book->setId('olid1');
-        $book->setAvailableStock(10);
-
-        $this->bookRepository->expects(self::atLeastOnce())
-            ->method('find')
-            ->with('olid1')
-            ->willReturn($book);
-
         $cartJson = json_encode(['olid1' => 3]);
         $cartData = base64_encode($cartJson);
         $signature = hash_hmac('sha256', $cartData, self::CART_HMAC_SECRET);

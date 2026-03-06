@@ -8,25 +8,19 @@ use App\Entity\Customer;
 use App\Entity\Order;
 use App\Entity\OrderLine;
 use App\Enum\OrderStatus;
-use App\Repository\OrderRepository;
 use App\Service\OrderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class OrderServiceTest extends TestCase
 {
-    private OrderRepository $orderRepository;
     private EntityManagerInterface $entityManager;
     private OrderService $orderService;
 
     protected function setUp(): void
     {
-        $this->orderRepository = $this->createMock(OrderRepository::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->orderService = new OrderService(
-            $this->orderRepository,
-            $this->entityManager
-        );
+        $this->orderService = new OrderService($this->entityManager);
     }
 
     public function testCreateReturnsNullWhenBookItemsEmpty(): void
@@ -139,7 +133,6 @@ class OrderServiceTest extends TestCase
         $line->setQuantity(2);
 
         $order = new Order();
-        $order->setId(1);
         $order->setStatus(OrderStatus::PENDING_SHIPMENT->value);
         $order->addOrderLine($line);
 
@@ -151,6 +144,6 @@ class OrderServiceTest extends TestCase
         $this->assertTrue($result);
         $this->assertSame(3, $book->getAvailableStock());
         $this->assertSame(OrderStatus::SHIPPED->value, $order->getStatus());
-        $this->assertStringStartsWith('TRK-1-', $order->getTrackingNumber());
+        $this->assertStringStartsWith('TRK-', $order->getTrackingNumber());
     }
 }
