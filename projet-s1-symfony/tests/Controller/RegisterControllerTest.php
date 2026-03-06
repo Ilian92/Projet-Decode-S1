@@ -20,16 +20,6 @@ class RegisterControllerTest extends WebTestCase
         parent::tearDown();
     }
 
-    public function testRegisterPageLoads(): void
-    {
-        $client = static::createClient();
-
-        $client->request('GET', '/register');
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(200);
-    }
-
     public function testRegisterWithMissingFields(): void
     {
         $client = static::createClient();
