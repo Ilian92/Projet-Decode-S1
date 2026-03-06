@@ -122,6 +122,12 @@ jobs:
           path: ./projet-s1-symfony/vendor
           key: ${{ runner.os }}-${{ runner.arch }}-vendor-${{ hashFiles('**/composer.lock') }}
 
+      - name: Restore public cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./projet-s1-symfony/public
+          key: ${{ runner.os }}-${{ runner.arch }}-public-${{ hashFiles('**/composer.lock') }}
+
       - name: Create .env.test.local
         run: |
           printf 'APP_ENV=test\nAPP_SECRET=test_secret\nCART_HMAC_SECRET=test-secret-key\nDATABASE_URL=postgresql://app:!ChangeMe!@127.0.0.1:5432/app_test?serverVersion=16\n' > .env.test.local
