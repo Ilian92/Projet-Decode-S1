@@ -28,11 +28,11 @@ describe("Inscription", () => {
 
     it("se connecte avec le compte créé", () => {
         visitPath("/login");
-        
-        cy.get("h1").should("contain", "Please sign in");
+
+        cy.get("h1").should("contain", "Connexion");
         cy.get("#username").type(uniqueEmail);
         cy.get("#password").type(password, { log: false });
-        cy.contains("button", "Sign in").click();
+        cy.contains("button", "Se connecter").click();
     });
 
     it("se connecter avec la commande personnalisé", () => {
@@ -41,11 +41,12 @@ describe("Inscription", () => {
 
     it("échoue à se connecter avec un email invalide", () => {
         visitPath("/login");
-        
-        cy.get("h1").should("contain", "Please sign in");
+
+        cy.get("h1").should("contain", "Connexion");
         cy.get("#username").type(wrongEmail);
         cy.get("#password").type(password, { log: false });
-        cy.contains("button", "Sign in").click();
-        cy.get(".alert-danger").should("contain", "Invalid credentials.");
+        cy.contains("button", "Se connecter").click();
+        cy.get(".bg-red-50").should("be.visible");
+        cy.get(".bg-red-50").invoke("text").should("match", /invalides|Invalid credentials/i);
     });
 });

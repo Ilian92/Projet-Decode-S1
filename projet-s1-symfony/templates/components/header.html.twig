@@ -43,6 +43,13 @@
 							{% endif %}
 						</a>
 
+						{# Admin dashboard (visible only for admins) #}
+						{% if is_granted('ROLE_ADMIN') %}
+							<a href="/admin" id="header-admin-btn" class="flex items-center justify-center px-3 py-2 rounded-lg bg-secondary-900 text-white hover:bg-secondary-800 transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Administration" title="Administration">
+								<span class="font-bodoni text-sm font-semibold">Admin</span>
+							</a>
+						{% endif %}
+
 						{# Profile Icon + User Name #}
 						<a href="{{ path('app_profile') }}" id="header-user-name" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/80 hover:bg-white transition-colors relative z-[100] pointer-events-auto" style="z-index: 100; pointer-events: auto;" aria-label="Mon profil" title="Mon profil">
 							<span class="font-bodoni text-primary-700 text-sm font-medium">

@@ -264,7 +264,8 @@ class AppFixtures extends Fixture
         $book5->setPublicationDate(new \DateTime('1831-03-16'));
         $book5->setReleaseDate(new \DateTime('2020-11-20'));
         $book5->setCurrentUnitPrice(1390);
-        $book5->setAvailableStock(45);
+        // This book is used in an order while out of stock to trigger a pending_restock status
+        $book5->setAvailableStock(0);
         $book5->setCoverImageUrl('https://covers.openlibrary.org/b/id/2626880-L.jpg');
         $book5->setWeightGrams(550);
         $manager->persist($book5);
@@ -342,6 +343,7 @@ class AppFixtures extends Fixture
         $order1->setTotalAmount(3990);
         $order1->setShippingCost(500);
         $order1->setTrackingNumber('FR123456789');
+        $order1->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order1);
 
         $order2 = new Order();
@@ -352,6 +354,7 @@ class AppFixtures extends Fixture
         $order2->setTotalAmount(2680);
         $order2->setShippingCost(500);
         $order2->setTrackingNumber('FR987654321');
+        $order2->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order2);
 
         $order3 = new Order();
@@ -363,7 +366,19 @@ class AppFixtures extends Fixture
         $order3->setTotalAmount(2390);
         $order3->setShippingCost(500);
         $order3->setTrackingNumber('FR456789123');
+        $order3->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
         $manager->persist($order3);
+
+        $order4 = new Order();
+        $order4->setCustomer($admin);
+        $order4->setAddress($address1);
+        $order4->setOrderDate(new \DateTime('2026-02-10'));
+        $order4->setStatus('pending_restock');
+        $order4->setTotalAmount(4070);
+        $order4->setShippingCost(500);
+        $order4->setTrackingNumber('FR000000000');
+        $order4->setStripePaymentIntentId('pi_3T6vXEIRHfUDcjVS1ieZVBdG');
+        $manager->persist($order4);
 
         // ========== ORDER LINES ==========
         $orderLine1 = new OrderLine();
@@ -407,6 +422,20 @@ class AppFixtures extends Fixture
         $orderLine6->setQuantity(1);
         $orderLine6->setUnitPriceSnapshot(890);
         $manager->persist($orderLine6);
+
+        $orderLine7 = new OrderLine();
+        $orderLine7->setTableOrder($order4);
+        $orderLine7->setBook($book5); // no stock
+        $orderLine7->setQuantity(2);
+        $orderLine7->setUnitPriceSnapshot(1390);
+        $manager->persist($orderLine7);
+
+        $orderLine8 = new OrderLine();
+        $orderLine8->setTableOrder($order4);
+        $orderLine8->setBook($book2); // has stock
+        $orderLine8->setQuantity(1);
+        $orderLine8->setUnitPriceSnapshot(1290);
+        $manager->persist($orderLine8);
 
         $manager->flush();
     }

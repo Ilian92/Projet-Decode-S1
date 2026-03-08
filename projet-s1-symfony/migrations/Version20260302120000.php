@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Remove shipping_status from monthly_box; delivery status is now derived from the linked Order.
- */
 final class Version20260302120000 extends AbstractMigration
 {
     public function getDescription(): string

@@ -52,6 +52,7 @@ jobs:
           DEFAULT_URI=${{ secrets.DEFAULT_URI }}
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
           EOF
 
       - name: Install Composer dependencies
@@ -172,7 +173,7 @@ jobs:
           export APP_DEBUG=0
 
           echo "Création du fichier .env.local..."
-          printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=${{ secrets.APP_SECRET }}\nDEFAULT_URI=${{ secrets.DEFAULT_URI }}\nDATABASE_URL=${{ secrets.DATABASE_URL }}\nMAILER_DSN=${{ secrets.MAILER_DSN }}\nSTRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}\n' > .env.local
+          printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=${{ secrets.APP_SECRET }}\nDEFAULT_URI=${{ secrets.DEFAULT_URI }}\nDATABASE_URL=${{ secrets.DATABASE_URL }}\nMAILER_DSN=${{ secrets.MAILER_DSN }}\nSTRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}\nSTRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}\n' > .env.local
           chmod 600 .env.local
 
           echo "Installation des dépendances PHP..."

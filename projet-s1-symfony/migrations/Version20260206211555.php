@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20260206211555 extends AbstractMigration
 {
     public function getDescription(): string
@@ -19,7 +16,6 @@ final class Version20260206211555 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE address (id SERIAL NOT NULL, label VARCHAR(255) NOT NULL, recipient_name VARCHAR(255) NOT NULL, street VARCHAR(255) NOT NULL, address_details VARCHAR(255) NOT NULL, postal_code VARCHAR(255) NOT NULL, city VARCHAR(255) NOT NULL, country VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE author (id SERIAL NOT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, biography TEXT DEFAULT NULL, photo_url VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE book (id SERIAL NOT NULL, work_id INT NOT NULL, book_publisher_id INT DEFAULT NULL, publication_date DATE NOT NULL, current_unit_price INT DEFAULT NULL, available_stock INT DEFAULT NULL, cover_image_url VARCHAR(255) DEFAULT NULL, weight_grams INT DEFAULT NULL, release_date DATE DEFAULT NULL, PRIMARY KEY(id))');
@@ -84,7 +80,6 @@ final class Version20260206211555 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE book DROP CONSTRAINT FK_CBE5A331BB3453DB');
         $this->addSql('ALTER TABLE book DROP CONSTRAINT FK_CBE5A3311929A596');
         $this->addSql('ALTER TABLE "customer" DROP CONSTRAINT FK_81398E09F5B7AF75');
