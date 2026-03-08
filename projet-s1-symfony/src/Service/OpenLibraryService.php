@@ -31,10 +31,8 @@ class OpenLibraryService
 
     private function getJson(string $endpoint, array $query = [], int $cacheTtl = 3600): array
     {
-        // Create cache key from endpoint and query
         $cacheKey = 'openlibrary_' . md5($endpoint . serialize($query));
-        
-        // Try to get from cache first
+
         $cacheItem = $this->cache->getItem($cacheKey);
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
@@ -43,10 +41,9 @@ class OpenLibraryService
         try {
             $response = $this->client->request('GET', $this->apiBaseUrl . $endpoint, [
                 'query' => $query,
-                'timeout' => 5 // 5 second timeout
+                'timeout' => 5
             ]);
 
-            // Throws exception if HTTP status is >= 400
             $statusCode = $response->getStatusCode();
             if ($statusCode >= 400) {
                 throw new \Exception("API returned status code $statusCode");
@@ -58,7 +55,6 @@ class OpenLibraryService
                 throw new \RuntimeException('Invalid JSON returned: ' . json_last_error_msg());
             }
 
-            // Cache the result
             $cacheItem->set($data);
             $cacheItem->expiresAfter($cacheTtl);
             $this->cache->save($cacheItem);
@@ -127,38 +123,33 @@ class OpenLibraryService
     /**
      * Format a work from OpenLibrary API for frontend display
      * Handles both search API format and subject works format
-     * 
+     *
      * @param array $work Work data from OpenLibrary API
      * @return array Formatted work data
      */
     public function formatWorkForFrontend(array $work): array
     {
-        // Handle cover - cover_i (search API), cover_id (subjects API), or covers array
         $coverId = $work['cover_i'] ?? $work['cover_id'] ?? null;
         if (!$coverId && isset($work['covers']) && !empty($work['covers'])) {
             $coverId = is_array($work['covers']) ? $work['covers'][0] : $work['covers'];
         }
-        
+
         $coverUrl = null;
         if ($coverId) {
             $coverUrl = $this->getImageUrl($coverId, ImageType::BOOK, ImageSize::MEDIUM);
         }
-        
-        // Handle authors - can be author_key/author_name arrays (search API) or authors array (subject API)
+
         $authorKey = null;
         $authorName = null;
-        
+
         if (isset($work['author_name']) && is_array($work['author_name']) && !empty($work['author_name'])) {
             // Search API format - author_name is an array
             $authorName = $work['author_name'][0];
             $authorKey = $work['author_key'][0] ?? null;
         } elseif (isset($work['author_key']) && is_array($work['author_key']) && !empty($work['author_key'])) {
-            // Search API format - only author_key available, try to extract name
             $authorKey = $work['author_key'][0];
-            // Note: We can't get the name from just the key without an API call
             $authorName = null;
         } elseif (isset($work['authors']) && is_array($work['authors']) && !empty($work['authors'])) {
-            // Subject API format
             $firstAuthor = $work['authors'][0];
             if (is_array($firstAuthor)) {
                 $authorName = $firstAuthor['name'] ?? null;
@@ -167,7 +158,7 @@ class OpenLibraryService
                 $authorName = $firstAuthor;
             }
         }
-        
+
         return [
             'key' => $work['key'] ?? null,
             'title' => $work['title'] ?? 'Untitled',
@@ -183,7 +174,7 @@ class OpenLibraryService
 
     /**
      * Format an edition/book from OpenLibrary API for frontend display
-     * 
+     *
      * @param array $edition Edition data from OpenLibrary API
      * @return array Formatted edition data
      */
@@ -193,12 +184,12 @@ class OpenLibraryService
         if (isset($edition['covers']) && !empty($edition['covers'])) {
             $coverId = $edition['covers'][0];
         }
-        
+
         $coverUrl = null;
         if ($coverId) {
             $coverUrl = $this->getImageUrl($coverId, ImageType::BOOK, ImageSize::MEDIUM);
         }
-        
+
         $authors = [];
         if (isset($edition['authors'])) {
             foreach ($edition['authors'] as $author) {
@@ -208,7 +199,7 @@ class OpenLibraryService
                 ];
             }
         }
-        
+
         return [
             'key' => $edition['key'] ?? null,
             'title' => $edition['title'] ?? 'Untitled',
@@ -229,7 +220,7 @@ class OpenLibraryService
         if (preg_match('/\/(?:works|books|authors)\/([^\/]+)/', $key, $matches)) {
             return $matches[1];
         }
-        
+
         return null;
     }
 
