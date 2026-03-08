@@ -55,7 +55,6 @@ final class SearchController extends AbstractController
             } elseif ($sort === 'editions') {
                 $params['sort'] = 'edition_count desc';
             }
-            // relevance and rating: API default
 
             try {
                 $searchResponse = $this->openLibraryService->search($params);

@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Change Work.id and Book.id to Open Library keys (string OLIDs).
- */
 final class Version20260228150000 extends AbstractMigration
 {
     public function isTransactional(): bool

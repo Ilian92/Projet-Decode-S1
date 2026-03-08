@@ -30,7 +30,6 @@ final class EditProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Si un nouveau mot de passe est fourni, le hasher
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
                 $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
